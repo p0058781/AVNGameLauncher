@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalResourceApi::class)
+
 package org.skynetsoftware.avnlauncher.ui.screen
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -18,37 +19,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.LocalImageLoader
 import com.seiko.imageloader.rememberAsyncImagePainter
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.data.model.Filter
-import org.skynetsoftware.avnlauncher.data.model.SortDirection
-import org.skynetsoftware.avnlauncher.data.model.SortOrder
+import org.skynetsoftware.avnlauncher.data.repository.Filter
+import org.skynetsoftware.avnlauncher.data.repository.SortDirection
+import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.Game
-import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
+import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.component.AutoSizeText
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.Toast
+import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
 import org.skynetsoftware.avnlauncher.ui.theme.CardColor
 import org.skynetsoftware.avnlauncher.ui.theme.CardHoverColor
 import org.skynetsoftware.avnlauncher.ui.theme.materialColors
+import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
+import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.imageLoader
-import java.awt.Toolkit
 
 @Composable
-@Preview
 fun MainScreen() {
 
-    val gamesRepository: GamesRepository = koinInject()
     val updateChecker = koinInject<UpdateChecker>()
     var selectedGame by remember { mutableStateOf<Game?>(null) }
-    var importGameDialogVisible by remember { mutableStateOf<Boolean>(false) }
+    var importGameDialogVisible by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
 
     MaterialTheme(
@@ -76,7 +79,7 @@ fun MainScreen() {
         }
         selectedGame?.let {
             EditGameDialog(
-                selectedGame = it,
+                _selectedGame = it,
                 onCloseRequest = {
                     selectedGame = null
                 },
@@ -117,16 +120,16 @@ private fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
     return buildString {
         val updates = this@buildToastMessage.filter { it.updateAvailable }
         if (updates.isNotEmpty()) {
-            appendLine("Update Available:")
+            appendLine(R.strings.toastUpdateAvailable)
             updates.forEach {
                 appendLine(it.game.title)
             }
         } else {
-            appendLine("No Updates Available")
+            appendLine(R.strings.toastNoUpdatesAvailable)
         }
         val exceptions = this@buildToastMessage.filter { it.exception != null }
         if (exceptions.isNotEmpty()) {
-            appendLine("Exceptions: ")
+            appendLine(R.strings.toastException)
             exceptions.forEach {
                 append(it.game.title)
                 append(": ")
@@ -146,10 +149,10 @@ private fun Actions(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
-        Action("import.png") {
+        Action(R.images.import) {
             onImportGameClicked()
         }
-        Action("refresh.png") {
+        Action(R.images.refresh) {
             updateChecker.startUpdateCheck(true) { updateResult ->
                 showToast(updateResult.buildToastMessage())
             }
@@ -195,19 +198,19 @@ private fun SortFilter() {
 @OptIn(ExperimentalMaterialApi::class)
 private fun FilterItems(
     modifier: Modifier = Modifier,
-    gamesRepository: GamesRepository = koinInject()
+    gamesViewModel: GamesViewModel = koinInject()
 ) {
-    val games by remember { gamesRepository.games }.collectAsState()
+    val games by remember { gamesViewModel.games }.collectAsState()
     Column(
         modifier = modifier.padding(start = 10.dp, end = 10.dp)
     ) {
-        val currentFilter by remember { gamesRepository.filter }.collectAsState()
+        val currentFilter by remember { gamesViewModel.filter }.collectAsState()
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically).weight(1f).fillMaxWidth(),
-                text = "Filter (${games.size})",
+                text = R.strings.filterTitle.format(games.size),
                 style = MaterialTheme.typography.h5,
             )
         }
@@ -222,7 +225,7 @@ private fun FilterItems(
                 Chip(
                     onClick = {
                         if (!isChipSelected) {
-                            gamesRepository.setFilter(filter)
+                            gamesViewModel.setFilter(filter)
                         }
                     },
                     modifier = Modifier.padding(end = 10.dp),
@@ -244,19 +247,19 @@ private fun FilterItems(
 @Composable
 private fun SortOrderItems(
     modifier: Modifier = Modifier,
-    gamesRepository: GamesRepository = koinInject(),
+    gamesViewModel: GamesViewModel = koinInject(),
 ) {
     Column(
         modifier = modifier.padding(start = 10.dp, end = 10.dp)
     ) {
-        val currentSortOrder by remember { gamesRepository.sortOrder }.collectAsState()
-        val currentDirection by remember { gamesRepository.sortDirection }.collectAsState()
+        val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
+        val currentDirection by remember { gamesViewModel.sortDirection }.collectAsState()
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Sort Order",
+                text = R.strings.sortOrderTitle,
                 style = MaterialTheme.typography.h5,
             )
         }
@@ -272,11 +275,11 @@ private fun SortOrderItems(
                     onClick = {
                         if (isChipSelected) {
                             when (currentDirection) {
-                                SortDirection.Ascending -> gamesRepository.setSortDirection(SortDirection.Descending)
-                                SortDirection.Descending -> gamesRepository.setSortDirection(SortDirection.Ascending)
+                                SortDirection.Ascending -> gamesViewModel.setSortDirection(SortDirection.Descending)
+                                SortDirection.Descending -> gamesViewModel.setSortDirection(SortDirection.Ascending)
                             }
                         } else {
-                            gamesRepository.setSortOrder(sortOrder)
+                            gamesViewModel.setSortOrder(sortOrder)
                         }
                     },
                     modifier = Modifier.padding(end = 10.dp),
@@ -298,11 +301,11 @@ private fun SortOrderItems(
 
 @Composable
 private fun GamesList(
-    gamesRepository: GamesRepository = koinInject(),
+    gamesViewModem: GamesViewModel = koinInject(),
     editGame: (game: Game) -> Unit,
 ) {
 
-    val games by remember { gamesRepository.games }.collectAsState()
+    val games by remember { gamesViewModem.games }.collectAsState()
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive((Toolkit.getDefaultToolkit().screenSize.width / 5).dp),
@@ -321,7 +324,7 @@ private fun GamesList(
 private fun GameItem(
     game: Game,
     gameLauncher: GameLauncher = koinInject(),
-    gamesRepository: GamesRepository = koinInject(),
+    gamesViewModel: GamesViewModel = koinInject(),
     editGame: (game: Game) -> Unit
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
@@ -361,59 +364,57 @@ private fun GameItem(
                         modifier = Modifier.weight(1f)
                     )
                     Image(
-                        painter = painterResource("playing.png"),
+                        painter = painterResource(R.images.playing),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesRepository.setPlaying(!game.playing, game.id)
+                            gamesViewModel.togglePlaying(game)
                         },
-                        colorFilter = ColorFilter.tint(if (game.playing) Color.Green else Color.White)
+                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Playing) Color.Green else Color.White)
                     )
                     Image(
-                        painter = painterResource("completed.png"),
+                        painter = painterResource(R.images.completed),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesRepository.setCompleted(!game.completed, game.id)
+                            gamesViewModel.toggleCompleted(game)
                         },
-                        colorFilter = ColorFilter.tint(if (game.completed) Color.Green else Color.White)
+                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Completed) Color.Green else Color.White)
                     )
                     Image(
-                        painter = painterResource("waiting.png"),
+                        painter = painterResource(R.images.waiting),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesRepository.setWaitingForUpdate(!game.waitingForUpdate, game.id)
+                            gamesViewModel.toggleWaitingForUpdate(game)
                         },
-                        colorFilter = ColorFilter.tint(if (game.waitingForUpdate) Color.Green else Color.White)
+                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.WaitingForUpdate) Color.Green else Color.White)
                     )
                     if (game.updateAvailable) {
                         Image(
-                            painter = painterResource("update.png"),
+                            painter = painterResource(R.images.update),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                                 game.availableVersion?.let {
-                                    gamesRepository.updateUpdateAvailable(false, game.id)
-                                    gamesRepository.updateVersion(it, game.id)
-                                    gamesRepository.updateAvailableVersion(null, game.id)
+                                    gamesViewModel.resetUpdateAvailable(it, game)
                                 }
                             }
                         )
                     }
-                    if (game.executablePath.isBlank()) {
+                    if (game.executablePath.isNullOrBlank()) {
                         Image(
-                            painter = painterResource("warning.png"),
+                            painter = painterResource(R.images.warning),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically)
                         )
                     }
                     Image(
-                        painter = painterResource(if (game.hidden) "visible.png" else "gone.png"),
+                        painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesRepository.updateHidden(!game.hidden, game.id)
+                            gamesViewModel.toggleHidden(game)
                         },
                         colorFilter = ColorFilter.tint(Color.White)
                     )
                     Image(
-                        painter = painterResource("edit.png"),
+                        painter = painterResource(R.images.edit),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                             editGame(game)
@@ -425,16 +426,16 @@ private fun GameItem(
                 Column(
                     modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth()
                 ) {
-                    InfoItem("Play Time:", formatPlayTime(game.playTime))
-                    InfoItem("Version:", game.version)
-                    InfoItem("Available Version:", game.availableVersion ?: "-")
-                    InfoItem("Release Date:", game.releaseDate ?: "-")
+                    InfoItem(R.strings.infoLabelPlayTime, formatPlayTime(game.playTime))
+                    InfoItem(R.strings.infoLabelVersion, game.version)
+                    InfoItem(R.strings.infoLabelAvailableVersion, game.availableVersion ?: R.strings.noValue)
+                    InfoItem(R.strings.infoLabelReleaseDate, game.releaseDate ?: R.strings.noValue)
                 }
                 RatingBar(
-                    rating = game.rating ?: 0,
+                    rating = game.rating,
                     modifier = Modifier.padding(start = 10.dp, top = 10.dp),
                     onClick = { rating ->
-                        gamesRepository.updateRating(rating, game.id)
+                        gamesViewModel.updateRating(rating, game)
                     }
                 )
 

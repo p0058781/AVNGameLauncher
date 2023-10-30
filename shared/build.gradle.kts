@@ -35,9 +35,8 @@ kotlin {
                 implementation("io.realm.kotlin:library-base:1.11.0")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-properties:1.6.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.3.0")
+                implementation("com.squareup.okio:okio:3.6.0")
 
                 implementation("io.insert-koin:koin-core:3.5.0")
                 implementation("io.insert-koin:koin-compose:1.1.0")
@@ -46,6 +45,11 @@ kotlin {
                 implementation("org.slf4j:slf4j-simple:2.0.9")
 
                 implementation("org.jsoup:jsoup:1.16.1")
+
+                implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.0")
+
+                implementation("dev.icerock.moko:mvvm-compose:0.16.1")
+                implementation("dev.icerock.moko:mvvm-flow-compose:0.16.1")
             }
         }
         val androidMain by getting {

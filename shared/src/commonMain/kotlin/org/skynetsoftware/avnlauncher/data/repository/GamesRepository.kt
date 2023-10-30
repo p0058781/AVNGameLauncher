@@ -1,328 +1,189 @@
 package org.skynetsoftware.avnlauncher.data.repository
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import io.realm.kotlin.Realm
+import io.realm.kotlin.ext.query
+import io.realm.kotlin.notifications.ResultsChange
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.transaction
+import kotlinx.coroutines.flow.combine
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.data.model.Filter
-import org.skynetsoftware.avnlauncher.data.model.SortDirection
-import org.skynetsoftware.avnlauncher.data.model.SortOrder
+import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
 import org.skynetsoftware.avnlauncher.data.model.Game
-import org.skynetsoftware.avnlauncher.data.model.Games
-import java.io.File
+import org.skynetsoftware.avnlauncher.data.model.PlayState
+import org.skynetsoftware.avnlauncher.data.model.toGame
 
 val gamesRepositoryKoinModule = module {
     single<GamesRepository> { GamesRepositoryImpl(get()) }
 }
 
 interface GamesRepository {
-    val games: StateFlow<List<Game>>
+    val games: Flow<List<Game>>
     val sortOrder: StateFlow<SortOrder>
     val sortDirection: StateFlow<SortDirection>
     val filter: StateFlow<Filter>
 
-    fun selectAll(): List<Game>
+    //read
+    suspend fun all(): List<Game>
 
-    fun updatePlayTime(playTime: Long, id: EntityID<Int>)
+    //write
+    suspend fun updatePlayTime(playTime: Long, game: Game)
 
-    fun updateLastPlayed(lastPlayed: Long, id: EntityID<Int>)
+    suspend fun updateLastPlayed(lastPlayed: Long, game: Game)
 
-    fun updateLastUpdateCheck(lastUpdateCheck: Long, id: EntityID<Int>)
+    suspend fun updateLastUpdateCheck(lastUpdateCheck: Long, game: Game)
 
-    fun updateUpdateAvailable(updateAvailable: Boolean, id: EntityID<Int>)
+    suspend fun updateUpdateAvailable(updateAvailable: Boolean, game: Game)
 
-    fun updateReleaseDate(releaseDate: String?, id: EntityID<Int>)
+    suspend fun updateReleaseDate(releaseDate: String?, game: Game)
 
-    fun updateAvailableVersion(availableVersion: String?, id: EntityID<Int>)
+    suspend fun updateAvailableVersion(availableVersion: String?, game: Game)
 
-    fun updateVersion(version: String, id: EntityID<Int>)
+    suspend fun updateVersion(version: String, game: Game)
 
-    fun updateRating(rating: Int, id: EntityID<Int>)
+    suspend fun updateRating(rating: Int, game: Game)
 
-    fun updateHidden(hidden: Boolean, id: EntityID<Int>)
+    suspend fun updateHidden(hidden: Boolean, game: Game)
 
-    fun setPlaying(playing: Boolean, id: EntityID<Int>)
+    suspend fun updatePlayState(playState: PlayState, game: Game)
 
-    fun setCompleted(completed: Boolean, id: EntityID<Int>)
+    suspend fun updateExecutablePath(executablePath: String, game: Game)
 
-    fun setWaitingForUpdate(waiting: Boolean, id: EntityID<Int>)
+    suspend fun updateTitle(title: String, game: Game)
 
+    suspend fun updateImageUrl(imageUrl: String, game: Game)
+
+    suspend fun insertGame(
+        title: String,
+        imageUrl: String,
+        f95ZoneUrl: String,
+        executablePath: String,
+        version: String
+    )
+
+    //repo
     fun setSortOrder(sortOrder: SortOrder)
 
     fun setSortDirection(sortDirection: SortDirection)
 
     fun setFilter(filter: Filter)
-
-    fun updateExecutablePath(executablePath: String, id: EntityID<Int>)
-
-    fun updateTitle(title: String, id: EntityID<Int>)
-
-    fun updateImageUrl(imageUrl: String, id: EntityID<Int>)
-
-    fun insertGame(title: String, imageUrl: String, f95ZoneUrl: String, executablePath: String, version: String, added: Long)
 }
 
 private class GamesRepositoryImpl(
-    private val database: Database
+    private val realm: Realm
 ) : GamesRepository {
 
-    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    //data
-    override val games = MutableStateFlow<List<Game>>(emptyList())
-
     //sorting
-    override val sortOrder = MutableStateFlow(SortOrder.LastPlayed)
+    override val sortOrder = MutableStateFlow<SortOrder>(SortOrder.LastPlayed)
     override val sortDirection = MutableStateFlow(SortDirection.Descending)
 
     //filtering
-    override val filter = MutableStateFlow(Filter.Playing)
+    override val filter = MutableStateFlow<Filter>(Filter.Playing)
 
-    init {
-        loadGames()
-        //check paths
-        repositoryScope.launch {
-            selectAll().forEach {
-                if (!File(it.executablePath).exists()) {
-                    updateExecutablePath("", it.id)
-                }
-            }
-        }
+    //data
+    override val games = combine(
+        realm.query<RealmGame>().find().asFlow(),
+        sortOrder,
+        sortDirection,
+        filter
+    ) { results, sortOrder, sortDirection, filter ->
+        filterAndSortResults(results, sortOrder, sortDirection, filter)
     }
 
-    private fun loadGames() {
-        repositoryScope.launch {
-            games.value = transaction {
-                val query = Games.selectAll()
-                var showHiddenGames = false
-                when (filter.value) {
-                    Filter.GamesWithUpdate -> {
-                        query.andWhere {
-                            Games.updateAvailable eq true
-                        }
-                    }
-
-                    Filter.HiddenGames -> {
-                        showHiddenGames = true
-                    }
-
-                    Filter.UnplayedGames -> {
-                        query.andWhere {
-                            Games.playTime eq null
-                        }
-                        query.orWhere {
-                            Games.playTime less 3600_000L
-                        }
-                    }
-
-                    Filter.Playing -> {
-                        query.andWhere {
-                            Games.playing eq true
-                        }
-                    }
-
-                    Filter.Completed -> {
-                        query.andWhere {
-                            Games.completed eq true
-                        }
-                    }
-
-                    Filter.WaitingForUpdate -> {
-                        query.andWhere {
-                            Games.waitingForUpdate eq true
-                        }
-                    }
-
-                    Filter.All -> {
-
-                    }
-                }
-                query.andWhere {
-                    Games.hidden eq showHiddenGames
-                }
-
-                query.orderBy(sortOrder.value.column, sortDirection.value.sortOrder).map { Game.wrapRow(it) }
-            }
-        }
+    private fun filterAndSortResults(
+        results: ResultsChange<RealmGame>,
+        sortOrder: SortOrder,
+        sortDirection: SortDirection,
+        filter: Filter
+    ): List<Game> {
+        return sortOrder.sort(filter.filter(results.list.map { it.toGame() }), sortDirection)
     }
 
-    override fun selectAll(): List<Game> {
-        return transaction { Game.all().toList() }
+    private fun findRealmGame(game: Game) = realm.query<RealmGame>("title == $0", game.title).first().find()
+
+    override suspend fun all(): List<Game> {
+        return realm.query<RealmGame>().find().map(RealmGame::toGame)
     }
 
-    override fun updatePlayTime(playTime: Long, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.playTime] = playTime
-            }
-        }
-        loadGames()
+    override suspend fun updatePlayTime(playTime: Long, game: Game) = realm.write {
+        findRealmGame(game)?.playTime = playTime
     }
 
-    override fun updateLastPlayed(lastPlayed: Long, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.lastPlayed] = lastPlayed
-            }
-        }
-        loadGames()
+    override suspend fun updateLastPlayed(lastPlayed: Long, game: Game) = realm.write {
+        findRealmGame(game)?.lastPlayed = lastPlayed
     }
 
-    override fun updateLastUpdateCheck(lastUpdateCheck: Long, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.lastUpdateCheck] = lastUpdateCheck
-            }
-        }
-        loadGames()
+    override suspend fun updateLastUpdateCheck(lastUpdateCheck: Long, game: Game) = realm.write {
+        findRealmGame(game)?.lastUpdateCheck = lastUpdateCheck
     }
 
-    override fun updateUpdateAvailable(updateAvailable: Boolean, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.updateAvailable] = updateAvailable
-            }
-        }
-        loadGames()
+    override suspend fun updateUpdateAvailable(updateAvailable: Boolean, game: Game) = realm.write {
+        findRealmGame(game)?.updateAvailable = updateAvailable
     }
 
-    override fun updateAvailableVersion(availableVersion: String?, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.availableVersion] = availableVersion
-            }
-        }
-        loadGames()
+    override suspend fun updateAvailableVersion(availableVersion: String?, game: Game) = realm.write {
+        findRealmGame(game)?.availableVersion = availableVersion
     }
 
-    override fun updateVersion(version: String, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.version] = version
-            }
-        }
-        loadGames()
+    override suspend fun updateVersion(version: String, game: Game) = realm.write {
+        findRealmGame(game)?.version = version
     }
 
-    override fun updateRating(rating: Int, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.rating] = rating
-            }
-        }
-        loadGames()
+    override suspend fun updateRating(rating: Int, game: Game) = realm.write {
+        findRealmGame(game)?.rating = rating
     }
 
-    override fun updateHidden(hidden: Boolean, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.hidden] = hidden
-            }
-        }
-        loadGames()
+    override suspend fun updateHidden(hidden: Boolean, game: Game) = realm.write {
+        findRealmGame(game)?.hidden = hidden
     }
 
-    override fun setPlaying(playing: Boolean, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.playing] = playing
-                it[Games.completed] = false
-                it[Games.waitingForUpdate] = false
-            }
-        }
-        loadGames()
+    override suspend fun updatePlayState(playState: PlayState, game: Game) = realm.write {
+        findRealmGame(game)?.playState = playState.name
     }
 
-    override fun setCompleted(completed: Boolean, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.completed] = completed
-                it[Games.playing] = false
-                it[Games.waitingForUpdate] = false
-            }
-        }
-        loadGames()
+    override suspend fun updateExecutablePath(executablePath: String, game: Game) = realm.write {
+        findRealmGame(game)?.executablePath = executablePath
     }
 
-    override fun setWaitingForUpdate(waiting: Boolean, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.waitingForUpdate] = waiting
-                it[Games.completed] = false
-                it[Games.playing] = false
-            }
+    override suspend fun updateTitle(title: String, game: Game) = realm.write {
+        findRealmGame(game)?.title = title
+    }
+
+    override suspend fun updateImageUrl(imageUrl: String, game: Game) = realm.write {
+        findRealmGame(game)?.imageUrl = imageUrl
+    }
+
+    override suspend fun updateReleaseDate(releaseDate: String?, game: Game) = realm.write {
+        findRealmGame(game)?.releaseDate = releaseDate
+    }
+
+    override suspend fun insertGame(
+        title: String,
+        imageUrl: String,
+        f95ZoneUrl: String,
+        executablePath: String,
+        version: String
+    ) = realm.write {
+        val game = RealmGame().apply {
+            this.title = title
+            this.imageUrl = imageUrl
+            this.f95ZoneUrl = f95ZoneUrl
+            this.executablePath = executablePath
+            this.version = version
         }
-        loadGames()
+        copyToRealm(game)
+        Unit
     }
 
     override fun setSortOrder(sortOrder: SortOrder) {
         this.sortOrder.value = sortOrder
-        loadGames()
     }
 
     override fun setSortDirection(sortDirection: SortDirection) {
         this.sortDirection.value = sortDirection
-        loadGames()
     }
 
     override fun setFilter(filter: Filter) {
         this.filter.value = filter
-        loadGames()
-    }
-
-    override fun updateExecutablePath(executablePath: String, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.executablePath] = executablePath
-            }
-        }
-        loadGames()
-    }
-
-    override fun updateTitle(title: String, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.title] = title
-            }
-        }
-        loadGames()
-    }
-
-    override fun updateImageUrl(imageUrl: String, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.imageUrl] = imageUrl
-            }
-        }
-        loadGames()
-    }
-
-    override fun updateReleaseDate(releaseDate: String?, id: EntityID<Int>) {
-        transaction {
-            Games.update({ Games.id eq id }) {
-                it[Games.releaseDate] = releaseDate
-            }
-        }
-        loadGames()
-    }
-
-    override fun insertGame(title: String, imageUrl: String, f95ZoneUrl: String, executablePath: String, version: String, added: Long) {
-        transaction {
-            Games.insert {
-                it[Games.title] = title
-                it[Games.imageUrl] = imageUrl
-                it[Games.f95ZoneUrl] = f95ZoneUrl
-                it[Games.executablePath] = executablePath
-                it[Games.version] = version
-                it[Games.added] = System.currentTimeMillis()
-            }
-        }
-        loadGames()
     }
 }
