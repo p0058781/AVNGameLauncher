@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.jsoup.Jsoup
 
 val gameImportKoinModule = module {
@@ -11,7 +12,7 @@ val gameImportKoinModule = module {
 }
 
 interface GameImport {
-    fun importGame(url: String, onGameImported: (title: String) -> Unit): Job
+    fun importGame(threadId: Int, onGameImported: (title: String) -> Unit): Job
 }
 
 private class GameImportImpl(configManager: ConfigManager, private val gamesRepository: GamesRepository) : GameImport {
@@ -20,8 +21,8 @@ private class GameImportImpl(configManager: ConfigManager, private val gamesRepo
     private val titleRegex = Regex("(.+)\\s*\\[(.+)\\]\\s*\\[(.+)\\]")
     //private val gamesDir = configManager.gamesDir
 
-    override fun importGame(url: String, onGameImported: (title: String) -> Unit) = coroutineScope.launch {
-        val document = Jsoup.connect(url).get()
+    override fun importGame(threadId: Int, onGameImported: (title: String) -> Unit) = coroutineScope.launch {
+        val document = Jsoup.connect(threadId.createF95ThreadUrl()).get()
         val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
             ?: throw IllegalArgumentException("cant get title")
         val imageUrl = document.select(".bbWrapper div a").first()?.attr("href")
@@ -37,9 +38,9 @@ private class GameImportImpl(configManager: ConfigManager, private val gamesRepo
             ?.firstOrNull { it.name.lowercase().contains(title.replace(" ", "").lowercase()) }?.let {
                 findExecutable(it.absolutePath)
             }?.absolutePath ?: ""
-
-        gamesRepository.insertGame(title, imageUrl, url, executable, version, System.currentTimeMillis())
-        onGameImported(title)*/
+*/
+        gamesRepository.insertGame(title, imageUrl, threadId, null, version)
+        onGameImported(title)
     }
 
     /*private fun findExecutable(searchDirectory: String): File? {

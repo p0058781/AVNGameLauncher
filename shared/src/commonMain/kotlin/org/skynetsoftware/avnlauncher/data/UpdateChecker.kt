@@ -4,7 +4,9 @@ import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
+import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.jsoup.Jsoup
 import org.skynetsoftware.avnlauncher.logging.Logger
 
@@ -17,7 +19,7 @@ val updateCheckerKoinModule = module {
 interface UpdateChecker {
 
     class UpdateResult(
-        val game: RealmGame,
+        val game: Game,
         val updateAvailable: Boolean,
         val exception: Exception?
     )
@@ -73,8 +75,9 @@ private class UpdateCheckerImpl(private val gamesRepository: GamesRepository, pr
         }
     }
 
-    private fun getNewVersionAndReleaseDate(game: RealmGame): Pair<String?, String?> {
-        val document = Jsoup.connect(game.f95ZoneUrl).get()
+    private fun getNewVersionAndReleaseDate(game: Game): Pair<String?, String?> {
+        //TODO use F95Api class
+        val document = Jsoup.connect(game.f95ZoneThreadId.createF95ThreadUrl()).get()
         val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
         val bbWrapper = document.select(".bbWrapper").first()?.html()
 

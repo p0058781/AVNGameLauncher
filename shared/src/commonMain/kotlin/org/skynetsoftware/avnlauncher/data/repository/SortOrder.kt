@@ -69,7 +69,17 @@ sealed class SortOrder(val label: String) {
     }
 
     companion object {
-        val entries: List<SortOrder> = listOf(AZ, LastPlayed, Added, Rating, PlayTime, UpdateAvailable, ReleaseDate)
+        val entries: List<SortOrder> by lazy {
+            listOf(
+                AZ,
+                LastPlayed,
+                Added,
+                Rating,
+                PlayTime,
+                UpdateAvailable,
+                ReleaseDate
+            )
+        }
     }
 }
 

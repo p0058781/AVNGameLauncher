@@ -5,9 +5,13 @@ import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.f95.model.F95Game
 import org.skynetsoftware.avnlauncher.jsoup.Jsoup
 
+private const val f95ZoneThreadBaseUrl = "https://f95zone.to/threads/"
+
 val f95ApiKoinModule = module {
     single<F95Api> { F95ApiImpl() }
 }
+
+fun Int.createF95ThreadUrl() = "$f95ZoneThreadBaseUrl$this"
 
 interface F95Api {
     suspend fun getGame(gameThreadId: Int): Result<F95Game>
@@ -16,7 +20,6 @@ interface F95Api {
 
 private class F95ApiImpl : F95Api {
 
-    private val f95ZoneThreadBaseUrl = "https://f95zone.to/threads/"
     private val titleRegex = Regex("(.+)\\s*\\[(.+)\\]\\s*\\[(.+)\\]")
     private val releaseDateRegex = Regex("<b>Release Date</b>: (.*)")
 
