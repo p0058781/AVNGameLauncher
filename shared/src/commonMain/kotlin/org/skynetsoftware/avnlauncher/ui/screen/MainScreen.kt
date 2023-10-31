@@ -116,6 +116,7 @@ fun MainScreen() {
 
 }
 
+//TODO this needs to be moved somewhere lese, it does not belong here
 private fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
     return buildString {
         val updates = this@buildToastMessage.filter { it.updateAvailable }
@@ -180,6 +181,7 @@ fun Action(
     }
 }
 
+//TODO this needs to be moved to the side instead of top on desktop and hidden by default on android
 @Composable
 private fun SortFilter() {
     Row(

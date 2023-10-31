@@ -75,7 +75,6 @@ private class GameLauncherDesktop(private val repository: GamesRepository, priva
             return when (os) {
                 OS.Linux,
                 OS.Windows -> executablePath
-
                 OS.Mac -> "open $executablePath"
             }
         }

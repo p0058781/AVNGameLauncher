@@ -33,5 +33,6 @@ object AVNLauncherApp {
                 viewModelsKoinModule,
             )
         }
+        //TODO register uncaught exception handler
     }
 }

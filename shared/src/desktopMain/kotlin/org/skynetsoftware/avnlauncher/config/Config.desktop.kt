@@ -10,6 +10,8 @@ actual val configKoinModule = module {
 }
 internal actual class ConfigManagerImpl(): ConfigManager {
 
+    //TODO use appropriate dirs depending on platform
+
     private val rootDir = File(System.getProperty("user.home"), ".config${File.separator}avnlauncher")
     private val cacheDirFile = File(rootDir, ".cache")
 

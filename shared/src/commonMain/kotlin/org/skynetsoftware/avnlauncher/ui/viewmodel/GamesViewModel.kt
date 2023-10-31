@@ -27,8 +27,9 @@ class GamesViewModel(private val gamesRepository: GamesRepository) : ViewModel()
                 }
             }
         }*/
-        //TODO
     }
+
+    //TODO detect invalid executable paths and update
 
     fun setFilter(filter: Filter) {
         gamesRepository.setFilter(filter)

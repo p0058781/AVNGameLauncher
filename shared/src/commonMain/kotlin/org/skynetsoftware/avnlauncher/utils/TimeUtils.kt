@@ -2,6 +2,7 @@ package org.skynetsoftware.avnlauncher.utils
 
 import org.skynetsoftware.avnlauncher.resources.R
 
+//TODO hardcoded strings
 fun formatPlayTime(playTime: Long?): String {
     if(playTime == null || playTime == 0L) {
         return R.strings.noValue
