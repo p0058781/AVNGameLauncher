@@ -3,17 +3,15 @@ package org.skynetsoftware.avnlauncher.data
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
-import org.skynetsoftware.avnlauncher.f95.createF95ThreadUrl
-import org.skynetsoftware.avnlauncher.jsoup.Jsoup
+import org.skynetsoftware.avnlauncher.f95.F95Api
 import org.skynetsoftware.avnlauncher.logging.Logger
 
 private const val UPDATE_CHECK_INTERVAL = 86_400_000L//24h
 
 val updateCheckerKoinModule = module {
-    single<UpdateChecker> { UpdateCheckerImpl(get(), get()) }
+    single<UpdateChecker> { UpdateCheckerImpl(get(), get(), get()) }
 }
 
 interface UpdateChecker {
@@ -27,10 +25,11 @@ interface UpdateChecker {
     fun startUpdateCheck(forceUpdateCheck: Boolean = false, onComplete: (updateResults: List<UpdateResult>) -> Unit)
 }
 
-private class UpdateCheckerImpl(private val gamesRepository: GamesRepository, private val logger: Logger) : UpdateChecker {
-
-    private val titleRegex = Regex("(.+)\\s*\\[(.+)\\]\\s*\\[(.+)\\]")
-    private val releaseDateRegex = Regex("<b>Release Date</b>: (.*)")
+private class UpdateCheckerImpl(
+    private val gamesRepository: GamesRepository,
+    private val logger: Logger,
+    private val f95Api: F95Api
+) : UpdateChecker {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
@@ -50,15 +49,20 @@ private class UpdateCheckerImpl(private val gamesRepository: GamesRepository, pr
                     async {
                         try {
                             val currentVersion = game.version
-                            val (newVersion, releaseDate) = getNewVersionAndReleaseDate(game)
+
+                            val f95Game = f95Api.getGame(game.f95ZoneThreadId).getOrThrow()
+                            val newVersion = f95Game.version
+                            val releaseDate = f95Game.releaseDate
                             if (newVersion != currentVersion) {
                                 gamesRepository.updateUpdateAvailable(true, game)
-                                newVersion?.let { gamesRepository.updateAvailableVersion(newVersion, game) }
+                                gamesRepository.updateAvailableVersion(newVersion, game)
                                 logger.info("${game.title}: Update Available $newVersion")
                             }
-                            releaseDate?.let {
-                                gamesRepository.updateReleaseDate(it, game)
+
+                            if (releaseDate != game.releaseDate) {
+                                gamesRepository.updateReleaseDate(releaseDate, game)
                             }
+
                             gamesRepository.updateLastUpdateCheck(now, game)
                             UpdateChecker.UpdateResult(game, newVersion != currentVersion, null)
                         } catch (e: Exception) {
@@ -73,20 +77,6 @@ private class UpdateCheckerImpl(private val gamesRepository: GamesRepository, pr
                 onComplete(updatesResult)
             }
         }
-    }
-
-    private fun getNewVersionAndReleaseDate(game: Game): Pair<String?, String?> {
-        //TODO use F95Api class
-        val document = Jsoup.connect(game.f95ZoneThreadId.createF95ThreadUrl()).get()
-        val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
-        val bbWrapper = document.select(".bbWrapper").first()?.html()
-
-        val matchResult = titleRaw?.let { titleRegex.matchEntire(it) }
-        val version = matchResult?.groups?.get(2)?.value?.trim()
-
-        val releaseDate = bbWrapper?.let { releaseDateRegex.find(bbWrapper)?.groups?.get(1)?.value }
-
-        return version to releaseDate
     }
 
     private suspend fun runIfNotAlreadyRunning(run: suspend () -> Unit) {

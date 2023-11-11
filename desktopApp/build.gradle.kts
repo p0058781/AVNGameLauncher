@@ -29,7 +29,7 @@ compose.desktop {
             jvmArgs(
                 "-Dapple.awt.application.appearance=system"
             )
-            //TODO change app name
+            //TODO [high] change app name
         }
     }
 }

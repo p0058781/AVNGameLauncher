@@ -12,5 +12,5 @@ interface SettingsManager {
 
 class SettingsManagerImpl(settings: Settings): SettingsManager
 
-//TODO selected filter and sort order
-//TODO import game executable search location for desktop
+//TODO [low] selected filter and sort order
+//TODO [medium] import game executable search location for desktop

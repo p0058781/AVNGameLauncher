@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.model.RealmLog
+import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 
 val loggerKoinModule = module {
     single<Logger> { LoggerImpl(get()) }
@@ -23,6 +24,7 @@ interface Logger {
 private class LoggerImpl(private val realm: Realm) : Logger {
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val timeFormat = SimpleDateFormat("dd.MM.yyyy, HH:mm:ss")
 
     override fun info(message: String) {
         log(Severity.Info, message)
@@ -42,8 +44,7 @@ private class LoggerImpl(private val realm: Realm) : Logger {
 
     private fun log(severity: Severity, message: String) {
         val time = Clock.System.now()
-        //TODO show formatted time instead
-        println("$severity[${time.toEpochMilliseconds()}]: $message")
+        println("$severity[${timeFormat.format(time.toEpochMilliseconds())}]: $message")
         coroutineScope.launch {
             realm.write {
                 copyToRealm(RealmLog().apply {
