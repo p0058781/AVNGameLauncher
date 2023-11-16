@@ -7,6 +7,8 @@ import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.model.RealmLog
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 
+expect fun logUncaughtExceptions(logger: Logger)
+
 val loggerKoinModule = module {
     single<Logger> { LoggerImpl(get()) }
 }

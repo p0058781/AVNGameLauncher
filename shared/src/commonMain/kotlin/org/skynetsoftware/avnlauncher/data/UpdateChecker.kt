@@ -19,7 +19,7 @@ interface UpdateChecker {
     class UpdateResult(
         val game: Game,
         val updateAvailable: Boolean,
-        val exception: Exception?
+        val exception: Throwable?
     )
 
     fun startUpdateCheck(forceUpdateCheck: Boolean = false, onComplete: (updateResults: List<UpdateResult>) -> Unit)
@@ -31,7 +31,7 @@ private class UpdateCheckerImpl(
     private val f95Api: F95Api
 ) : UpdateChecker {
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private var updateCheckRunning = false
 
@@ -51,6 +51,7 @@ private class UpdateCheckerImpl(
                             val currentVersion = game.version
 
                             val f95Game = f95Api.getGame(game.f95ZoneThreadId).getOrThrow()
+                            //TODO update RealmGame with new data, merge with existing
                             val newVersion = f95Game.version
                             val releaseDate = f95Game.releaseDate
                             if (newVersion != currentVersion) {
@@ -65,9 +66,9 @@ private class UpdateCheckerImpl(
 
                             gamesRepository.updateLastUpdateCheck(now, game)
                             UpdateChecker.UpdateResult(game, newVersion != currentVersion, null)
-                        } catch (e: Exception) {
-                            logger.error(e)
-                            UpdateChecker.UpdateResult(game, false, e)
+                        } catch (t: Throwable) {
+                            logger.error(t)
+                            UpdateChecker.UpdateResult(game, false, t)
                         }
                     }
                 }.map { it.await() }

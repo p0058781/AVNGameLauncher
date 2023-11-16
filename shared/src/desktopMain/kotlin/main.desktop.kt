@@ -3,10 +3,10 @@ import androidx.compose.runtime.Composable
 import org.skynetsoftware.avnlauncher.ui.screen.MainScreen
 
 @Composable
-fun MainView() = MainScreen()
+fun MainView(exitApplication: () -> Unit) = MainScreen(exitApplication)
 
 @Preview
 @Composable
 fun AppPreview() {
-    MainScreen()
+    MainScreen {}
 }

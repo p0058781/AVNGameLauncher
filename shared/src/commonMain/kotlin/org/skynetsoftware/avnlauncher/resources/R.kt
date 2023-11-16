@@ -5,12 +5,15 @@ package org.skynetsoftware.avnlauncher.resources
 //TODO This is a dumb temporary "solution" since moko-resources doesn't support kotlin 1.9 and compose 1.5 yet
 object R {
     object strings {
+        const val appName = "AVN Game Launcher"
         const val editGameDialogTitle = "Edit '%s'"
         const val toastException = "Exceptions: "
         const val toastNoUpdatesAvailable = "No Updates Available"
         const val toastUpdateAvailable = "Update Available:"
         const val filterTitle = "Filter (%d)"
+        const val filterLabel = "Filter:"
         const val sortOrderTitle = "Sort Order"
+        const val sortLabel = "Sort:"
         const val infoLabelPlayTime = "Play Time:"
         const val infoLabelVersion = "Version:"
         const val infoLabelAvailableVersion = "Available Version:"
@@ -28,11 +31,12 @@ object R {
         const val importGameDialogThreadIdHint = "F95 Thread ID"
         const val importGameDialogSuccessToast = "Game Imported: '%s'"
         const val importGameDialogButtonImport = "Import"
+        const val importGamesDialogToast = "Import Finished. Success: %d"
     }
 
     object images {
-        const val star_full = "star_full.png"
-        const val star_empty = "star_empty.png"
+        const val starFull = "star_full.png"
+        const val starEmpty = "star_empty.png"
         const val playing = "playing.png"
         const val refresh = "refresh.png"
         const val import = "import.png"
@@ -43,6 +47,8 @@ object R {
         const val visible = "visible.png"
         const val gone = "gone.png"
         const val edit = "edit.png"
+        const val close = "close.png"
+        const val appIcon = "icon.png"
     }
 
 }

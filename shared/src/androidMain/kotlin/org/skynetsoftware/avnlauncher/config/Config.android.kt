@@ -8,9 +8,9 @@ import java.io.File
 import java.text.SimpleDateFormat
 
 actual val configKoinModule = module {
-    single<ConfigManager> { ConfigManagerImpl(get())
-    SimpleDateFormat}
+    single<ConfigManager> { ConfigManagerImpl(get()) }
 }
-internal actual class ConfigManagerImpl(context: Context): ConfigManager {
-    override val cacheDir: Config<Path> = Config.Some(File(context.cacheDir, "images").toOkioPath())
+private class ConfigManagerImpl(context: Context): ConfigManager {
+    override val cacheDir: String = context.cacheDir.absolutePath
+    override val dataDir: String = context.dataDir.absolutePath
 }

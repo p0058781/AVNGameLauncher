@@ -8,15 +8,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.model.toGame
 import org.skynetsoftware.avnlauncher.data.model.toRealmGame
+import org.skynetsoftware.avnlauncher.settings.SettingsManager
 
 val gamesRepositoryKoinModule = module {
-    single<GamesRepository> { GamesRepositoryImpl(get()) }
+    single<GamesRepository> { GamesRepositoryImpl(get(), get()) }
 }
 
 interface GamesRepository {
@@ -66,15 +68,16 @@ interface GamesRepository {
 }
 
 private class GamesRepositoryImpl(
-    private val realm: Realm
+    private val realm: Realm,
+    private val settingsManager: SettingsManager
 ) : GamesRepository {
 
     //sorting
-    override val sortOrder = MutableStateFlow<SortOrder>(SortOrder.LastPlayed)
-    override val sortDirection = MutableStateFlow(SortDirection.Descending)
+    override val sortOrder = MutableStateFlow(settingsManager.selectedSortOrder)
+    override val sortDirection = MutableStateFlow(settingsManager.selectedSortDirection)
 
     //filtering
-    override val filter = MutableStateFlow<Filter>(Filter.Playing)
+    override val filter = MutableStateFlow(settingsManager.selectedFilter)
 
     //data
     override val games = combine(
@@ -156,19 +159,22 @@ private class GamesRepositoryImpl(
     override suspend fun insertGame(
         game: Game
     ) = realm.write {
-        copyToRealm(game.toRealmGame())
+        copyToRealm(game.toRealmGame().apply { added = Clock.System.now().toEpochMilliseconds() })
         Unit
     }
 
     override fun setSortOrder(sortOrder: SortOrder) {
         this.sortOrder.value = sortOrder
+        settingsManager.selectedSortOrder = sortOrder
     }
 
     override fun setSortDirection(sortDirection: SortDirection) {
         this.sortDirection.value = sortDirection
+        settingsManager.selectedSortDirection = sortDirection
     }
 
     override fun setFilter(filter: Filter) {
         this.filter.value = filter
+        settingsManager.selectedFilter = filter
     }
 }
