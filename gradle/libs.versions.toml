@@ -1,15 +1,16 @@
 [versions]
+kotlin = "1.9.10"
 activity-compose = "1.8.0"
 appcompat = "1.6.1"
 core-ktx = "1.10.1"
 image-loader = "1.2.10"
 jsoup = "1.16.1"
-koin-android = "3.5.0"
+koin = "3.5.0"
 koin-compose = "1.1.0"
 kotlinx-coroutines-core = "1.7.3"
 kotlinx-serialization-json = "1.6.0"
 kotlinx-datetime = "0.4.1"
-ktor = "2.3.6"
+ktor = "2.3.7"
 realm = "1.11.1"
 mpfilepicker = "2.1.0"
 multiplatform-settings-no-arg = "1.1.0"
@@ -17,6 +18,10 @@ mvvm = "0.16.1"
 okio = "3.6.0"
 slf4j-simple = "2.0.9"
 turbine = "0.12.1"
+h2 = "2.1.214"
+exposed = "0.41.1"
+logback = "1.4.11"
+clikt = "4.2.1"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -24,10 +29,11 @@ appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat"
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "image-loader" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin-android" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
-koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin-android" }
-koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin-android" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
@@ -38,6 +44,18 @@ ktor-client-curl = { module = "io.ktor:ktor-client-curl", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-server-call-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm", version.ref = "ktor" }
+ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
+ktor-server-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor" }
+ktor-server-netty-jvm = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-tests-jvm = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+jetbrains-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+jetbrains-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+h2database = { module = "com.h2database:h2", version.ref = "h2" }
 realm-librarybase = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings-no-arg" }
@@ -46,6 +64,8 @@ mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j-simple" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 
 [bundles]
 

@@ -17,12 +17,19 @@ val f95ApiKoinModule = module {
 fun Int.createF95ThreadUrl() = "$f95ZoneThreadBaseUrl$this"
 
 interface F95Api {
+
+    suspend fun login(username: String, password: String): Result<Unit>
+
     suspend fun getGame(gameThreadId: Int): Result<F95Game>
+
     suspend fun getGame(gameThreadUrl: String): Result<F95Game>
+
+    suspend fun getRedirectUrl(gameThreadId: Int): Result<String>
 }
 
 private class F95ApiImpl(private val f95Parser: F95Parser, private val f95CookiesStorage: F95CookiesStorage) : F95Api {
     private val gameThreadUrlRegex = Regex("https://f95zone.to/threads/.+\\.(\\d+)")
+    private val loginPageUrl = "https://f95zone.to/login/"
     private val httpClient = HttpClient {
         /*install(HttpCookies) {
             storage = f95CookiesStorage
@@ -31,8 +38,15 @@ private class F95ApiImpl(private val f95Parser: F95Parser, private val f95Cookie
             requestTimeoutMillis = 60000
         }
         install(Logging) {
-            level = LogLevel.NONE
+            level = LogLevel.INFO
         }
+    }
+    private val noRedirectClient = httpClient.config {
+        followRedirects = false
+    }
+
+    override suspend fun login(username: String, password: String): Result<Unit> {
+        TODO("not implemented")
     }
 
     override suspend fun getGame(gameThreadId: Int): Result<F95Game> {
@@ -44,7 +58,16 @@ private class F95ApiImpl(private val f95Parser: F95Parser, private val f95Cookie
         return if(threadId == null) {
             Result.failure(IllegalStateException("Failed to parse gameThreadUrl"))
         } else {
-            getGame(threadId)
+            return f95Parser.parseGame(httpClient.get(gameThreadUrl), threadId)
+        }
+    }
+
+    override suspend fun getRedirectUrl(gameThreadId: Int): Result<String> {
+        return try {
+            val location = noRedirectClient.prepareGet(gameThreadId.createF95ThreadUrl()).execute { it.headers["Location"] }
+            Result.success(location!!)
+        } catch (t: Throwable) {
+            Result.failure(t)
         }
     }
 

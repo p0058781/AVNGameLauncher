@@ -4,8 +4,11 @@ import org.koin.core.module.Module
 
 expect val configKoinModule: Module
 
-interface ConfigManager {
+interface ConfigManagerShared {
     val dataDir: String
     val cacheDir: String
+    val remoteClientModeDefault: Boolean
 }
+
+expect interface ConfigManager: ConfigManagerShared
 

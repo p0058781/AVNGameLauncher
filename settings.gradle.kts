@@ -30,6 +30,8 @@ pluginManagement {
         id("org.jetbrains.compose").version(composeVersion)
 
         id("io.realm.kotlin").version(realmVersion)
+        id("io.ktor.plugin").version("2.3.7")
+        //TODO use version catalog
     }
 }
 
