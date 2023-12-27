@@ -37,6 +37,7 @@ object R {
         const val stateCheckingForUpdates = "Checking for Updates"
         const val stateIdle = "Idle"
         const val stateSyncing = "Sync in progress"
+        const val editGameDialogCheckForUpdates = "Check for Updates"
     }
 
     object images {

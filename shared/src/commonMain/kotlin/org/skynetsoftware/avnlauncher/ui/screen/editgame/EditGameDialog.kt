@@ -38,6 +38,7 @@ fun EditGameDialog(
     var title by remember { editGameViewModel.title }.collectAsMutableState()
     var imageUrl by remember { editGameViewModel.imageUrl }.collectAsMutableState()
     var executablePath by remember { editGameViewModel.executablePath }.collectAsMutableState()
+    var checkForUpdates by remember { editGameViewModel.checkForUpdates }.collectAsMutableState()
 
     Dialog(
         title = R.strings.editGameDialogTitle.format(title),
@@ -86,6 +87,21 @@ fun EditGameDialog(
                         )
                     }
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Checkbox(
+                        checked = checkForUpdates,
+                        onCheckedChange = { checked ->
+                            checkForUpdates = checked
+                        }
+                    )
+                    Text(
+                        text = R.strings.editGameDialogCheckForUpdates,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
                 Spacer(modifier = Modifier.height(10.dp))
                 Button(
                     modifier = Modifier.fillMaxWidth(),

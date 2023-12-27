@@ -27,4 +27,5 @@ class RealmGame : RealmObject {
     var availableVersion: String? = null
     var tags: RealmSet<String> = realmSetOf()
     var lastRedirectUrl: String? = null
+    var checkForUpdates: Boolean = true
 }

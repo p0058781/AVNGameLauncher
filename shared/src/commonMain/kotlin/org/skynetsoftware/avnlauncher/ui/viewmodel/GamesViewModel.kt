@@ -46,15 +46,15 @@ class GamesViewModel(
         }
     }
 
-    fun setFilter(filter: Filter) {
+    fun setFilter(filter: Filter) = viewModelScope.launch {
         gamesRepository.setFilter(filter)
     }
 
-    fun setSortOrder(sortOrder: SortOrder) {
+    fun setSortOrder(sortOrder: SortOrder) = viewModelScope.launch {
         gamesRepository.setSortOrder(sortOrder)
     }
 
-    fun setSortDirection(sortDirection: SortDirection) {
+    fun setSortDirection(sortDirection: SortDirection) = viewModelScope.launch {
         gamesRepository.setSortDirection(sortDirection)
     }
 

@@ -24,7 +24,8 @@ data class Game(
     val playState: PlayState,
     val availableVersion: String?,
     val tags: Set<String>,
-    val lastRedirectUrl: String?
+    val lastRedirectUrl: String?,
+    val checkForUpdates: Boolean
 )
 
 fun Game.toRealmGame() = RealmGame().apply {
@@ -46,6 +47,7 @@ fun Game.toRealmGame() = RealmGame().apply {
     playState = this@toRealmGame.playState.name
     availableVersion = this@toRealmGame.availableVersion
     tags = realmSetOf(*this@toRealmGame.tags.toTypedArray())
+    checkForUpdates = this@toRealmGame.checkForUpdates
 }
 
 fun RealmGame.toGame() = Game(
@@ -67,7 +69,8 @@ fun RealmGame.toGame() = Game(
     playState = PlayState.fromString(playState),
     availableVersion = availableVersion,
     tags = setOf(*tags.toTypedArray()),
-    lastRedirectUrl = lastRedirectUrl
+    lastRedirectUrl = lastRedirectUrl,
+    checkForUpdates = checkForUpdates
 )
 
 fun F95Game.toRealmGame() = RealmGame().apply {
@@ -100,7 +103,8 @@ fun F95Game.toGame() = Game(
     playState = PlayState.Playing,
     availableVersion = null,
     tags = tags,
-    lastRedirectUrl = null
+    lastRedirectUrl = null,
+    checkForUpdates = true
 )
 
 fun SyncGame.toGame() = Game(
@@ -122,7 +126,8 @@ fun SyncGame.toGame() = Game(
     playState = playState,
     availableVersion = availableVersion,
     tags = tags,
-    lastRedirectUrl = lastRedirectUrl
+    lastRedirectUrl = lastRedirectUrl,
+    checkForUpdates = checkForUpdates
 )
 
 fun Game.toSyncGame() = SyncGame(
@@ -144,5 +149,6 @@ fun Game.toSyncGame() = SyncGame(
     playState = playState,
     availableVersion = availableVersion,
     tags = tags,
-    lastRedirectUrl = lastRedirectUrl
+    lastRedirectUrl = lastRedirectUrl,
+    checkForUpdates = checkForUpdates
 )

@@ -22,12 +22,12 @@ interface SettingsManager {
     val gamesDir: StateFlow<String?>
     val remoteClientMode: StateFlow<Boolean>
 
-    fun setSelectedFilter(filter: Filter)
-    fun setSelectedSortOrder(sortOrder: SortOrder)
-    fun setSelectedSortDirection(sortDirection: SortDirection)
-    fun setFastUpdateCheck(fastUpdateCheck: Boolean)
-    fun setGamesDir(gamesDir: String)
-    fun setRemoteClientMode(remoteClientMode: Boolean)
+    suspend fun setSelectedFilter(filter: Filter)
+    suspend fun setSelectedSortOrder(sortOrder: SortOrder)
+    suspend fun setSelectedSortDirection(sortDirection: SortDirection)
+    suspend fun setFastUpdateCheck(fastUpdateCheck: Boolean)
+    suspend fun setGamesDir(gamesDir: String)
+    suspend fun setRemoteClientMode(remoteClientMode: Boolean)
 }
 
 class SettingsManagerImpl(private val settings: Settings, configManager: ConfigManager) : SettingsManager {
@@ -70,33 +70,33 @@ class SettingsManagerImpl(private val settings: Settings, configManager: ConfigM
     )
     override val remoteClientMode: StateFlow<Boolean> get() = _remoteClientMode
 
-    override fun setSelectedFilter(filter: Filter) {
-        _selectedFilter.tryEmit(filter)
+    override suspend fun setSelectedFilter(filter: Filter) {
+        _selectedFilter.emit(filter)
         settings[SettingsManager::selectedFilter.name] = filter::class.simpleName
     }
 
-    override fun setSelectedSortOrder(sortOrder: SortOrder) {
-        _selectedSortOrder.tryEmit(sortOrder)
+    override suspend fun setSelectedSortOrder(sortOrder: SortOrder) {
+        _selectedSortOrder.emit(sortOrder)
         settings[SettingsManager::selectedSortOrder.name] = sortOrder::class.simpleName
     }
 
-    override fun setSelectedSortDirection(sortDirection: SortDirection) {
-        _selectedSortDirection.tryEmit(sortDirection)
+    override suspend fun setSelectedSortDirection(sortDirection: SortDirection) {
+        _selectedSortDirection.emit(sortDirection)
         settings[SettingsManager::selectedSortDirection.name] = sortDirection.name
     }
 
-    override fun setFastUpdateCheck(fastUpdateCheck: Boolean) {
-        _fastUpdateCheck.tryEmit(fastUpdateCheck)
+    override suspend fun setFastUpdateCheck(fastUpdateCheck: Boolean) {
+        _fastUpdateCheck.emit(fastUpdateCheck)
         settings[SettingsManager::fastUpdateCheck.name] = fastUpdateCheck
     }
 
-    override fun setGamesDir(gamesDir: String) {
-        _gamesDir.tryEmit(gamesDir)
+    override suspend fun setGamesDir(gamesDir: String) {
+        _gamesDir.emit(gamesDir)
         settings[SettingsManager::gamesDir.name] = gamesDir
     }
 
-    override fun setRemoteClientMode(remoteClientMode: Boolean) {
-        _remoteClientMode.tryEmit(remoteClientMode)
+    override suspend fun setRemoteClientMode(remoteClientMode: Boolean) {
+        _remoteClientMode.emit(remoteClientMode)
         settings[SettingsManager::remoteClientMode.name] = remoteClientMode
     }
 
