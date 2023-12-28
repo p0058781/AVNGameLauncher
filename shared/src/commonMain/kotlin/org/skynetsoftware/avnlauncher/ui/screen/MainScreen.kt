@@ -81,6 +81,7 @@ fun MainScreen(
     updateChecker: UpdateChecker = koinInject(),
     gameLauncher: GameLauncher = koinInject(),
     exitApplication: () -> Unit,
+    draggableArea: @Composable (content: @Composable () -> Unit) -> Unit
 ) {
     val games by remember { gamesViewModel.games }.collectAsState()
     val totalPlayTime by remember { gamesViewModel.totalPlayTime }.collectAsState()
@@ -104,40 +105,42 @@ fun MainScreen(
             // TODO settings screen
             // TODO pull to refresh for remote client
             Column {
-                TopAppBar {
-                    Column(
-                        modifier = Modifier.padding(start = 10.dp),
-                    ) {
-                        Text(
-                            text = R.strings.appName,
-                            style = MaterialTheme.typography.h6,
+                draggableArea {
+                    TopAppBar {
+                        Column(
+                            modifier = Modifier.padding(start = 10.dp),
+                        ) {
+                            Text(
+                                text = R.strings.appName,
+                                style = MaterialTheme.typography.h6,
+                            )
+                            Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
+                        }
+                        if (globalState != State.Idle) {
+                            Text(
+                                modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
+                                textAlign = TextAlign.End,
+                                text = globalState.buildText(),
+                                style = MaterialTheme.typography.subtitle2,
+                            )
+                        } else {
+                            Spacer(
+                                modifier = Modifier.weight(1f).fillMaxWidth(),
+                            )
+                        }
+                        Actions(
+                            remoteClientMode = mainViewModel.remoteClientMode,
+                            startUpdateCheck = {
+                                updateChecker.startUpdateCheck(true) { updateResult ->
+                                    toastMessage = updateResult.buildToastMessage()
+                                }
+                            },
+                            onImportGameClicked = {
+                                importGameDialogVisible = true
+                            },
+                            exitApplication = exitApplication,
                         )
-                        Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
                     }
-                    if (globalState != State.Idle) {
-                        Text(
-                            modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
-                            textAlign = TextAlign.End,
-                            text = globalState.buildText(),
-                            style = MaterialTheme.typography.subtitle2,
-                        )
-                    } else {
-                        Spacer(
-                            modifier = Modifier.weight(1f).fillMaxWidth(),
-                        )
-                    }
-                    Actions(
-                        remoteClientMode = mainViewModel.remoteClientMode,
-                        startUpdateCheck = {
-                            updateChecker.startUpdateCheck(true) { updateResult ->
-                                toastMessage = updateResult.buildToastMessage()
-                            }
-                        },
-                        onImportGameClicked = {
-                            importGameDialogVisible = true
-                        },
-                        exitApplication = exitApplication,
-                    )
                 }
                 SortFilter(
                     games = games,
