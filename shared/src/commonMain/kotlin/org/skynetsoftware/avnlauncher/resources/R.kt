@@ -38,6 +38,8 @@ object R {
         const val stateIdle = "Idle"
         const val stateSyncing = "Sync in progress"
         const val editGameDialogCheckForUpdates = "Check for Updates"
+        const val gameLauncherInvalidExecutableToast = "Can't launch '%s', executablePath is invalid"
+        const val gameLauncherAnotherGameRunning = "Can't start '%s', '%s' is already running"
     }
 
     object images {

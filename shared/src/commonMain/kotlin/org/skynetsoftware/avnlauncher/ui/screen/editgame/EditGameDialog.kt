@@ -41,6 +41,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.theme.Foreground
 import org.skynetsoftware.avnlauncher.ui.theme.Gray
 import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameViewModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
 @OptIn(ExperimentalResourceApi::class)
@@ -48,8 +49,8 @@ import org.skynetsoftware.avnlauncher.utils.format
 fun EditGameDialog(
     _selectedGame: Game,
     editGameViewModel: EditGameViewModel = koinInject(parameters = { parametersOf(_selectedGame) }),
+    mainViewModel: MainViewModel = koinInject(),
     onCloseRequest: () -> Unit = {},
-    showToast: (message: String) -> Unit = {},
 ) {
     var title by remember { editGameViewModel.title }.collectAsMutableState()
     var imageUrl by remember { editGameViewModel.imageUrl }.collectAsMutableState()
@@ -124,7 +125,7 @@ fun EditGameDialog(
                     onClick = {
                         editGameViewModel.save()
                         onCloseRequest()
-                        showToast(R.strings.editGameToastGameUpdated)
+                        mainViewModel.showToast(R.strings.editGameToastGameUpdated)
                     },
                     shape = MaterialTheme.shapes.medium,
                     colors = ButtonDefaults.buttonColors(backgroundColor = Gray, contentColor = Foreground),
