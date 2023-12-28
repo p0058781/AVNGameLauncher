@@ -25,14 +25,14 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
     private val activeStates = ActiveStates()
 
     private fun validateStates() {
-        //TODO make sure ids are unique
+        // TODO make sure ids are unique
     }
 
     init {
         validateStates()
         scope.launch {
             eventCenter.events.collect { event ->
-                when(event) {
+                when (event) {
                     Event.PlayingEnded -> activeStates.removeAll { state -> state is State.Playing }
                     is Event.PlayingStarted -> activeStates.add(State.Playing(event.game))
                     Event.SyncCompleted -> activeStates.remove(State.Syncing)
@@ -73,18 +73,20 @@ class ActiveStates {
     }
 
     private fun updateHighestPriority(newState: State) {
-        if(newState.priority < highestPriority.priority) {
+        if (newState.priority < highestPriority.priority) {
             highestPriority = newState
         }
     }
-
 }
 
 sealed class State(val id: Int, val priority: Int) {
-    object Idle: State(0, Int.MAX_VALUE)
-    object UpdateCheckRunning: State(1, 0)
-    class Playing(val game: Game): State(2, 2)
-    object Syncing: State(3, 1)
+    object Idle : State(0, Int.MAX_VALUE)
+
+    object UpdateCheckRunning : State(1, 0)
+
+    class Playing(val game: Game) : State(2, 2)
+
+    object Syncing : State(3, 1)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -98,6 +100,4 @@ sealed class State(val id: Int, val priority: Int) {
     override fun hashCode(): Int {
         return id
     }
-
-
 }

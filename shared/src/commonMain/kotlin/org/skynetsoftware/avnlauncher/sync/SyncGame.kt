@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.sync
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 
 @Serializable
@@ -25,5 +24,5 @@ data class SyncGame(
     val availableVersion: String?,
     val tags: Set<String>,
     val lastRedirectUrl: String?,
-    val checkForUpdates: Boolean
+    val checkForUpdates: Boolean,
 )

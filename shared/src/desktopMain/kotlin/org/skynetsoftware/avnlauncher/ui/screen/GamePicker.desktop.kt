@@ -6,9 +6,11 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import org.skynetsoftware.avnlauncher.utils.OS
 import org.skynetsoftware.avnlauncher.utils.os
 
-
 @Composable
-actual fun GamePicker(visible: Boolean, onGamePicked: (game: String?) -> Unit) {
+actual fun GamePicker(
+    visible: Boolean,
+    onGamePicked: (game: String?) -> Unit,
+) {
     when (os) {
         OS.Linux -> FilePicker(visible, fileExtensions = listOf("sh")) { path ->
             onGamePicked(path?.path)
@@ -25,7 +27,10 @@ actual fun GamePicker(visible: Boolean, onGamePicked: (game: String?) -> Unit) {
 }
 
 @Composable
-actual fun ImportGamesPicker(visible: Boolean, onFilePicked: (file: String?) -> Unit) {
+actual fun ImportGamesPicker(
+    visible: Boolean,
+    onFilePicked: (file: String?) -> Unit,
+) {
     FilePicker(visible, fileExtensions = listOf("json")) { path ->
         onFilePicked(path?.path)
     }

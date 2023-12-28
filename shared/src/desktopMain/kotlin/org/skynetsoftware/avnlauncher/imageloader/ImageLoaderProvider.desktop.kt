@@ -12,23 +12,24 @@ import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.logging.Logger
 
 actual val imageLoaderKoinModule = module {
-    single<ImageLoader> { imageLoader(get(), get()) }
+    single<ImageLoader> { imageLoader(get()) }
 }
 
-private fun imageLoader(configManager: ConfigManager, avnLauncherLogger: Logger) =
-    ImageLoader(requestCoroutineContext = Dispatchers.IO) {
-        logger = DebugLogger(LogPriority.WARN)
-        //TODO use avnLauncherLogger
-        components {
-            setupDefaultComponents()
+private fun imageLoader(
+    configManager: ConfigManager,
+) = ImageLoader(requestCoroutineContext = Dispatchers.IO) {
+    logger = DebugLogger(LogPriority.WARN)
+    // TODO use avnLauncherLogger
+    components {
+        setupDefaultComponents()
+    }
+    interceptor {
+        memoryCacheConfig {
+            maxSizePercent(0.25)
         }
-        interceptor {
-            memoryCacheConfig {
-                maxSizePercent(0.25)
-            }
-            diskCacheConfig {
-                directory(configManager.cacheDir.toPath().resolve("images"))
-                maxSizeBytes(512L * 1024 * 1024) // 512MB
-            }
+        diskCacheConfig {
+            directory(configManager.cacheDir.toPath().resolve("images"))
+            maxSizeBytes(512L * 1024 * 1024) // 512MB
         }
     }
+}

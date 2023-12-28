@@ -9,3 +9,6 @@ interface GameLauncher {
     fun launch(game: Game)
 }
 
+class GameLauncherNoOp : GameLauncher {
+    override fun launch(game: Game) {}
+}

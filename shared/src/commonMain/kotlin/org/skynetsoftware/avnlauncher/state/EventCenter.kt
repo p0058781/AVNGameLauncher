@@ -20,7 +20,6 @@ interface EventCenter {
 }
 
 private class EventCenterImpl : EventCenter {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
 
     private val _events = MutableSharedFlow<Event>(replay = 0)
@@ -34,10 +33,15 @@ private class EventCenterImpl : EventCenter {
 }
 
 sealed class Event {
-    object UpdateCheckStarted: Event()
-    object UpdateCheckComplete: Event()
-    class PlayingStarted(val game: Game): Event()
-    object PlayingEnded: Event()
-    object SyncStarted: Event()
-    object SyncCompleted: Event()
+    object UpdateCheckStarted : Event()
+
+    object UpdateCheckComplete : Event()
+
+    class PlayingStarted(val game: Game) : Event()
+
+    object PlayingEnded : Event()
+
+    object SyncStarted : Event()
+
+    object SyncCompleted : Event()
 }

@@ -31,6 +31,7 @@ pluginManagement {
 
         id("io.realm.kotlin").version(realmVersion)
         id("io.ktor.plugin").version("2.3.7")
+        id("org.jlleitschuh.gradle.ktlint").version("12.0.3")
         //TODO use version catalog
     }
 }

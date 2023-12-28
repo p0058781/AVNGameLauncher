@@ -1,8 +1,14 @@
 package org.skynetsoftware.avnlauncher.data
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.f95.F95Api
@@ -12,23 +18,50 @@ import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 
-//TODO options for update, filter, not hidden, not completed, etc
-private const val UPDATE_CHECK_INTERVAL = 86_400_000L//24h
+// TODO options for update, filter, not hidden, not completed, etc
+private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
 
 val updateCheckerKoinModule = module {
-    single<UpdateChecker> { UpdateCheckerImpl(get(), get(), get(), get(), get()) }
+    single<UpdateChecker> {
+        val configManager = get<ConfigManager>()
+        if (configManager.remoteClientMode) {
+            UpdateCheckerNoOp()
+        } else {
+            UpdateCheckerImpl(get(), get(), get(), get(), get())
+        }
+    }
 }
 
 interface UpdateChecker {
-
     class UpdateResult(
         val game: Game,
         val updateAvailable: Boolean,
-        val exception: Throwable?
+        val exception: Throwable?,
     )
 
-    fun startUpdateCheck(forceUpdateCheck: Boolean = false, onComplete: (updateResults: List<UpdateResult>) -> Unit)
-    suspend fun startUpdateCheck(scope: CoroutineScope, forceUpdateCheck: Boolean = false): List<UpdateResult>
+    fun startUpdateCheck(
+        forceUpdateCheck: Boolean = false,
+        onComplete: (updateResults: List<UpdateResult>) -> Unit,
+    )
+
+    suspend fun startUpdateCheck(
+        scope: CoroutineScope,
+        forceUpdateCheck: Boolean = false,
+    ): List<UpdateResult>
+}
+
+private class UpdateCheckerNoOp : UpdateChecker {
+    override fun startUpdateCheck(
+        forceUpdateCheck: Boolean,
+        onComplete: (updateResults: List<UpdateChecker.UpdateResult>) -> Unit,
+    ) {}
+
+    override suspend fun startUpdateCheck(
+        scope: CoroutineScope,
+        forceUpdateCheck: Boolean,
+    ): List<UpdateChecker.UpdateResult> {
+        return emptyList()
+    }
 }
 
 private class UpdateCheckerImpl(
@@ -36,16 +69,15 @@ private class UpdateCheckerImpl(
     private val logger: Logger,
     private val f95Api: F95Api,
     private val settingsManager: SettingsManager,
-    private val eventCenter: EventCenter
+    private val eventCenter: EventCenter,
 ) : UpdateChecker {
-
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private var updateCheckRunning = false
 
     override fun startUpdateCheck(
         forceUpdateCheck: Boolean,
-        onComplete: (updateResults: List<UpdateChecker.UpdateResult>) -> Unit
+        onComplete: (updateResults: List<UpdateChecker.UpdateResult>) -> Unit,
     ) {
         scope.launch {
             val result = startUpdateCheck(this, forceUpdateCheck)
@@ -53,7 +85,10 @@ private class UpdateCheckerImpl(
         }
     }
 
-    override suspend fun startUpdateCheck(scope: CoroutineScope, forceUpdateCheck: Boolean): List<UpdateChecker.UpdateResult> {
+    override suspend fun startUpdateCheck(
+        scope: CoroutineScope,
+        forceUpdateCheck: Boolean,
+    ): List<UpdateChecker.UpdateResult> {
         return runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
             val now = Clock.System.now().toEpochMilliseconds()
@@ -67,9 +102,9 @@ private class UpdateCheckerImpl(
                     try {
                         val lastRedirectUrl = game.lastRedirectUrl
 
-                        val result = if(fastUpdateCheck) {
+                        val result = if (fastUpdateCheck) {
                             val newRedirectUrl = f95Api.getRedirectUrl(game.f95ZoneThreadId).getOrNull()
-                            if(newRedirectUrl != lastRedirectUrl) {
+                            if (newRedirectUrl != lastRedirectUrl) {
                                 val slowResult = doSlowUpdateCheck(game)
                                 newRedirectUrl?.let { gamesRepository.updateLastRedirectUrl(newRedirectUrl, game) }
                                 slowResult
@@ -100,7 +135,7 @@ private class UpdateCheckerImpl(
         val currentVersion = game.version
         logger.info("doing slow update check for: ${game.title}")
         val f95Game = f95Api.getGame(game.f95ZoneThreadId).getOrThrow()
-        //TODO update RealmGame with new data, merge with existing
+        // TODO update RealmGame with new data, merge with existing
         val newVersion = f95Game.version
         val releaseDate = f95Game.releaseDate
         if (newVersion != currentVersion) {
@@ -117,7 +152,7 @@ private class UpdateCheckerImpl(
     }
 
     private suspend fun runIfNotAlreadyRunning(run: suspend () -> List<UpdateChecker.UpdateResult>): List<UpdateChecker.UpdateResult> {
-        if (updateCheckRunning || settingsManager.remoteClientMode.value) {
+        if (updateCheckRunning) {
             return emptyList()
         }
         updateCheckRunning = true

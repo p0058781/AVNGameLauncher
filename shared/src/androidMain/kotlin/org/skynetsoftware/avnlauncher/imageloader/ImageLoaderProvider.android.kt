@@ -16,20 +16,23 @@ actual val imageLoaderKoinModule = module {
     single<ImageLoader> { imageLoader(get(), get(), get()) }
 }
 
-private fun imageLoader(context: Context, configManager: ConfigManager, avnLauncherLogger: Logger) =
-    ImageLoader(requestCoroutineContext = Dispatchers.IO) {
-        logger = DebugLogger(LogPriority.WARN)
-        //TODO use avnLauncherLogger
-        components {
-            setupDefaultComponents(context)
+private fun imageLoader(
+    context: Context,
+    configManager: ConfigManager,
+    avnLauncherLogger: Logger,
+) = ImageLoader(requestCoroutineContext = Dispatchers.IO) {
+    logger = DebugLogger(LogPriority.WARN)
+    // TODO use avnLauncherLogger
+    components {
+        setupDefaultComponents(context)
+    }
+    interceptor {
+        memoryCacheConfig {
+            maxSizePercent(context, 0.25)
         }
-        interceptor {
-            memoryCacheConfig {
-                maxSizePercent(context, 0.25)
-            }
-            diskCacheConfig {
-                directory(configManager.cacheDir.toPath().resolve("images"))
-                maxSizeBytes(512L * 1024 * 1024) // 512MB
-            }
+        diskCacheConfig {
+            directory(configManager.cacheDir.toPath().resolve("images"))
+            maxSizeBytes(512L * 1024 * 1024) // 512MB
         }
     }
+}

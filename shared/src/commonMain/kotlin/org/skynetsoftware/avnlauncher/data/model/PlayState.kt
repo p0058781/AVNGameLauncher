@@ -1,7 +1,11 @@
 package org.skynetsoftware.avnlauncher.data.model
 
 enum class PlayState {
-    None, Playing, WaitingForUpdate, Completed;
+    None,
+    Playing,
+    WaitingForUpdate,
+    Completed,
+    ;
 
     companion object {
         fun fromString(playState: String?): PlayState {

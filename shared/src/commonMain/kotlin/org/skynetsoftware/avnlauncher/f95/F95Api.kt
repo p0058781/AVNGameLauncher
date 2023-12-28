@@ -1,24 +1,28 @@
 package org.skynetsoftware.avnlauncher.f95
 
 import com.russhwolf.settings.Settings
-import io.ktor.client.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.request.*
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
+import io.ktor.client.request.prepareGet
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.f95.model.F95Game
 
-const val f95ZoneThreadBaseUrl = "https://f95zone.to/threads/"
+const val F95_ZONE_THREAD_BASE_URL = "https://f95zone.to/threads/"
 
 val f95ApiKoinModule = module {
     single<F95Api> { F95ApiImpl(get(), F95CookiesStorage(Settings())) }
 }
 
-fun Int.createF95ThreadUrl() = "$f95ZoneThreadBaseUrl$this"
+fun Int.createF95ThreadUrl() = "$F95_ZONE_THREAD_BASE_URL$this"
 
 interface F95Api {
-
-    suspend fun login(username: String, password: String): Result<Unit>
+    suspend fun login(
+        username: String,
+        password: String,
+    ): Result<Unit>
 
     suspend fun getGame(gameThreadId: Int): Result<F95Game>
 
@@ -38,14 +42,17 @@ private class F95ApiImpl(private val f95Parser: F95Parser, private val f95Cookie
             requestTimeoutMillis = 60000
         }
         install(Logging) {
-            level = LogLevel.INFO
+            level = LogLevel.NONE
         }
     }
     private val noRedirectClient = httpClient.config {
         followRedirects = false
     }
 
-    override suspend fun login(username: String, password: String): Result<Unit> {
+    override suspend fun login(
+        username: String,
+        password: String,
+    ): Result<Unit> {
         TODO("not implemented")
     }
 
@@ -55,7 +62,7 @@ private class F95ApiImpl(private val f95Parser: F95Parser, private val f95Cookie
 
     override suspend fun getGame(gameThreadUrl: String): Result<F95Game> {
         val threadId = gameThreadUrlRegex.find(gameThreadUrl)?.groups?.get(1)?.value?.toIntOrNull()
-        return if(threadId == null) {
+        return if (threadId == null) {
             Result.failure(IllegalStateException("Failed to parse gameThreadUrl"))
         } else {
             return f95Parser.parseGame(httpClient.get(gameThreadUrl), threadId)
@@ -70,5 +77,4 @@ private class F95ApiImpl(private val f95Parser: F95Parser, private val f95Cookie
             Result.failure(t)
         }
     }
-
 }

@@ -1,47 +1,63 @@
 package org.skynetsoftware.avnlauncher.data
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.toGame
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.f95.F95Api
-import org.skynetsoftware.avnlauncher.logging.Logger
-import org.skynetsoftware.avnlauncher.settings.SettingsManager
 
 val gameImportKoinModule = module {
-    single<GameImport> { GameImportImpl(get(), get(), get()) }
+    single<GameImport> {
+        val configManager = get<ConfigManager>()
+        if (configManager.remoteClientMode) {
+            GameImportNoOp()
+        } else {
+            GameImportImpl(get(), get())
+        }
+    }
 }
 
 interface GameImport {
-    fun importGame(threadId: Int, onGameImported: (title: Result<String>) -> Unit)
+    fun importGame(
+        threadId: Int,
+        onGameImported: (title: Result<String>) -> Unit,
+    )
+}
 
+private class GameImportNoOp : GameImport {
+    override fun importGame(
+        threadId: Int,
+        onGameImported: (title: Result<String>) -> Unit,
+    ) {}
 }
 
 private class GameImportImpl(
-    private val settingsManager: SettingsManager,
     private val gamesRepository: GamesRepository,
-    private val f95Api: F95Api
+    private val f95Api: F95Api,
 ) : GameImport {
-
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    //private val gamesDir = configManager.gamesDir
+    // private val gamesDir = configManager.gamesDir
 
-    override fun importGame(threadId: Int, onGameImported: (title: Result<String>) -> Unit) {
-        if(settingsManager.remoteClientMode.value) {
-            onGameImported(Result.failure(IllegalStateException("Can't import game in remote client mode ")))
-            return
-        }
+    override fun importGame(
+        threadId: Int,
+        onGameImported: (title: Result<String>) -> Unit,
+    ) {
         coroutineScope.launch {
             try {
                 val f95Game = f95Api.getGame(threadId).getOrThrow()
-                //TODO [medium] search executable/android app
+                // TODO [medium] search executable/android app
+
                 /*val executable = gamesDir.listFiles()
                     ?.filter { it.isDirectory }
                     ?.firstOrNull { it.name.lowercase().contains(title.replace(" ", "").lowercase()) }?.let {
                         findExecutable(it.absolutePath)
                     }?.absolutePath ?: ""
-                */
+                 */
                 gamesRepository.insertGame(f95Game.toGame())
                 onGameImported(Result.success(f95Game.title))
             } catch (t: Throwable) {
