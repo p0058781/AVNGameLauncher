@@ -5,7 +5,6 @@ import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.repository.Filter
 import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
@@ -20,6 +19,7 @@ interface SettingsManager {
     val selectedSortDirection: StateFlow<SortDirection>
     val fastUpdateCheck: StateFlow<Boolean>
     val gamesDir: StateFlow<String?>
+    val lastSyncTime: StateFlow<Long>
 
     suspend fun setSelectedFilter(filter: Filter)
 
@@ -30,6 +30,8 @@ interface SettingsManager {
     suspend fun setFastUpdateCheck(fastUpdateCheck: Boolean)
 
     suspend fun setGamesDir(gamesDir: String)
+
+    suspend fun setLastSyncTime(lastSyncTime: Long)
 }
 
 class SettingsManagerImpl(private val settings: Settings) : SettingsManager {
@@ -64,6 +66,10 @@ class SettingsManagerImpl(private val settings: Settings) : SettingsManager {
         MutableStateFlow(settings.getString(SettingsManager::gamesDir.name, "/mnt/sata_4tb/AVN/Games"))
     override val gamesDir: StateFlow<String?> get() = _gamesDir
 
+    private val _lastSyncTime =
+        MutableStateFlow(settings.getLong(SettingsManager::lastSyncTime.name, 0L))
+    override val lastSyncTime: StateFlow<Long> get() = _lastSyncTime
+
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
         settings[SettingsManager::selectedFilter.name] = filter::class.simpleName
@@ -87,6 +93,11 @@ class SettingsManagerImpl(private val settings: Settings) : SettingsManager {
     override suspend fun setGamesDir(gamesDir: String) {
         _gamesDir.emit(gamesDir)
         settings[SettingsManager::gamesDir.name] = gamesDir
+    }
+
+    override suspend fun setLastSyncTime(lastSyncTime: Long) {
+        _lastSyncTime.emit(lastSyncTime)
+        settings[SettingsManager::lastSyncTime.name] = lastSyncTime
     }
 
     private fun <T> MutableStateFlow(initialValue: () -> T): MutableStateFlow<T> {
