@@ -2,6 +2,7 @@ package org.skynetsoftware.avnlauncher.data.repository
 
 import io.realm.kotlin.MutableRealm
 import io.realm.kotlin.Realm
+import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,6 +118,8 @@ interface GamesRepository {
     )
 
     suspend fun insertGame(game: Game)
+
+    suspend fun updateGame(game: Game)
 }
 
 private class GamesRepositoryRealm(
@@ -247,6 +250,12 @@ private class GamesRepositoryRealm(
     override suspend fun insertGame(game: Game) =
         realmWrite {
             copyToRealm(game.toRealmGame().apply { added = Clock.System.now().toEpochMilliseconds() })
+            Unit
+        }
+
+    override suspend fun updateGame(game: Game) =
+        realmWrite {
+            copyToRealm(game.toRealmGame(), updatePolicy = UpdatePolicy.ALL)
             Unit
         }
 
@@ -384,6 +393,10 @@ private class GamesRepositorySyncApi(
     }
 
     override suspend fun insertGame(game: Game) {
+        notSupportedError()
+    }
+
+    override suspend fun updateGame(game: Game) {
         notSupportedError()
     }
 

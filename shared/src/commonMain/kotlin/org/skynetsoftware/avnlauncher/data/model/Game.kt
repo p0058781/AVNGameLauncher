@@ -49,6 +49,7 @@ fun Game.toRealmGame() =
         playState = this@toRealmGame.playState.name
         availableVersion = this@toRealmGame.availableVersion
         tags = realmSetOf(*this@toRealmGame.tags.toTypedArray())
+        lastRedirectUrl = this@toRealmGame.lastRedirectUrl
         checkForUpdates = this@toRealmGame.checkForUpdates
     }
 
@@ -110,6 +111,30 @@ fun F95Game.toGame() =
         tags = tags,
         lastRedirectUrl = null,
         checkForUpdates = true,
+    )
+
+fun Game.mergeWith(f95Game: F95Game) =
+    Game(
+        title = f95Game.title,
+        imageUrl = f95Game.imageUrl,
+        f95ZoneThreadId = f95Game.threadId,
+        executablePath = executablePath,
+        version = f95Game.version,
+        playTime = playTime,
+        rating = rating,
+        f95Rating = f95Game.rating,
+        updateAvailable = updateAvailable,
+        added = added,
+        lastPlayed = lastPlayed,
+        lastUpdateCheck = lastUpdateCheck,
+        hidden = hidden,
+        releaseDate = f95Game.releaseDate,
+        firstReleaseDate = f95Game.firstReleaseDate,
+        playState = playState,
+        availableVersion = availableVersion,
+        tags = f95Game.tags,
+        lastRedirectUrl = lastRedirectUrl,
+        checkForUpdates = checkForUpdates,
     )
 
 fun SyncGame.toGame() =
