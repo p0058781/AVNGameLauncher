@@ -99,7 +99,7 @@ private class GameLauncherDesktop(
                 OS.Windows,
                 -> arrayOf(executablePath)
 
-                OS.Mac -> arrayOf("open", "-W", executablePath)
+                OS.Mac -> throw IllegalStateException("Mac is not supported")
             }
         }
     }

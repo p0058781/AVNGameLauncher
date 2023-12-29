@@ -64,6 +64,6 @@ private fun platformFilter(path: Path): Boolean {
     return when (os) {
         OS.Linux -> path.extension == "sh"
         OS.Windows -> path.extension == "exe"
-        OS.Mac -> TODO("path filter not implemented for MacOS")
+        OS.Mac -> throw IllegalStateException("Mac is not supported")
     }
 }

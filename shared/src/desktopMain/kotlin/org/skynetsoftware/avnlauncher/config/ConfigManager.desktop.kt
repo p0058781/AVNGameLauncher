@@ -15,13 +15,13 @@ private class ConfigManagerImpl : ConfigManager() {
     private val cacheDirFile = when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".cache/$APPLICATION_NAME")
         OS.Windows -> File(System.getenv("AppData"), "$APPLICATION_NAME/cache")
-        OS.Mac -> File(System.getProperty("user.home"), "Library/Caches/$APPLICATION_NAME")
+        OS.Mac -> throw IllegalStateException("Mac is not supported")
     }
 
     private val dataDirFile = when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".config/$APPLICATION_NAME")
         OS.Windows -> File(System.getenv("AppData"), APPLICATION_NAME)
-        OS.Mac -> File(System.getProperty("user.home"), "Library/Application Support/$APPLICATION_NAME")
+        OS.Mac -> throw IllegalStateException("Mac is not supported")
     }
 
     override val cacheDir: String = cacheDirFile.absolutePath
