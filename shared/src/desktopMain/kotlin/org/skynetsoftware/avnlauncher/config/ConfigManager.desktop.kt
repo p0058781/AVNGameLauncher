@@ -11,7 +11,7 @@ actual val configKoinModule = module {
     single<ConfigManager> { ConfigManagerImpl() }
 }
 
-private class ConfigManagerImpl : ConfigManager {
+private class ConfigManagerImpl : ConfigManager() {
     private val cacheDirFile = when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".cache/$APPLICATION_NAME")
         OS.Windows -> File(System.getenv("AppData"), "$APPLICATION_NAME/cache")
@@ -27,6 +27,7 @@ private class ConfigManagerImpl : ConfigManager {
     override val cacheDir: String = cacheDirFile.absolutePath
     override val dataDir: String = dataDirFile.absolutePath
     override val remoteClientMode: Boolean = false
+    override val syncEnabled: Boolean = true
 
     init {
         cacheDirFile.mkdirs()
@@ -34,4 +35,4 @@ private class ConfigManagerImpl : ConfigManager {
     }
 }
 
-actual interface ConfigManager : ConfigManagerShared
+actual abstract class ConfigManager : ConfigManagerShared()
