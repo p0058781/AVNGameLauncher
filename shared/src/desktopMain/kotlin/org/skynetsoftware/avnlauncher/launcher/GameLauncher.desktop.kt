@@ -64,7 +64,7 @@ private class GameLauncherDesktop(
                 eventCenter.emit(Event.PlayingStarted(game))
                 logger.info("game starting: ${game.title}")
                 running = true
-                val process = ProcessBuilder(createCommand(game.executablePath)).apply {
+                val process = ProcessBuilder(*createCommand(game.executablePath)).apply {
                     redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     redirectError(ProcessBuilder.Redirect.DISCARD)
                 }.start()
@@ -93,13 +93,13 @@ private class GameLauncherDesktop(
             }
         }
 
-        private fun createCommand(executablePath: String): String {
+        private fun createCommand(executablePath: String): Array<String> {
             return when (os) {
                 OS.Linux,
                 OS.Windows,
-                -> executablePath
+                -> arrayOf(executablePath)
 
-                OS.Mac -> "open $executablePath"
+                OS.Mac -> arrayOf("open", "-W", executablePath)
             }
         }
     }
