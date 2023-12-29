@@ -6,6 +6,8 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import org.skynetsoftware.avnlauncher.utils.OS
 import org.skynetsoftware.avnlauncher.utils.os
 
+// TODO should specify initial file/dir
+
 @Composable
 actual fun GamePicker(
     visible: Boolean,
@@ -27,11 +29,11 @@ actual fun GamePicker(
 }
 
 @Composable
-actual fun ImportGamesPicker(
+actual fun GamesDirPicker(
     visible: Boolean,
-    onFilePicked: (file: String?) -> Unit,
+    onDirPicked: (dir: String?) -> Unit,
 ) {
-    FilePicker(visible, fileExtensions = listOf("json")) { path ->
-        onFilePicked(path?.path)
+    DirectoryPicker(visible) { path ->
+        onDirPicked(path)
     }
 }

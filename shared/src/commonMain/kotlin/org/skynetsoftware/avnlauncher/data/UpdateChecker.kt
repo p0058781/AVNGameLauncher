@@ -18,7 +18,6 @@ import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 
-// TODO options for update, filter, not hidden, not completed, etc
 private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
 
 val updateCheckerKoinModule = module {

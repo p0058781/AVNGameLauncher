@@ -1,5 +1,9 @@
 package org.skynetsoftware.avnlauncher
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.skynetsoftware.avnlauncher.config.configKoinModule
@@ -23,6 +27,8 @@ import org.skynetsoftware.avnlauncher.sync.syncServiceModule
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModelsKoinModule
 
 object AVNLauncherApp {
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     fun onCreate(initKoin: KoinApplication.() -> Unit = {}) {
         val koinApplication = startKoin {
             initKoin()
@@ -50,8 +56,15 @@ object AVNLauncherApp {
 
         val syncService = koinApplication.koin.get<SyncService>()
         val settingsManager = koinApplication.koin.get<SettingsManager>()
-        if (settingsManager.syncEnabled.value) {
-            syncService.start()
+
+        coroutineScope.launch {
+            settingsManager.syncEnabled.collect { syncEnabled ->
+                if (syncEnabled) {
+                    syncService.start()
+                } else {
+                    syncService.stop()
+                }
+            }
         }
     }
 }

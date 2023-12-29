@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.State
@@ -15,9 +16,11 @@ class MainViewModel(
     private val eventCenter: EventCenter,
     stateHandler: StateHandler,
     configManager: ConfigManager,
+    private val settingsManager: SettingsManager,
 ) : ViewModel() {
     val state: StateFlow<State> = stateHandler.state
     val remoteClientMode = configManager.remoteClientMode
+    val sfwMode = settingsManager.sfwModeEnabled
 
     private val _toastMessage = MutableStateFlow<String?>(null)
     val toastMessage: StateFlow<String?> get() = _toastMessage
@@ -37,4 +40,9 @@ class MainViewModel(
     fun showToast(message: String) {
         eventCenter.emit(Event.ToastMessage(message))
     }
+
+    fun toggleSfwMode() =
+        viewModelScope.launch {
+            settingsManager.setSfwModeEnabled(!sfwMode.value)
+        }
 }

@@ -7,13 +7,13 @@ actual fun GamePicker(
     visible: Boolean,
     onGamePicked: (game: String?) -> Unit,
 ) {
-    TODO()
+    TODO("not implemented")
 }
 
 @Composable
-actual fun ImportGamesPicker(
+actual fun GamesDirPicker(
     visible: Boolean,
-    onFilePicked: (file: String?) -> Unit,
+    onDirPicked: (dir: String?) -> Unit,
 ) {
-    TODO()
+    TODO("not implemented")
 }

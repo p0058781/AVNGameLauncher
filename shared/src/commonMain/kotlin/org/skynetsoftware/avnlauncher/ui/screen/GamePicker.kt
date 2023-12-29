@@ -9,7 +9,7 @@ expect fun GamePicker(
 )
 
 @Composable
-expect fun ImportGamesPicker(
+expect fun GamesDirPicker(
     visible: Boolean,
-    onFilePicked: (file: String?) -> Unit,
+    onDirPicked: (dir: String?) -> Unit,
 )
