@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,9 +61,8 @@ import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsDialog
-import org.skynetsoftware.avnlauncher.ui.theme.CardColor
-import org.skynetsoftware.avnlauncher.ui.theme.CardHoverColor
-import org.skynetsoftware.avnlauncher.ui.theme.materialColors
+import org.skynetsoftware.avnlauncher.ui.theme.darkColors
+import org.skynetsoftware.avnlauncher.ui.theme.lightColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
@@ -96,8 +94,10 @@ fun MainScreen(
     var settingsDialogVisible by remember { mutableStateOf(false) }
     val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
 
+    val isDarkTheme by remember { mainViewModel.isDarkTheme }.collectAsState()
+
     MaterialTheme(
-        colors = materialColors,
+        colors = if (isDarkTheme) lightColors else darkColors,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -449,13 +449,11 @@ private fun GameItem(
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
-    val cardHover by cardHoverInteractionSource.collectIsHoveredAsState()
 
     CompositionLocalProvider(
         LocalImageLoader provides koinInject(),
     ) {
         Card(
-            backgroundColor = if (cardHover) CardHoverColor else CardColor,
             modifier = Modifier
                 .hoverable(cardHoverInteractionSource)
                 .clickable {
@@ -499,7 +497,9 @@ private fun GameItem(
                                 togglePlaying(game)
                             }
                         },
-                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Playing) Color.Green else Color.White),
+                        colorFilter = ColorFilter.tint(
+                            if (game.playState == PlayState.Playing) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
+                        ),
                     )
                     Image(
                         painter = painterResource(R.images.completed),
@@ -509,7 +509,9 @@ private fun GameItem(
                                 toggleCompleted(game)
                             }
                         },
-                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Completed) Color.Green else Color.White),
+                        colorFilter = ColorFilter.tint(
+                            if (game.playState == PlayState.Completed) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
+                        ),
                     )
                     Image(
                         painter = painterResource(R.images.waiting),
@@ -519,7 +521,13 @@ private fun GameItem(
                                 toggleWaitingForUpdate(game)
                             }
                         },
-                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.WaitingForUpdate) Color.Green else Color.White),
+                        colorFilter = ColorFilter.tint(
+                            if (game.playState == PlayState.WaitingForUpdate) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                MaterialTheme.colors.onSurface
+                            },
+                        ),
                     )
                     if (game.updateAvailable) {
                         Image(
@@ -548,7 +556,7 @@ private fun GameItem(
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                                 toggleHidden(game)
                             },
-                            colorFilter = ColorFilter.tint(Color.White),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
                         )
                     }
                     if (!remoteClientMode) {
@@ -558,7 +566,7 @@ private fun GameItem(
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                                 editGame(game)
                             },
-                            colorFilter = ColorFilter.tint(Color.White),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
                         )
                     }
                 }

@@ -22,6 +22,7 @@ h2 = "2.1.214"
 exposed = "0.41.1"
 logback = "1.4.11"
 clikt = "4.2.1"
+system-theme-detector = "3.6"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -67,6 +68,7 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j-simple"
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+systemthemedetector = { module = "com.github.Dansoftowner:jSystemThemeDetector", version.ref = "system-theme-detector" }
 
 [bundles]
 

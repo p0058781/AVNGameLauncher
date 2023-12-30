@@ -11,8 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.skynetsoftware.avnlauncher.ui.theme.Foreground
-import org.skynetsoftware.avnlauncher.ui.theme.ToastBackground
 
 @Composable
 fun Toast(text: String) {
@@ -22,13 +20,11 @@ fun Toast(text: String) {
     ) {
         Surface(
             modifier = Modifier.size(300.dp, 70.dp),
-            color = ToastBackground,
             shape = RoundedCornerShape(4.dp),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = text,
-                    color = Foreground,
                 )
             }
         }

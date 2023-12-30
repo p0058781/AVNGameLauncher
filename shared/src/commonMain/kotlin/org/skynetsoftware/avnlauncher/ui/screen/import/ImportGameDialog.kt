@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -26,8 +25,6 @@ import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.data.GameImport
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
-import org.skynetsoftware.avnlauncher.ui.theme.Foreground
-import org.skynetsoftware.avnlauncher.ui.theme.Gray
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
@@ -83,7 +80,6 @@ fun ImportGameDialog(
                             }
                         },
                         shape = MaterialTheme.shapes.medium,
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Gray, contentColor = Foreground),
                     ) {
                         Text(
                             text = R.strings.importGameDialogButtonImport,

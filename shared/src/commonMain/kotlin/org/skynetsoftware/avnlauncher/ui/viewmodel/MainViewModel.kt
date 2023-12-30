@@ -1,5 +1,6 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
+import com.jthemedetecor.OsThemeDetector
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,7 @@ class MainViewModel(
     stateHandler: StateHandler,
     configManager: ConfigManager,
     private val settingsManager: SettingsManager,
+    private val themeDetector: OsThemeDetector,
 ) : ViewModel() {
     val state: StateFlow<State> = stateHandler.state
     val remoteClientMode = configManager.remoteClientMode
@@ -24,6 +26,9 @@ class MainViewModel(
 
     private val _toastMessage = MutableStateFlow<String?>(null)
     val toastMessage: StateFlow<String?> get() = _toastMessage
+
+    private val _isDarkTheme = MutableStateFlow<Boolean>(themeDetector.isDark)
+    val isDarkTheme: StateFlow<Boolean> get() = _isDarkTheme
 
     init {
         viewModelScope.launch {
@@ -33,6 +38,12 @@ class MainViewModel(
                     delay(it.duration)
                     _toastMessage.emit(null)
                 }
+            }
+        }
+
+        themeDetector.registerListener {
+            viewModelScope.launch {
+                _isDarkTheme.emit(it)
             }
         }
     }
