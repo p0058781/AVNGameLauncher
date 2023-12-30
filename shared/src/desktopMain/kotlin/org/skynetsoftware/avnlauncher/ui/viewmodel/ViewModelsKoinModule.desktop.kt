@@ -8,4 +8,5 @@ actual val viewModelsKoinModule = module {
     factory<EditGameViewModel> { EditGameViewModel(get(), get()) }
     factory<MainViewModel> { MainViewModel(get(), get(), get(), get(), OsThemeDetector.getDetector()) }
     factory<SettingsViewModel> { SettingsViewModel(get()) }
+    factory<ImportGameViewModel> { ImportGameViewModel(get()) }
 }

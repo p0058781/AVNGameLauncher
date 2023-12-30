@@ -14,29 +14,30 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.data.GameImport
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
+import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
 // TODO use viewmodel
 @Composable
 fun ImportGameDialog(
-    gameImport: GameImport = koinInject(),
+    importGameViewModel: ImportGameViewModel = koinInject(),
     mainViewModel: MainViewModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
-    var threadId by remember { mutableStateOf<String?>(null) }
-    var importing by remember { mutableStateOf(false) }
+    var threadId by remember { importGameViewModel.threadId }.collectAsMutableState()
+    val state by remember { importGameViewModel.state }.collectAsState()
 
     Dialog(
         title = R.strings.importGameDialogTitle,
@@ -45,46 +46,54 @@ fun ImportGameDialog(
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            if (importing) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = threadId ?: "",
-                        onValueChange = {
-                            threadId = it
-                        },
-                        label = { Text(R.strings.importGameDialogThreadIdHint) },
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = threadId.isNullOrBlank().not(),
-                        onClick = {
-                            threadId?.let {
-                                importing = true
-                                gameImport.importGame(it.toInt()) { title ->
-                                    importing = false
-                                    onCloseRequest()
-                                    mainViewModel.showToast(R.strings.importGameDialogSuccessToast.format(title))
-                                }
-                            }
-                        },
-                        shape = MaterialTheme.shapes.medium,
+            val stateCopy = state
+            when (stateCopy) {
+                ImportGameViewModel.State.Idle -> {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(
-                            text = R.strings.importGameDialogButtonImport,
+                        TextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = threadId ?: "",
+                            onValueChange = {
+                                threadId = it
+                            },
+                            label = { Text(R.strings.importGameDialogThreadIdHint) },
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = threadId.isNullOrBlank().not(),
+                            onClick = {
+                                importGameViewModel.import()
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                        ) {
+                            Text(
+                                text = R.strings.importGameDialogButtonImport,
+                            )
+                        }
                     }
+                }
+
+                is ImportGameViewModel.State.Imported -> {
+                    mainViewModel.showToast(R.strings.importGameDialogSuccessToast.format(stateCopy.game.title))
+                    onCloseRequest()
+                }
+
+                ImportGameViewModel.State.Importing -> {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+
+                is ImportGameViewModel.State.Error -> {
+                    mainViewModel.showToast(R.strings.importGameDialogErrorToast.format(stateCopy.error.message))
+                    onCloseRequest()
                 }
             }
         }
