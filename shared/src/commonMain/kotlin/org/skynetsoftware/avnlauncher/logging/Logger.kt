@@ -1,20 +1,13 @@
 package org.skynetsoftware.avnlauncher.logging
 
-import io.realm.kotlin.Realm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.data.database.model.RealmLog
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 
 expect fun logUncaughtExceptions(logger: Logger)
 
 val loggerKoinModule = module {
-    single<Logger> { LoggerImpl(get()) }
+    single<Logger> { LoggerImpl() }
 }
 
 interface Logger {
@@ -27,8 +20,7 @@ interface Logger {
     fun error(throwable: Throwable)
 }
 
-private class LoggerImpl(private val realm: Realm) : Logger {
-    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+private class LoggerImpl : Logger {
     private val timeFormat = SimpleDateFormat("dd.MM.yyyy, HH:mm:ss")
 
     override fun info(message: String) {
@@ -53,15 +45,5 @@ private class LoggerImpl(private val realm: Realm) : Logger {
     ) {
         val time = Clock.System.now()
         println("$severity[${timeFormat.format(time.toEpochMilliseconds())}]: $message")
-        coroutineScope.launch {
-            realm.write {
-                copyToRealm(
-                    RealmLog().apply {
-                        this.severity = severity.name
-                        this.logMessage = message
-                    },
-                )
-            }
-        }
     }
 }

@@ -2,7 +2,6 @@ package org.skynetsoftware.avnlauncher.data
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -33,7 +32,7 @@ val updateCheckerKoinModule = module {
 }
 
 interface UpdateChecker {
-    class UpdateResult(
+    data class UpdateResult(
         val game: Game,
         val updateAvailable: Boolean,
         val exception: Throwable?,
@@ -114,15 +113,18 @@ private class UpdateCheckerImpl(
                         } else {
                             doSlowUpdateCheck(game)
                         }
+                        val newGame = result.game.copy(lastUpdateCheck = now)
 
-                        gamesRepository.updateLastUpdateCheck(now, game)
-                        result
+                        result.copy(game = newGame)
                     } catch (t: Throwable) {
                         logger.error(t)
                         UpdateChecker.UpdateResult(game, false, t)
                     }
                 }
-            }.map { it.await() }
+            }.map {
+                it.await()
+            }
+            gamesRepository.updateGames(updatesResult.map { it.game })
             if (updatesResult.none { it.updateAvailable }) {
                 logger.info("No Updates Available")
             }
@@ -144,9 +146,7 @@ private class UpdateCheckerImpl(
             logger.info("${game.title}: Update Available $newVersion")
         }
 
-        gamesRepository.updateGame(newGame)
-
-        return UpdateChecker.UpdateResult(game, newVersion != currentVersion, null)
+        return UpdateChecker.UpdateResult(newGame, newVersion != currentVersion, null)
     }
 
     private suspend fun runIfNotAlreadyRunning(run: suspend () -> List<UpdateChecker.UpdateResult>): List<UpdateChecker.UpdateResult> {
