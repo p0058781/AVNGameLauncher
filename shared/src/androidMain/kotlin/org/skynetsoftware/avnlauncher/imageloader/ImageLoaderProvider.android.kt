@@ -19,8 +19,7 @@ private fun imageLoader(
     configManager: ConfigManager,
     avnLauncherLogger: Logger,
 ) = ImageLoader(requestCoroutineContext = Dispatchers.IO) {
-    // logger = DebugLogger(LogPriority.WARN)
-    // TODO use avnLauncherLogger
+    logger = ImageLoaderLogger(avnLauncherLogger)
     options {
         playAnimate = false
     }
