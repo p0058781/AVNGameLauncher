@@ -25,6 +25,7 @@ import org.skynetsoftware.avnlauncher.sync.SyncService
 import org.skynetsoftware.avnlauncher.sync.syncApiKoinModule
 import org.skynetsoftware.avnlauncher.sync.syncServiceModule
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModelsKoinModule
+import org.skynetsoftware.avnlauncher.utils.executableFinderKoinModule
 
 object AVNLauncherApp {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -49,6 +50,7 @@ object AVNLauncherApp {
                 stateHandlerModule,
                 syncApiKoinModule,
                 syncServiceModule,
+                executableFinderKoinModule,
             )
         }
 

@@ -97,6 +97,8 @@ interface GamesRepository {
         game: Game,
     )
 
+    suspend fun updateExecutablePaths(games: List<Pair<Game, String>>)
+
     suspend fun updateTitle(
         title: String,
         game: Game,
@@ -125,7 +127,10 @@ interface GamesRepository {
 private class GamesRepositoryRealm(
     private val realm: Realm,
 ) : GamesRepository {
-    override val games: Flow<List<Game>> = realm.query<RealmGame>().find().asFlow().map { it.list.map { it.toGame() } }
+    override val games: Flow<List<Game>> = realm.query<RealmGame>().find().asFlow().map {
+            resultChange ->
+        resultChange.list.map { it.toGame() }
+    }
 
     override suspend fun all(): List<Game> {
         return realm.query<RealmGame>().find().map(RealmGame::toGame)
@@ -205,6 +210,13 @@ private class GamesRepositoryRealm(
         findRealmGame(game)?.executablePath = executablePath
     }
 
+    override suspend fun updateExecutablePaths(games: List<Pair<Game, String>>) =
+        realmWrite {
+            games.forEach {
+                findRealmGame(it.first)?.executablePath = it.second
+            }
+        }
+
     override suspend fun updateTitle(
         title: String,
         game: Game,
@@ -258,7 +270,6 @@ private class GamesRepositoryRealm(
             games.forEach {
                 copyToRealm(it.toRealmGame(), updatePolicy = UpdatePolicy.ALL)
             }
-            Unit
         }
 
     private fun MutableRealm.findRealmGame(game: Game) = query<RealmGame>("title == $0", game.title).first().find()
@@ -349,6 +360,10 @@ private class GamesRepositorySyncApi(
         executablePath: String,
         game: Game,
     ) {
+        notSupportedError()
+    }
+
+    override suspend fun updateExecutablePaths(games: List<Pair<Game, String>>) {
         notSupportedError()
     }
 
