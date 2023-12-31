@@ -22,6 +22,7 @@ interface SettingsManager {
     val lastSyncTime: StateFlow<Long>
     val syncEnabled: StateFlow<Boolean>
     val sfwModeEnabled: StateFlow<Boolean>
+    val forceDarkTheme: StateFlow<Boolean>
 
     suspend fun setSelectedFilter(filter: Filter)
 
@@ -38,6 +39,8 @@ interface SettingsManager {
     suspend fun setSyncEnabled(syncEnabled: Boolean)
 
     suspend fun setSfwModeEnabled(sfwModeEnabled: Boolean)
+
+    suspend fun setForceDarkTheme(forceDarkTheme: Boolean)
 }
 
 abstract class SettingsManagerShared(
@@ -92,8 +95,17 @@ abstract class SettingsManagerShared(
     override val syncEnabled: StateFlow<Boolean> get() = _syncEnabled
 
     private val _sfwModeEnabled =
-        MutableStateFlow { settings.getBoolean(SettingsManager::sfwModeEnabled.name, configManager.sfwModeEnabledDefault) }
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsManager::sfwModeEnabled.name,
+                configManager.sfwModeEnabledDefault,
+            )
+        }
     override val sfwModeEnabled: StateFlow<Boolean> get() = _sfwModeEnabled
+
+    private val _forceDarkTheme =
+        MutableStateFlow { settings.getBoolean(SettingsManager::forceDarkTheme.name, false) }
+    override val forceDarkTheme: StateFlow<Boolean> get() = _forceDarkTheme
 
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
@@ -128,6 +140,11 @@ abstract class SettingsManagerShared(
     override suspend fun setSfwModeEnabled(sfwModeEnabled: Boolean) {
         _sfwModeEnabled.emit(sfwModeEnabled)
         settings[SettingsManager::sfwModeEnabled.name] = sfwModeEnabled
+    }
+
+    override suspend fun setForceDarkTheme(forceDarkTheme: Boolean) {
+        _forceDarkTheme.emit(forceDarkTheme)
+        settings[SettingsManager::forceDarkTheme.name] = forceDarkTheme
     }
 }
 

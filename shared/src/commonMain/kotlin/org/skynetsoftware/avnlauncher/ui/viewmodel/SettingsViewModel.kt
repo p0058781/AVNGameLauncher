@@ -7,6 +7,7 @@ import org.skynetsoftware.avnlauncher.settings.SettingsManager
 class SettingsViewModel(private val settingsManager: SettingsManager) : ViewModel() {
     val syncEnabled = settingsManager.syncEnabled
     val fastUpdateCheck = settingsManager.fastUpdateCheck
+    val forceDarkTheme = settingsManager.forceDarkTheme
     val gamesDir = settingsManager.gamesDir
 
     fun setSyncEnabled(syncEnabled: Boolean) =
@@ -17,6 +18,11 @@ class SettingsViewModel(private val settingsManager: SettingsManager) : ViewMode
     fun setFastUpdateCheck(fastUpdateCheck: Boolean) =
         viewModelScope.launch {
             settingsManager.setFastUpdateCheck(fastUpdateCheck)
+        }
+
+    fun setForceDarkTheme(forceDarkTheme: Boolean) =
+        viewModelScope.launch {
+            settingsManager.setForceDarkTheme(forceDarkTheme)
         }
 
     fun setGamesDir(gamesDir: String) =

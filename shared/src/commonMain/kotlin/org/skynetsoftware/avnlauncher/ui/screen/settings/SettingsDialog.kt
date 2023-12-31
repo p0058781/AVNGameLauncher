@@ -43,6 +43,7 @@ fun SettingsDialog(
 ) {
     val syncEnabled by remember { settingsViewModel.syncEnabled }.collectAsState()
     val fastUpdateCheck by remember { settingsViewModel.fastUpdateCheck }.collectAsState()
+    val forceDarkTheme by remember { settingsViewModel.forceDarkTheme }.collectAsState()
     val gamesDirShown = settingsViewModel.gamesDir is Option.Some
     // it is ok to cast directly to Some because it is lazy initialized
     // if gamesDirShown is false then this should never get called and initialized
@@ -96,6 +97,15 @@ fun SettingsDialog(
                         settingsViewModel.setFastUpdateCheck(it)
                     },
                     description = R.strings.settingsDialogFastUpdateCheckDescription,
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                CheckBoxWithText(
+                    text = R.strings.settingsDialogForceDarkTheme,
+                    checked = forceDarkTheme,
+                    onCheckedChange = {
+                        settingsViewModel.setForceDarkTheme(it)
+                    },
+                    description = R.strings.settingsDialogForceDarkThemeDescription,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }
