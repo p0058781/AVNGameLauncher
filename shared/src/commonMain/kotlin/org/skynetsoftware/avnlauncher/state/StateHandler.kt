@@ -77,7 +77,6 @@ class ActiveStates {
     }
 }
 
-// TODO write a test to validate that ids are unique
 sealed class State(val id: Int, val priority: Int) {
     object Idle : State(0, Int.MAX_VALUE)
 
