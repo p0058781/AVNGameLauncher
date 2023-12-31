@@ -6,19 +6,18 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import org.skynetsoftware.avnlauncher.utils.OS
 import org.skynetsoftware.avnlauncher.utils.os
 
-// TODO should specify initial file/dir
-
 @Composable
 actual fun GamePicker(
     visible: Boolean,
+    currentPath: String?,
     onGamePicked: (game: String?) -> Unit,
 ) {
     when (os) {
-        OS.Linux -> FilePicker(visible, fileExtensions = listOf("sh")) { path ->
+        OS.Linux -> FilePicker(visible, currentPath, fileExtensions = listOf("sh")) { path ->
             onGamePicked(path?.path)
         }
 
-        OS.Windows -> FilePicker(visible, fileExtensions = listOf("exe")) { path ->
+        OS.Windows -> FilePicker(visible, currentPath, fileExtensions = listOf("exe")) { path ->
             onGamePicked(path?.path)
         }
 
@@ -29,9 +28,10 @@ actual fun GamePicker(
 @Composable
 actual fun GamesDirPicker(
     visible: Boolean,
+    currentDir: String?,
     onDirPicked: (dir: String?) -> Unit,
 ) {
-    DirectoryPicker(visible) { path ->
+    DirectoryPicker(visible, currentDir) { path ->
         onDirPicked(path)
     }
 }
