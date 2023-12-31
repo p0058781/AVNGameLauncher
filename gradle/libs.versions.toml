@@ -11,7 +11,7 @@ kotlinx-coroutines-core = "1.7.3"
 kotlinx-serialization-json = "1.6.0"
 kotlinx-datetime = "0.4.1"
 ktor = "2.3.7"
-realm = "1.11.1"
+realm = "1.12.0"
 mpfilepicker = "2.1.0"
 multiplatform-settings-no-arg = "1.1.0"
 mvvm = "0.16.1"
@@ -26,6 +26,7 @@ system-theme-detector = "3.6"
 agp = "8.0.2"
 jetbrains-compose = "1.5.10"
 ktlint-plugin = "12.0.3"
+accompanist = "0.28.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -72,6 +73,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 systemthemedetector = { module = "com.github.Dansoftowner:jSystemThemeDetector", version.ref = "system-theme-detector" }
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 
 [bundles]
 

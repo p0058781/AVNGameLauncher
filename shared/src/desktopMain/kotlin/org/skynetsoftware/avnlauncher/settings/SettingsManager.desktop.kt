@@ -12,7 +12,7 @@ actual val settingsKoinModule = module {
     single<SettingsManager> { SettingsManagerImpl(Settings(), get()) }
 }
 
-actual class SettingsManagerImpl(private val settings: Settings, private val configManager: ConfigManager) :
+actual class SettingsManagerImpl(private val settings: Settings, configManager: ConfigManager) :
     SettingsManagerShared(settings, configManager) {
     // TODO remove hardcoded value when settings screen is done
     private val _gamesDir = Option.Some(

@@ -24,7 +24,7 @@ android {
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
-        applicationId = "com.myapplication.MyApplication"
+        applicationId = "org.skynetsoftware.avnlauncher"
         minSdk = (findProperty("android.minSdk") as String).toInt()
         targetSdk = (findProperty("android.targetSdk") as String).toInt()
         versionCode = 1
@@ -37,5 +37,25 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+    packagingOptions.resources {
+        excludes += "META-INF/AL2.0"
+        excludes += "META-INF/LGPL2.1"
+    }
+    flavorDimensions += "mode"
+    productFlavors {
+        create("remoteClient") {
+            dimension = "mode"
+            applicationIdSuffix = ".remoteClient"
+            versionNameSuffix = "-remoteClient"
+        }
+        create("full") {
+            dimension = "mode"
+            applicationIdSuffix = ".full"
+            versionNameSuffix = "-full"
+        }
+    }
+
+
+
 }
 

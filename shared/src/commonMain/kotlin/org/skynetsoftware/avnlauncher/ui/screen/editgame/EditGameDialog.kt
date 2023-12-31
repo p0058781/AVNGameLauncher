@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -55,13 +54,14 @@ fun EditGameDialog(
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
         ) {
             var showFilePicker by remember { mutableStateOf(false) }
             Column(
                 modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                // label should be platform appropriate
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = title,
@@ -127,10 +127,12 @@ fun EditGameDialog(
                     )
                 }
             }
-            GamePicker(showFilePicker, executablePath) {
-                showFilePicker = false
-                it?.let {
-                    executablePath = it
+            if (showFilePicker) {
+                GamePicker(showFilePicker, executablePath) {
+                    showFilePicker = false
+                    it?.let {
+                        executablePath = it
+                    }
                 }
             }
         }
