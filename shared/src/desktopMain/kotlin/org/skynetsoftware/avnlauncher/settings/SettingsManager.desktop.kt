@@ -2,10 +2,10 @@ package org.skynetsoftware.avnlauncher.settings
 
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.utils.MutableStateFlow
 import org.skynetsoftware.avnlauncher.utils.Option
 
 actual val settingsKoinModule = module {
@@ -14,14 +14,16 @@ actual val settingsKoinModule = module {
 
 actual class SettingsManagerImpl(private val settings: Settings, configManager: ConfigManager) :
     SettingsManagerShared(settings, configManager) {
-    // TODO remove hardcoded value when settings screen is done
     private val _gamesDir = Option.Some(
-        MutableStateFlow<String?>(
-            settings.getString(
+        MutableStateFlow {
+            val value = settings.getString(
                 SettingsManager::gamesDir.name,
-                "/mnt/sata_4tb/AVN/Games",
-            ),
-        ),
+                "",
+            )
+            value.ifBlank {
+                null
+            }
+        },
     )
     override val gamesDir: Option<out StateFlow<String?>> get() = _gamesDir
 
