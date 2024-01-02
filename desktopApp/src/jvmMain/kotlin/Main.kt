@@ -1,3 +1,4 @@
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,7 +51,11 @@ fun main() {
                         modifier = Modifier.align(Alignment.Center),
                     ) {
                         Text("Apple is not supported!!! Fuck Apple")
-                        Text("Anyone who is involved in development of apple products should burn in hell for all eternity")
+                        Image(
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            painter = painterResource("fuck_apple.jpg"),
+                            contentDescription = "fuck apple.jpg",
+                        )
                     }
                 }
             }
