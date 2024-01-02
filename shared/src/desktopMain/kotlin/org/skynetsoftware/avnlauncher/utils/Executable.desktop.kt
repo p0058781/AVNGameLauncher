@@ -21,21 +21,28 @@ private class ExecutableFinderDesktop(
     val configManager: ConfigManager,
     val logger: Logger,
 ) : ExecutableFinder {
-    override fun validateExecutables(games: List<Game>): List<Pair<Game, String>> {
+    override fun validateExecutables(games: List<Game>): List<Pair<Int, Set<String>>> {
         val gamesRootDir = getGamesRootDir() ?: return emptyList()
-        val gamesToUpdate = ArrayList<Pair<Game, String>>()
+        val gamesToUpdate = ArrayList<Pair<Int, Set<String>>>()
         games.forEach { game ->
-            if (game.executablePath.isNullOrEmpty()) {
-                val executable = findExecutable(gamesRootDir, game.title)
-                if (executable != null) {
-                    gamesToUpdate.add(game to executable)
+            val executablePaths = game.executablePaths
+            if (executablePaths.isEmpty()) {
+                val executables = findExecutables(gamesRootDir, game.title)
+                if (executables.isNotEmpty()) {
+                    gamesToUpdate.add(game.f95ZoneThreadId to executables)
                 } else {
                     logger.warning("No executable found for '${game.title}'")
                 }
             } else {
-                val executablePathFile = File(game.executablePath)
-                if (!executablePathFile.exists()) {
-                    gamesToUpdate.add(game to "")
+                val mutableExecutablePaths = executablePaths.toMutableSet()
+                mutableExecutablePaths.forEach {
+                    val executablePathFile = File(it)
+                    if (!executablePathFile.exists()) {
+                        mutableExecutablePaths.remove(it)
+                    }
+                }
+                if (mutableExecutablePaths.size != executablePaths.size) {
+                    gamesToUpdate.add(game.f95ZoneThreadId to mutableExecutablePaths)
                 }
             }
         }
@@ -50,25 +57,25 @@ private class ExecutableFinderDesktop(
         return gamesDir.value.value?.let { File(it) } ?: return null
     }
 
-    override fun findExecutable(title: String): String? {
-        val gamesRootDir = getGamesRootDir() ?: return null
-        return findExecutable(gamesRootDir, title)
+    override fun findExecutables(title: String): Set<String> {
+        val gamesRootDir = getGamesRootDir() ?: return emptySet()
+        return findExecutables(gamesRootDir, title)
     }
 
     @Suppress("NewApi")
-    private fun findExecutable(
+    private fun findExecutables(
         gamesDirRoot: File,
         title: String,
-    ): String? {
+    ): Set<String> {
         return gamesDirRoot.listFiles()
             ?.filter { it.isDirectory }
-            ?.firstOrNull { it.name == title }?.let {
+            ?.filter { it.name == title }?.mapNotNull {
                 Files.walk(Paths.get(it.absolutePath)).use { files ->
                     files
                         .filter { f -> platformFilter(f) }
                         .findFirst().getOrNull()?.toFile()
-                }
-            }?.absolutePath
+                }?.absolutePath
+            }?.toSet() ?: emptySet()
     }
 
     private fun platformFilter(path: Path): Boolean {

@@ -8,7 +8,7 @@ data class SyncGame(
     val title: String,
     val imageUrl: String,
     val f95ZoneThreadId: Int,
-    val executablePath: String?,
+    val executablePaths: Set<String>,
     val version: String,
     val playTime: Long,
     val rating: Int,

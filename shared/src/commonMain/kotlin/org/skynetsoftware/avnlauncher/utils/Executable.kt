@@ -6,7 +6,7 @@ import org.skynetsoftware.avnlauncher.data.model.Game
 expect val executableFinderKoinModule: Module
 
 interface ExecutableFinder {
-    fun validateExecutables(games: List<Game>): List<Pair<Game, String>>
+    fun validateExecutables(games: List<Game>): List<Pair<Int, Set<String>>>
 
-    fun findExecutable(title: String): String?
+    fun findExecutables(title: String): Set<String>
 }

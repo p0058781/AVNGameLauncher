@@ -6,9 +6,15 @@ import org.skynetsoftware.avnlauncher.data.model.Game
 expect val gameLauncherKoinModule: Module
 
 interface GameLauncher {
-    fun launch(game: Game)
+    fun launch(
+        game: Game,
+        executablePath: String,
+    )
 }
 
 class GameLauncherNoOp : GameLauncher {
-    override fun launch(game: Game) {}
+    override fun launch(
+        game: Game,
+        executablePath: String,
+    ) {}
 }

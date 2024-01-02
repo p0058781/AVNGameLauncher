@@ -38,7 +38,14 @@ private class GameImportImpl(
     override suspend fun importGame(threadId: Int): Result<Game> {
         return try {
             val f95Game = f95Api.getGame(threadId).getOrThrow()
-            val game = f95Game.toGame().copy(executablePath = executableFinder.findExecutable(f95Game.title))
+            val game = f95Game.toGame().run {
+                val executablePath = executableFinder.findExecutables(f95Game.title)
+                if (executablePath.isEmpty()) {
+                    this
+                } else {
+                    this.copy(executablePaths = executablePath)
+                }
+            }
             gamesRepository.insertGame(game)
             Result.Ok(game)
         } catch (t: Throwable) {

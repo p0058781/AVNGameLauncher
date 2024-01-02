@@ -31,7 +31,10 @@ private class GameLauncherDesktop(
 ) : GameLauncher {
     private var processStarterThread: ProcessStarterThread? = null
 
-    override fun launch(game: Game) {
+    override fun launch(
+        game: Game,
+        executablePath: String,
+    ) {
         if (processStarterThread?.running == true) {
             val message = R.strings.gameLauncherAnotherGameRunning.format(game.title, processStarterThread?.game?.title)
             logger.warning(message)
@@ -39,12 +42,13 @@ private class GameLauncherDesktop(
             return
         }
 
-        processStarterThread = ProcessStarterThread(game, repository, logger, eventCenter)
+        processStarterThread = ProcessStarterThread(game, executablePath, repository, logger, eventCenter)
         processStarterThread?.start()
     }
 
     private class ProcessStarterThread(
         val game: Game,
+        private val executablePath: String,
         private val repository: GamesRepository,
         private val logger: Logger,
         private val eventCenter: EventCenter,
@@ -54,17 +58,11 @@ private class GameLauncherDesktop(
 
         @Suppress("NewApi")
         override fun run() {
-            if (game.executablePath.isNullOrBlank()) {
-                val message = R.strings.gameLauncherInvalidExecutableToast.format(game.title)
-                logger.info(message)
-                eventCenter.emit(Event.ToastMessage(message))
-                return
-            }
             try {
                 eventCenter.emit(Event.PlayingStarted(game))
                 logger.info("game starting: ${game.title}")
                 running = true
-                val process = ProcessBuilder(*createCommand(game.executablePath)).apply {
+                val process = ProcessBuilder(*createCommand(executablePath)).apply {
                     redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     redirectError(ProcessBuilder.Redirect.DISCARD)
                 }.start()
@@ -79,8 +77,7 @@ private class GameLauncherDesktop(
                 val elapsedTime = System.currentTimeMillis() - startTime
                 val totalTime = game.playTime + elapsedTime
                 runBlocking {
-                    repository.updatePlayTime(totalTime, game)
-                    repository.updateLastPlayed(System.currentTimeMillis(), game)
+                    repository.updateGame(game.f95ZoneThreadId, totalTime, System.currentTimeMillis())
                 }
                 logger.info(
                     "game exited: ${game.title}, exit code: ${process.exitValue()} elapsedTime: $elapsedTime, totalTime: $totalTime",

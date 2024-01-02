@@ -105,7 +105,7 @@ private class UpdateCheckerImpl(
                             val newRedirectUrl = f95Api.getRedirectUrl(game.f95ZoneThreadId).getOrNull()
                             if (newRedirectUrl != lastRedirectUrl) {
                                 val slowResult = doSlowUpdateCheck(game)
-                                newRedirectUrl?.let { gamesRepository.updateLastRedirectUrl(newRedirectUrl, game) }
+                                newRedirectUrl?.let { gamesRepository.updateLastRedirectUrl(game.f95ZoneThreadId, newRedirectUrl) }
                                 slowResult
                             } else {
                                 UpdateChecker.UpdateResult(game, false, null)
