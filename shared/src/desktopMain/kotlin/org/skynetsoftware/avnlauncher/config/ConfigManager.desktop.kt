@@ -15,7 +15,7 @@ private class ConfigManagerImpl : ConfigManager() {
     private val cacheDirFile = when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".cache/$APPLICATION_NAME")
         OS.Windows -> File(System.getenv("AppData"), "$APPLICATION_NAME/cache")
-        OS.Mac -> throw IllegalStateException("Mac is not supported")
+        OS.Mac -> File(System.getProperty("user.home"), "Library/Caches/$APPLICATION_NAME")
     }
 
     private val dataDirFile = when (os) {
