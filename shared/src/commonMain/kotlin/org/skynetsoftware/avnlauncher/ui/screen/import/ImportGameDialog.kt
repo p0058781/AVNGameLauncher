@@ -22,12 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
+import dev.icerock.moko.resources.compose.stringResource
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
-import org.skynetsoftware.avnlauncher.utils.format
 
 @Composable
 fun ImportGameDialog(
@@ -39,7 +39,7 @@ fun ImportGameDialog(
     val state by remember { importGameViewModel.state }.collectAsState()
 
     Dialog(
-        title = R.strings.importGameDialogTitle,
+        title = stringResource(MR.strings.importGameDialogTitle),
         onDismiss = onCloseRequest,
     ) {
         Surface(
@@ -58,7 +58,7 @@ fun ImportGameDialog(
                             onValueChange = {
                                 threadId = it
                             },
-                            label = { Text(R.strings.importGameDialogThreadIdHint) },
+                            label = { Text(stringResource(MR.strings.importGameDialogThreadIdHint)) },
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Button(
@@ -70,14 +70,14 @@ fun ImportGameDialog(
                             shape = MaterialTheme.shapes.medium,
                         ) {
                             Text(
-                                text = R.strings.importGameDialogButtonImport,
+                                text = stringResource(MR.strings.importGameDialogButtonImport),
                             )
                         }
                     }
                 }
 
                 is ImportGameViewModel.State.Imported -> {
-                    mainViewModel.showToast(R.strings.importGameDialogSuccessToast.format(stateCopy.game.title))
+                    mainViewModel.showToast(stringResource(MR.strings.importGameDialogSuccessToast, stateCopy.game.title))
                     onCloseRequest()
                 }
 
@@ -91,7 +91,7 @@ fun ImportGameDialog(
                 }
 
                 is ImportGameViewModel.State.Error -> {
-                    mainViewModel.showToast(R.strings.importGameDialogErrorToast.format(stateCopy.error.message))
+                    mainViewModel.showToast(stringResource(MR.strings.importGameDialogErrorToast, stateCopy.error.message ?: ""))
                     onCloseRequest()
                 }
             }

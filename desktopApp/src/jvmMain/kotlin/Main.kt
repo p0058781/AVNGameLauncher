@@ -14,7 +14,11 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import dev.icerock.moko.resources.compose.stringResource
+import dev.icerock.moko.resources.desc.Resource
+import dev.icerock.moko.resources.desc.StringDesc
 import org.skynetsoftware.avnlauncher.AVNLauncherApp
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.utils.OS
 import org.skynetsoftware.avnlauncher.utils.os
@@ -27,7 +31,7 @@ fun main() {
         val xToolkit = Toolkit.getDefaultToolkit()
         val awtAppClassNameField: Field = xToolkit.javaClass.getDeclaredField("awtAppClassName")
         awtAppClassNameField.setAccessible(true)
-        awtAppClassNameField.set(xToolkit, R.strings.appName)
+        awtAppClassNameField.set(xToolkit, StringDesc.Resource(MR.strings.appName).localized())
     } catch (e: Exception) {
         e.printStackTrace()
     }
@@ -62,7 +66,7 @@ fun main() {
         } else {
             Window(
                 onCloseRequest = ::exitApplication,
-                title = R.strings.appName,
+                title = stringResource(MR.strings.appName),
                 icon = painterResource(R.images.appIcon),
                 state = WindowState(
                     position = WindowPosition.Aligned(Alignment.Center),

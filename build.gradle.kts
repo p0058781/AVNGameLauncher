@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.realm.kotlin).apply(false)
     alias(libs.plugins.ktor.plugin).apply(false)
     alias(libs.plugins.ktlint.plugin).apply(false)
+    alias(libs.plugins.moko.resource.generator).apply(false)
 }
 
 subprojects {

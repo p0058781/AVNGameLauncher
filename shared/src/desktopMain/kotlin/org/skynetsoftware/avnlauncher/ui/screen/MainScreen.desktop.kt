@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import dev.icerock.moko.resources.compose.stringResource
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.component.IconAction
 import org.skynetsoftware.avnlauncher.ui.component.TextAction
@@ -39,7 +41,7 @@ actual fun ToolbarActions(
         modifier = modifier,
         horizontalArrangement = Arrangement.End,
     ) {
-        TextAction(if (sfwMode) R.strings.toolbarActionSfw else R.strings.toolbarActionNsfw) {
+        TextAction(stringResource(if (sfwMode) MR.strings.toolbarActionSfw else MR.strings.toolbarActionNsfw)) {
             onSfwModeClicked()
         }
         if (!remoteClientMode) {

@@ -17,16 +17,19 @@ kotlin {
                     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                     manifest {
                         attributes["Main-Class"] = "MainKt"
-                        attributes["Add-Opens"] = "java.desktop/sun.awt.X11"
+                        attributes["Add-Opens"] = "java.desktop/sun.awt.X11=ALL-UNNAMED"
                     }
-                    from(configurations.getByName("runtimeClasspath").map { if (it.isDirectory) it else zipTree(it) }, main.output.classesDirs)
+                    from(
+                        configurations.getByName("runtimeClasspath").map { if (it.isDirectory) it else zipTree(it) },
+                        main.output.classesDirs
+                    )
                     archiveBaseName.set("${project.name}-fat")
                 }
             }
         }
     }
     sourceSets {
-        val jvmMain by getting  {
+        val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":shared"))
@@ -38,14 +41,27 @@ kotlin {
 compose.desktop {
     application {
         mainClass = "MainKt"
+        jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
+        jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
+
+        buildTypes.release.proguard {
+            obfuscate.set(true)
+            optimize.set(true)
+        }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Exe, TargetFormat.AppImage)
             packageName = "avn-launcher-v3"
             packageVersion = "1.0.0"
-            jvmArgs(
-                "-Dapple.awt.application.appearance=system"
-            )
+
+            val iconsRoot = project.file("../shared/src/commonMain/resources")
+            windows {
+                iconFile.set(iconsRoot.resolve("icon.ico"))
+                upgradeUuid = "822cc90d-718b-4087-b337-bb203005f9ad"
+            }
+            linux {
+                iconFile.set(iconsRoot.resolve("icon.png"))
+            }
         }
     }
 }

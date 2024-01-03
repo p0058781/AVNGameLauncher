@@ -34,7 +34,7 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
                     Event.SyncStarted -> activeStates.add(State.Syncing)
                     Event.UpdateCheckComplete -> activeStates.remove(State.UpdateCheckRunning)
                     Event.UpdateCheckStarted -> activeStates.add(State.UpdateCheckRunning)
-                    is Event.ToastMessage -> {
+                    is Event.ToastMessage<*> -> {
                         // not handled
                     }
                 }

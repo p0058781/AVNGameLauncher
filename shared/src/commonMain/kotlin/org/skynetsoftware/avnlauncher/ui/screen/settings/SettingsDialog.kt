@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.component.CheckBoxWithText
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
@@ -46,7 +48,7 @@ fun SettingsDialog(
     val gamesDirShown = settingsViewModel.gamesDir is Option.Some
 
     Dialog(
-        title = R.strings.settings,
+        title = stringResource(MR.strings.settings),
         onDismiss = onCloseRequest,
     ) {
         Surface(
@@ -64,7 +66,7 @@ fun SettingsDialog(
                         value = gamesDir ?: "",
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text(R.strings.settingsDialogInputLabelGamesDir) },
+                        label = { Text(stringResource(MR.strings.settingsDialogInputLabelGamesDir)) },
                         trailingIcon = {
                             Image(
                                 painter = painterResource(R.images.edit),
@@ -86,30 +88,30 @@ fun SettingsDialog(
                     }
                 }
                 CheckBoxWithText(
-                    text = R.strings.settingsDialogSyncEnabled,
+                    text = stringResource(MR.strings.settingsDialogSyncEnabled),
                     checked = syncEnabled,
                     onCheckedChange = {
                         settingsViewModel.setSyncEnabled(it)
                     },
-                    description = R.strings.settingsDialogSyncEnabledDescription,
+                    description = stringResource(MR.strings.settingsDialogSyncEnabledDescription),
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 CheckBoxWithText(
-                    text = R.strings.settingsDialogFastUpdateCheck,
+                    text = stringResource(MR.strings.settingsDialogFastUpdateCheck),
                     checked = fastUpdateCheck,
                     onCheckedChange = {
                         settingsViewModel.setFastUpdateCheck(it)
                     },
-                    description = R.strings.settingsDialogFastUpdateCheckDescription,
+                    description = stringResource(MR.strings.settingsDialogFastUpdateCheckDescription),
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 CheckBoxWithText(
-                    text = R.strings.settingsDialogForceDarkTheme,
+                    text = stringResource(MR.strings.settingsDialogForceDarkTheme),
                     checked = forceDarkTheme,
                     onCheckedChange = {
                         settingsViewModel.setForceDarkTheme(it)
                     },
-                    description = R.strings.settingsDialogForceDarkThemeDescription,
+                    description = stringResource(MR.strings.settingsDialogForceDarkThemeDescription),
                 )
                 Spacer(modifier = Modifier.height(10.dp))
             }

@@ -1,7 +1,9 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -9,8 +11,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
-import org.skynetsoftware.avnlauncher.data.buildToastMessage
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.repository.Filter
@@ -18,12 +20,10 @@ import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
-import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
-import org.skynetsoftware.avnlauncher.utils.format
 
 class GamesViewModel(
     private val gamesRepository: GamesRepository,
@@ -73,6 +73,9 @@ class GamesViewModel(
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0f)
 
     val showExecutablePathPicker = MutableStateFlow<Game?>(null)
+
+    private val _updateCheckComplete = MutableSharedFlow<List<UpdateChecker.UpdateResult>>(replay = 0)
+    val updateCheckComplete: SharedFlow<List<UpdateChecker.UpdateResult>?> get() = _updateCheckComplete
 
     init {
         // check paths
@@ -155,7 +158,9 @@ class GamesViewModel(
 
     fun startUpdateCheck() {
         updateChecker.startUpdateCheck(true) { updateResult ->
-            eventCenter.emit(Event.ToastMessage(updateResult.buildToastMessage()))
+            viewModelScope.launch {
+                _updateCheckComplete.emit(updateResult)
+            }
         }
     }
 
@@ -163,8 +168,7 @@ class GamesViewModel(
         viewModelScope.launch {
             val executablePaths = game.executablePaths
             if (game.executablePaths.isEmpty()) {
-                val message = R.strings.gameLauncherInvalidExecutableToast.format(game.title)
-                eventCenter.emit(Event.ToastMessage(message))
+                eventCenter.emit(Event.ToastMessage(MR.strings.gameLauncherInvalidExecutableToast, game.title))
                 return@launch
             } else if (executablePaths.size > 1) {
                 showExecutablePathPicker.emit(game)

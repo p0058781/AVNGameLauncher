@@ -25,7 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
-import org.skynetsoftware.avnlauncher.resources.R
+import dev.icerock.moko.resources.compose.stringResource
+import org.skynetsoftware.avnlauncher.MR
 
 @Composable
 actual fun GamePicker(
@@ -44,7 +45,7 @@ actual fun GamePicker(
 
     if (visible) {
         Dialog(
-            title = R.strings.gamePickerPickGame,
+            title = stringResource(MR.strings.gamePickerPickGame),
             onDismiss = {
                 visible = false
             },

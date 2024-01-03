@@ -27,6 +27,7 @@ agp = "8.0.2"
 jetbrains-compose = "1.5.10"
 ktlint-plugin = "12.0.3"
 accompanist = "0.28.0"
+moko = "0.23.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -74,6 +75,9 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 systemthemedetector = { module = "com.github.Dansoftowner:jSystemThemeDetector", version.ref = "system-theme-detector" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
+moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko" }
+moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko" }
+moko-resources-test = { module = "dev.icerock.moko:resources-test", version.ref = "moko" }
 
 [bundles]
 
@@ -88,3 +92,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+moko-resource-generator = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko" }

@@ -6,6 +6,7 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.compose")
     id("io.realm.kotlin")
+    alias(libs.plugins.moko.resource.generator)
 }
 
 kotlin {
@@ -46,6 +47,9 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
+
+                api(libs.moko.resources)
+                api(libs.moko.resources.compose)
             }
         }
         val commonTest by getting {
@@ -54,6 +58,7 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.koin.test)
                 implementation(libs.turbine)
+                implementation(libs.moko.resources.test)
             }
         }
         val jvmMain = create("jvmMain") {
@@ -116,6 +121,10 @@ android {
     buildFeatures {
         buildConfig = true
     }
+}
+
+multiplatformResources {
+    multiplatformResourcesPackage = "org.skynetsoftware.avnlauncher"
 }
 
 

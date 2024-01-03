@@ -1,10 +1,13 @@
 package org.skynetsoftware.avnlauncher.utils
 
-import org.skynetsoftware.avnlauncher.resources.R
+import androidx.compose.runtime.Composable
+import dev.icerock.moko.resources.compose.stringResource
+import org.skynetsoftware.avnlauncher.MR
 
+@Composable
 fun formatPlayTime(playTime: Long?): String {
     if (playTime == null || playTime == 0L) {
-        return R.strings.noValue
+        return stringResource(MR.strings.noValue)
     }
     val totalSeconds = playTime / 1000
 
@@ -15,8 +18,8 @@ fun formatPlayTime(playTime: Long?): String {
 
     // Format the result
     return when {
-        hours > 0 -> R.strings.nHours.format(hours)
-        minutes > 0 -> R.strings.nMinutes.format(minutes)
-        else -> R.strings.nSeconds.format(seconds)
+        hours > 0 -> stringResource(MR.strings.nHours, hours)
+        minutes > 0 -> stringResource(MR.strings.nMinutes, minutes)
+        else -> stringResource(MR.strings.nSeconds, seconds)
     }
 }

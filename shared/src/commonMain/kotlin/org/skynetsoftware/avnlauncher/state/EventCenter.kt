@@ -49,5 +49,5 @@ sealed class Event {
     object SyncCompleted : Event()
 
     // Toast
-    class ToastMessage(val message: String, val duration: Long = 3000L) : Event()
+    class ToastMessage<T>(val message: T, vararg val args: Any, val duration: Long = 3000L) : Event()
 }

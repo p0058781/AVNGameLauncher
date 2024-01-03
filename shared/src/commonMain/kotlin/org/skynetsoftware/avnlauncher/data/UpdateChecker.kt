@@ -13,7 +13,6 @@ import org.skynetsoftware.avnlauncher.data.model.mergeWith
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.f95.F95Api
 import org.skynetsoftware.avnlauncher.logging.Logger
-import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
@@ -157,28 +156,5 @@ private class UpdateCheckerImpl(
         val result = run()
         updateCheckRunning = false
         return result
-    }
-}
-
-fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
-    return buildString {
-        val updates = this@buildToastMessage.filter { it.updateAvailable }
-        if (updates.isNotEmpty()) {
-            appendLine(R.strings.toastUpdateAvailable)
-            updates.forEach {
-                appendLine(it.game.title)
-            }
-        } else {
-            appendLine(R.strings.toastNoUpdatesAvailable)
-        }
-        val exceptions = this@buildToastMessage.filter { it.exception != null }
-        if (exceptions.isNotEmpty()) {
-            appendLine(R.strings.toastException)
-            exceptions.forEach {
-                append(it.game.title)
-                append(": ")
-                append(it.exception?.message)
-            }
-        }
     }
 }
