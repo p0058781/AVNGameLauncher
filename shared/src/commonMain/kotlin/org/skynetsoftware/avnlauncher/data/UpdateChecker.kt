@@ -19,6 +19,8 @@ import org.skynetsoftware.avnlauncher.state.EventCenter
 
 private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
 
+// TODO background service with auto update check
+
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
         val configManager = get<ConfigManager>()

@@ -43,6 +43,7 @@ compose.desktop {
         mainClass = "MainKt"
         jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
+        jvmArgs("-Dapple.awt.application.appearance=system")
 
         buildTypes.release.proguard {
             obfuscate.set(true)
@@ -50,11 +51,14 @@ compose.desktop {
         }
 
         nativeDistributions {
-            targetFormats(TargetFormat.Exe, TargetFormat.AppImage)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.AppImage)
             packageName = "avn-launcher-v3"
             packageVersion = "1.0.0"
 
             val iconsRoot = project.file("../shared/src/commonMain/resources")
+            macOS {
+                iconFile.set(project.file("icon.icns"))
+            }
             windows {
                 iconFile.set(iconsRoot.resolve("icon.ico"))
                 upgradeUuid = "822cc90d-718b-4087-b337-bb203005f9ad"

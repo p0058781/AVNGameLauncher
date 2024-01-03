@@ -85,4 +85,8 @@ class F95ApiTest : KoinTest {
             val redirectUrl = f95Api.getRedirectUrl(gameIds[0])
             assertEquals("", redirectUrl.getOrThrow())
         }
+
+    // TODO test images are valid
+    // TODO browser plugin for auto game import
+    // TODO search f95 games and add
 }

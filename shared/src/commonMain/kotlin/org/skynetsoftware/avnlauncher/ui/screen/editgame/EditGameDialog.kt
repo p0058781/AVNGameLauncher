@@ -40,6 +40,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 
+// TODO personal notes input
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun EditGameDialog(

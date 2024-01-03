@@ -20,6 +20,7 @@ val gameImportKoinModule = module {
     }
 }
 
+// TODO option to add non-f95 games
 interface GameImport {
     suspend fun importGame(threadId: Int): Result<Game>
 }
