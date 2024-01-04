@@ -21,7 +21,7 @@ actual fun GamePicker(
             onGamePicked(path?.path)
         }
 
-        OS.Mac -> FilePicker(show, fileExtensions = listOf("app")) { path ->
+        OS.Mac -> FilePicker(show, currentExecutable, fileExtensions = listOf("app")) { path ->
             onGamePicked(path?.path)
         }
     }
