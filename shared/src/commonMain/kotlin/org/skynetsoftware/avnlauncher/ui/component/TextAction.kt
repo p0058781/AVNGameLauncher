@@ -22,7 +22,7 @@ fun TextAction(
             modifier = Modifier.clickable {
                 action()
             },
-            color = MaterialTheme.colors.onSurface,
+            color = MaterialTheme.colors.onPrimary,
         )
     }
 }

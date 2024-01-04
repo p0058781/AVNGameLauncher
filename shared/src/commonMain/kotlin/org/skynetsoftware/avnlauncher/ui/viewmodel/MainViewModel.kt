@@ -22,6 +22,7 @@ class MainViewModel(
     val state: StateFlow<State> = stateHandler.state
     val remoteClientMode = configManager.remoteClientMode
     val sfwMode = settingsManager.sfwModeEnabled
+    val forceDarkTheme = settingsManager.forceDarkTheme
 
     private val _toastMessage = MutableStateFlow<Event.ToastMessage<*>?>(null)
     val toastMessage: StateFlow<Event.ToastMessage<*>?> get() = _toastMessage

@@ -12,7 +12,9 @@ val darkColors = darkColors(
     primary = Red,
     background = DarkGrey,
     surface = LightGrey,
+    onPrimary = Color.White
 )
 val lightColors = lightColors(
     primary = Red,
+    onPrimary = Color.White
 )

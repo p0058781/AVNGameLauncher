@@ -109,6 +109,7 @@ fun MainScreen(
     val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
     var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
     var showExecutablePathPicker by gamesViewModel.showExecutablePathPicker.collectAsMutableState()
+    val forceDarkTheme by mainViewModel.forceDarkTheme.collectAsState()
 
     val updateResult by gamesViewModel.updateCheckComplete.collectAsState(null)
 
@@ -117,7 +118,7 @@ fun MainScreen(
     }
 
     MaterialTheme(
-        colors = if (isSystemInDarkTheme()) darkColors else lightColors,
+        colors = if (isSystemInDarkTheme() || forceDarkTheme) darkColors else lightColors,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -133,7 +134,7 @@ fun MainScreen(
                                 Text(
                                     text = stringResource(MR.strings.appName),
                                     style = MaterialTheme.typography.h6,
-                                    color = MaterialTheme.colors.onSurface,
+                                    color = MaterialTheme.colors.onPrimary,
                                 )
                                 Text(stringResource(MR.strings.totalPlayTime, formatPlayTime(totalPlayTime), averagePlayTime))
                             }
@@ -152,10 +153,12 @@ fun MainScreen(
                                         Text(
                                             text = stringResource(MR.strings.searchLabel),
                                             style = MaterialTheme.typography.body2,
+                                            //TODO color is wrong in light theme
                                         )
                                     },
                                     textStyle = TextStyle(
-                                        color = MaterialTheme.colors.onSurface,
+                                        color = MaterialTheme.colors.onPrimary,
+
                                     ),
                                     singleLine = true,
                                     trailingIcon = {
@@ -384,6 +387,7 @@ private fun SortFilter(
                 }
             }
         }
+        //TODO dropdown should be aligned below sort, rignt now it is below filter
         DropdownMenu(
             expanded = showSortOrderDropdown,
             onDismissRequest = {
