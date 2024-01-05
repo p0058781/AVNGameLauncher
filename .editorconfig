@@ -7,4 +7,5 @@ ktlint_standard_string-template-indent = disabled
 ktlint_standard_function-naming = disabled
 
 [MR.kt]
-ktlint_standard_class-naming = disabled
+ktlint_standard = disabled
+ktlint_experimental = disabled
