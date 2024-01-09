@@ -3,7 +3,6 @@ package org.skynetsoftware.avnlauncher.launcher
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.logging.Logger
@@ -14,12 +13,7 @@ import org.skynetsoftware.avnlauncher.utils.os
 
 actual val gameLauncherKoinModule = module {
     single<GameLauncher> {
-        val configManager = get<ConfigManager>()
-        if (configManager.remoteClientMode) {
-            GameLauncherNoOp()
-        } else {
-            GameLauncherDesktop(get(), get(), get())
-        }
+        GameLauncherDesktop(get(), get(), get())
     }
 }
 

@@ -33,7 +33,6 @@ actual fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit) {
 @Composable
 actual fun ToolbarActions(
     modifier: Modifier,
-    remoteClientMode: Boolean,
     sfwMode: Boolean,
     startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
@@ -48,16 +47,14 @@ actual fun ToolbarActions(
         TextAction(stringResource(if (sfwMode) MR.strings.toolbarActionSfw else MR.strings.toolbarActionNsfw)) {
             onSfwModeClicked()
         }
-        if (!remoteClientMode) {
-            IconAction(R.images.import) {
-                onImportGameClicked()
-            }
-            IconAction(R.images.refresh) {
-                startUpdateCheck()
-            }
-            IconAction(R.images.settings) {
-                onSettingsClicked()
-            }
+        IconAction(R.images.import) {
+            onImportGameClicked()
+        }
+        IconAction(R.images.refresh) {
+            startUpdateCheck()
+        }
+        IconAction(R.images.settings) {
+            onSettingsClicked()
         }
     }
 }

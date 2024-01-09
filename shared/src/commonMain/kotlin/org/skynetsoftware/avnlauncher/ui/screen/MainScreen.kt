@@ -194,7 +194,6 @@ data class MainScreen(
                         }
                     }
                     ToolbarActions(
-                        remoteClientMode = mainScreenModel.remoteClientMode,
                         sfwMode = sfwMode,
                         startUpdateCheck = {
                             gamesScreenModel.startUpdateCheck()
@@ -230,7 +229,6 @@ data class MainScreen(
             ) // TODO pull to refresh for remote client
             GamesList(
                 games = games,
-                remoteClientMode = mainScreenModel.remoteClientMode,
                 sfwMode = sfwMode,
                 editGame = {
                     selectedGame = it
@@ -308,7 +306,6 @@ data class MainScreen(
 @Composable
 expect fun ToolbarActions(
     modifier: Modifier = Modifier,
-    remoteClientMode: Boolean,
     sfwMode: Boolean,
     startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
@@ -421,7 +418,6 @@ private fun SortFilter(
 @Composable
 private fun GamesList(
     games: List<Game>,
-    remoteClientMode: Boolean,
     sfwMode: Boolean,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
@@ -441,7 +437,6 @@ private fun GamesList(
         items(games) { game ->
             GameItem(
                 game = game,
-                remoteClientMode = remoteClientMode,
                 sfwMode = sfwMode,
                 editGame = editGame,
                 launchGame = launchGame,
@@ -461,7 +456,6 @@ private fun GamesList(
 @Composable
 private fun GameItem(
     game: Game,
-    remoteClientMode: Boolean,
     sfwMode: Boolean,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
@@ -481,9 +475,7 @@ private fun GameItem(
             modifier = Modifier
                 .hoverable(cardHoverInteractionSource)
                 .clickable {
-                    if (!remoteClientMode) {
-                        launchGame(game)
-                    }
+                    launchGame(game)
                 },
             shape = RoundedCornerShape(10.dp),
         ) {
@@ -517,9 +509,7 @@ private fun GameItem(
                         painter = painterResource(R.images.playing),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            if (!remoteClientMode) {
-                                togglePlaying(game)
-                            }
+                            togglePlaying(game)
                         },
                         colorFilter = ColorFilter.tint(
                             if (game.playState == PlayState.Playing) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
@@ -529,9 +519,7 @@ private fun GameItem(
                         painter = painterResource(R.images.completed),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            if (!remoteClientMode) {
-                                toggleCompleted(game)
-                            }
+                            toggleCompleted(game)
                         },
                         colorFilter = ColorFilter.tint(
                             if (game.playState == PlayState.Completed) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
@@ -541,9 +529,7 @@ private fun GameItem(
                         painter = painterResource(R.images.waiting),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            if (!remoteClientMode) {
-                                toggleWaitingForUpdate(game)
-                            }
+                            toggleWaitingForUpdate(game)
                         },
                         colorFilter = ColorFilter.tint(
                             if (game.playState == PlayState.WaitingForUpdate) {
@@ -558,10 +544,8 @@ private fun GameItem(
                             painter = painterResource(R.images.update),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                                if (!remoteClientMode) {
-                                    game.availableVersion?.let {
-                                        resetUpdateAvailable(it, game)
-                                    }
+                                game.availableVersion?.let {
+                                    resetUpdateAvailable(it, game)
                                 }
                             },
                         )
@@ -573,26 +557,23 @@ private fun GameItem(
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically),
                         )
                     }
-                    if (!remoteClientMode) {
-                        Image(
-                            painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                                toggleHidden(game)
-                            },
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
-                        )
-                    }
-                    if (!remoteClientMode) {
-                        Image(
-                            painter = painterResource(R.images.edit),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                                editGame(game)
-                            },
-                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
-                        )
-                    }
+                    Image(
+                        painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
+                            toggleHidden(game)
+                        },
+                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
+                    )
+
+                    Image(
+                        painter = painterResource(R.images.edit),
+                        contentDescription = null,
+                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
+                            editGame(game)
+                        },
+                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
+                    )
                 }
 
                 Column(
@@ -629,9 +610,7 @@ private fun GameItem(
                     rating = game.rating,
                     modifier = Modifier.padding(start = 10.dp, top = 10.dp),
                     onClick = { rating ->
-                        if (!remoteClientMode) {
-                            updateRating(rating, game)
-                        }
+                        updateRating(rating, game)
                     },
                 )
             }

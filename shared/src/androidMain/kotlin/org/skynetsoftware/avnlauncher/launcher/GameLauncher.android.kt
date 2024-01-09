@@ -5,7 +5,6 @@ import android.content.Intent
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.logging.Logger
 import org.skynetsoftware.avnlauncher.state.Event
@@ -13,12 +12,7 @@ import org.skynetsoftware.avnlauncher.state.EventCenter
 
 actual val gameLauncherKoinModule = module {
     single<GameLauncher> {
-        val configManager = get<ConfigManager>()
-        if (configManager.remoteClientMode) {
-            GameLauncherNoOp()
-        } else {
-            GameLauncherAndroid(get(), get(), androidApplication())
-        }
+        GameLauncherAndroid(get(), get(), androidApplication())
     }
 }
 

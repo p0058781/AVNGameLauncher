@@ -41,21 +41,6 @@ android {
         excludes += "META-INF/AL2.0"
         excludes += "META-INF/LGPL2.1"
     }
-    flavorDimensions += "mode"
-    productFlavors {
-        create("remoteClient") {
-            dimension = "mode"
-            applicationIdSuffix = ".remoteClient"
-            versionNameSuffix = "-remoteClient"
-        }
-        create("full") {
-            dimension = "mode"
-            applicationIdSuffix = ".full"
-            versionNameSuffix = "-full"
-        }
-    }
-
-
 
 }
 

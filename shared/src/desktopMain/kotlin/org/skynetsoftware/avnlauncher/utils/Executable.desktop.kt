@@ -51,7 +51,7 @@ private class ExecutableFinderDesktop(
 
     private fun getGamesRootDir(): File? {
         val gamesDir = settingsManager.gamesDir
-        if (configManager.remoteClientMode || gamesDir !is Option.Some) {
+        if (gamesDir !is Option.Some) {
             return null
         }
         return gamesDir.value.value?.let { File(it) } ?: return null

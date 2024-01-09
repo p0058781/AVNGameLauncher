@@ -81,7 +81,6 @@ class GamesScreenModel(
     init {
         // check paths
         screenModelScope.launch {
-            gamesRepository.refresh()
             val gamesToUpdate = executableFinder.validateExecutables(gamesRepository.all())
             gamesRepository.updateExecutablePaths(gamesToUpdate)
         }
