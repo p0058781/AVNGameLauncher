@@ -14,10 +14,12 @@ plugins {
     alias(libs.plugins.ktor.plugin).apply(false)
     alias(libs.plugins.ktlint.plugin).apply(false)
     alias(libs.plugins.moko.resource.generator).apply(false)
+    alias(libs.plugins.kover).apply(false)
 }
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    apply(plugin = "org.jetbrains.kotlinx.kover")
 
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
         version.set("1.1.0")
