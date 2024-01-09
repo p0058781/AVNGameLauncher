@@ -10,7 +10,6 @@ internal actual fun Module.configKoinModule() {
 private class ConfigManagerImpl(context: Context) : ConfigManager() {
     override val cacheDir: String = context.cacheDir.absolutePath
     override val dataDir: String = context.dataDir.absolutePath
-    override val syncEnabledDefault: Boolean = false
     override val sfwModeEnabledDefault: Boolean = true
 }
 

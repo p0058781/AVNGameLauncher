@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.config.ConfigManager
-import org.skynetsoftware.avnlauncher.logging.Logger
+import org.skynetsoftware.avnlauncher.logger.Logger
 
 actual val imageLoaderKoinModule = module {
     single<ImageLoader> { imageLoader(get(), get(), get()) }

@@ -5,8 +5,8 @@ import android.content.Intent
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.data.model.Game
-import org.skynetsoftware.avnlauncher.logging.Logger
+import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 

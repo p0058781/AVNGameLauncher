@@ -19,8 +19,6 @@ import org.skynetsoftware.avnlauncher.state.EventCenter
 
 private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
 
-// TODO background service with auto update check
-
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
         UpdateCheckerImpl(get(), get(), get(), get(), get())
@@ -75,7 +73,7 @@ private class UpdateCheckerImpl(
             val now = Clock.System.now().toEpochMilliseconds()
             val games = gamesRepository.all()
                 .filter { forceUpdateCheck || now > it.lastUpdateCheck + UPDATE_CHECK_INTERVAL }
-                .filter { !it.updateAvailable } // TODO dont exclude games with update
+                .filter { !it.updateAvailable }
                 .filter { it.checkForUpdates }
             val fastUpdateCheck = settingsRepository.fastUpdateCheck.value
             val updatesResult = games.map { game ->

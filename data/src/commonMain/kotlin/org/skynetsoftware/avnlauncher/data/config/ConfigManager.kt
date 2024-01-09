@@ -16,6 +16,5 @@ abstract class ConfigManagerShared {
     open val fastUpdateCheckDefault: Boolean = false
     abstract val sfwModeEnabledDefault: Boolean
 }
-// TODO sync should be build type optional
 
 expect abstract class ConfigManager : ConfigManagerShared

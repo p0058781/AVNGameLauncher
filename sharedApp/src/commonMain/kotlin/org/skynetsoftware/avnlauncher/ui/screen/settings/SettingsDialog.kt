@@ -52,7 +52,6 @@ fun SettingsDialog(
     ) {
         Surface(
             modifier = Modifier.verticalScroll(rememberScrollState()),
-            // TODO this needs to be fillMaxHeight on desktop but NOT on android
         ) {
             var showFilePicker by remember { mutableStateOf(false) }
             Column(

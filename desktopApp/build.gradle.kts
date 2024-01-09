@@ -55,7 +55,7 @@ compose.desktop {
             packageName = "avn-launcher-v3"
             packageVersion = "1.0.0"
 
-            val iconsRoot = project.file("../shared/src/commonMain/resources")
+            val iconsRoot = project.file("../sharedApp/src/commonMain/resources")
             macOS {
                 packageName = "AVN Game Launcher"
                 iconFile.set(iconsRoot.resolve("icon.icns"))

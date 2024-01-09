@@ -90,9 +90,6 @@ private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 data class MainScreen(
     val exitApplication: () -> Unit,
 ) : Screen {
-// TODO scaling is not working on desktop
-// TODO write tests
-
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -147,7 +144,6 @@ data class MainScreen(
                         Box(
                             modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
                         ) {
-                            // TODO this is cut-off on windows
                             OutlinedTextField(
                                 modifier = Modifier.padding(0.dp).fillMaxHeight(),
                                 value = searchQuery,
@@ -158,7 +154,6 @@ data class MainScreen(
                                     Text(
                                         text = stringResource(MR.strings.searchLabel),
                                         style = MaterialTheme.typography.body2,
-                                        // TODO color is wrong in light theme
                                     )
                                 },
                                 textStyle = TextStyle(
@@ -314,8 +309,6 @@ expect fun ToolbarActions(
     exitApplication: () -> Unit,
 )
 
-// TODO custom filter/sort
-// TODO rename "hide" to "archive"
 @Composable
 private fun SortFilter(
     games: List<Game>,
@@ -387,7 +380,6 @@ private fun SortFilter(
                 }
             }
         }
-        // TODO dropdown should be aligned below sort, rignt now it is below filter
         DropdownMenu(
             expanded = showSortOrderDropdown,
             onDismissRequest = {
@@ -451,7 +443,6 @@ private fun GamesList(
     }
 }
 
-// TODO link to f95 thread
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun GameItem(

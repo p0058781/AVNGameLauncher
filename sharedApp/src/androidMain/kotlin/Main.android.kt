@@ -1,8 +1,7 @@
 import androidx.compose.runtime.Composable
-import cafe.adriel.voyager.navigator.Navigator
-import org.skynetsoftware.avnlauncher.ui.screen.MainScreen
+import org.skynetsoftware.avnlauncher.Navigator
 
 @Composable
 fun MainView(exitApplication: () -> Unit) {
-    Navigator(MainScreen(exitApplication = exitApplication, draggableArea = { it() }))
+    Navigator(exitApplication = exitApplication, draggableArea = { it() })
 }

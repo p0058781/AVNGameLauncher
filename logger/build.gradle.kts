@@ -49,7 +49,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "org.skynetsoftware.avnlauncher.;pgger"
+    namespace = "org.skynetsoftware.avnlauncher.logger"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
