@@ -6,9 +6,8 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.data.f95.F95Api
-import org.skynetsoftware.avnlauncher.data.f95.f95ApiKoinModule
-import org.skynetsoftware.avnlauncher.data.f95.f95ParserKoinModule
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.domain.utils.valueOrNull
 import kotlin.test.AfterTest
@@ -40,8 +39,7 @@ class F95ApiTest : KoinTest {
     fun beforeTest() {
         startKoin {
             modules(
-                f95ParserKoinModule,
-                f95ApiKoinModule,
+                dataKoinModule,
             )
         }
     }
