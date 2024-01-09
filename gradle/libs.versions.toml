@@ -30,6 +30,8 @@ accompanist = "0.28.0"
 moko = "0.23.0"
 voyager = "1.0.0"
 webview-compose-multiplatform = "1.8.0"
+mosaic = "0.9.1"
+jline = "3.25.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -84,6 +86,7 @@ voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 webview-compose-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "webview-compose-multiplatform" }
+jline = { module = "org.jline:jline", version.ref = "jline" }
 
 [bundles]
 
@@ -99,3 +102,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 moko-resource-generator = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko" }
+mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }

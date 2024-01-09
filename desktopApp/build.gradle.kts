@@ -32,7 +32,7 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(compose.desktop.currentOs)
-                implementation(project(":shared"))
+                implementation(project(":sharedApp"))
             }
         }
     }
