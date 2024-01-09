@@ -6,6 +6,8 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import org.skynetsoftware.avnlauncher.utils.Result
+import org.skynetsoftware.avnlauncher.utils.valueOrNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -51,11 +53,11 @@ class F95ApiTest : KoinTest {
         runBlocking {
             gameIds.forEach {
                 val result = f95Api.getGame(it)
-                if (result.isFailure) {
+                if (result is Result.Error) {
                     println(it)
-                    result.exceptionOrNull()?.printStackTrace()
+                    result.exception.printStackTrace()
                 }
-                assertTrue(result.isSuccess)
+                assertTrue(result is Result.Ok)
             }
         }
 
@@ -63,27 +65,27 @@ class F95ApiTest : KoinTest {
     fun `getGame with gameThreadUrl returns Result success for valid url`() =
         runTest {
             val result = f95Api.getGame("https://f95zone.to/threads/erotica-ep-6-daniels-k.161013/")
-            if (result.isFailure) {
-                result.exceptionOrNull()?.printStackTrace()
+            if (result is Result.Error) {
+                result.exception.printStackTrace()
             }
-            assertTrue(result.isSuccess)
+            assertTrue(result is Result.Ok)
         }
 
     @Test
     fun `getGame with gameThreadUrl returns Result failure for invalid url`() =
         runTest {
             val result = f95Api.getGame("google.com")
-            if (result.isFailure) {
-                result.exceptionOrNull()?.printStackTrace()
+            if (result is Result.Error) {
+                result.exception.printStackTrace()
             }
-            assertTrue(result.isFailure)
+            assertTrue(result is Result.Error)
         }
 
     @Test
     fun `getRedirectUrl return correct url`() =
         runBlocking {
             val redirectUrl = f95Api.getRedirectUrl(gameIds[0])
-            assertEquals("", redirectUrl.getOrThrow())
+            assertEquals("", redirectUrl.valueOrNull())
         }
 
     // TODO test images are valid

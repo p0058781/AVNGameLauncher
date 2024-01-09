@@ -20,5 +20,6 @@ object R {
         const val appIcon = "icon.png"
         const val settings = "settings.png"
         const val add = "add.png"
+        const val back = "back.png"
     }
 }

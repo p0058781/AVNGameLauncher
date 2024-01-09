@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -8,16 +9,16 @@ import org.skynetsoftware.avnlauncher.data.GameImport
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.utils.Result
 
-class ImportGameViewModel(
+class ImportGameScreenModel(
     private val gameImport: GameImport,
-) : ViewModel() {
+) : ScreenModel {
     val threadId = MutableStateFlow<String?>(null)
 
     private val _state = MutableStateFlow<State>(State.Idle)
     val state: StateFlow<State> get() = _state
 
     fun import() =
-        viewModelScope.launch {
+        screenModelScope.launch {
             threadId.value?.let {
                 _state.emit(State.Importing)
                 when (val gameResult = gameImport.importGame(it.toInt())) {

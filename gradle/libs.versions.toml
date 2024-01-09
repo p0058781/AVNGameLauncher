@@ -28,6 +28,8 @@ jetbrains-compose = "1.5.10"
 ktlint-plugin = "12.0.3"
 accompanist = "0.28.0"
 moko = "0.23.0"
+voyager = "1.0.0"
+webview-compose-multiplatform = "1.8.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -78,6 +80,10 @@ accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-dra
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko" }
 moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko" }
 moko-resources-test = { module = "dev.icerock.moko:resources-test", version.ref = "moko" }
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
+voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+webview-compose-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "webview-compose-multiplatform" }
 
 [bundles]
 

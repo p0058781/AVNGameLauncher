@@ -16,6 +16,8 @@ import org.skynetsoftware.avnlauncher.logging.Logger
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
+import org.skynetsoftware.avnlauncher.utils.Result
+import org.skynetsoftware.avnlauncher.utils.valueOrNull
 
 private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
 
@@ -54,7 +56,8 @@ private class UpdateCheckerNoOp : UpdateChecker {
     override fun startUpdateCheck(
         forceUpdateCheck: Boolean,
         onComplete: (updateResults: List<UpdateChecker.UpdateResult>) -> Unit,
-    ) {}
+    ) {
+    }
 
     override suspend fun startUpdateCheck(
         scope: CoroutineScope,
@@ -94,33 +97,33 @@ private class UpdateCheckerImpl(
             val now = Clock.System.now().toEpochMilliseconds()
             val games = gamesRepository.all()
                 .filter { forceUpdateCheck || now > it.lastUpdateCheck + UPDATE_CHECK_INTERVAL }
-                .filter { !it.updateAvailable }
+                .filter { !it.updateAvailable } // TODO dont exclude games with update
                 .filter { it.checkForUpdates }
             val fastUpdateCheck = settingsManager.fastUpdateCheck.value
             val updatesResult = games.map { game ->
                 scope.async {
-                    try {
-                        val lastRedirectUrl = game.lastRedirectUrl
+                    val lastRedirectUrl = game.lastRedirectUrl
 
-                        val result = if (fastUpdateCheck) {
-                            val newRedirectUrl = f95Api.getRedirectUrl(game.f95ZoneThreadId).getOrNull()
-                            if (newRedirectUrl != lastRedirectUrl) {
-                                val slowResult = doSlowUpdateCheck(game)
-                                newRedirectUrl?.let { gamesRepository.updateLastRedirectUrl(game.f95ZoneThreadId, newRedirectUrl) }
-                                slowResult
-                            } else {
-                                UpdateChecker.UpdateResult(game, false, null)
+                    val result = if (fastUpdateCheck) {
+                        val newRedirectUrl = f95Api.getRedirectUrl(game.f95ZoneThreadId).valueOrNull()
+                        if (newRedirectUrl != lastRedirectUrl) {
+                            val slowResult = doSlowUpdateCheck(game)
+                            newRedirectUrl?.let {
+                                gamesRepository.updateLastRedirectUrl(
+                                    game.f95ZoneThreadId,
+                                    newRedirectUrl,
+                                )
                             }
+                            slowResult
                         } else {
-                            doSlowUpdateCheck(game)
+                            UpdateChecker.UpdateResult(game, false, null)
                         }
-                        val newGame = result.game.copy(lastUpdateCheck = now)
-
-                        result.copy(game = newGame)
-                    } catch (t: Throwable) {
-                        logger.error(t)
-                        UpdateChecker.UpdateResult(game, false, t)
+                    } else {
+                        doSlowUpdateCheck(game)
                     }
+                    val newGame = result.game.copy(lastUpdateCheck = now)
+
+                    result.copy(game = newGame)
                 }
             }.map {
                 it.await()
@@ -137,17 +140,20 @@ private class UpdateCheckerImpl(
     private suspend fun doSlowUpdateCheck(game: Game): UpdateChecker.UpdateResult {
         val currentVersion = game.version
         logger.info("doing slow update check for: ${game.title}")
-        val f95Game = f95Api.getGame(game.f95ZoneThreadId).getOrThrow()
+        return when (val f95Game = f95Api.getGame(game.f95ZoneThreadId)) {
+            is Result.Error -> UpdateChecker.UpdateResult(game, false, f95Game.exception)
+            is Result.Ok -> {
+                var newGame = game.mergeWith(f95Game.value)
 
-        var newGame = game.mergeWith(f95Game)
+                val newVersion = f95Game.value.version
+                if (newVersion != currentVersion) {
+                    newGame = newGame.copy(updateAvailable = true, availableVersion = newVersion)
+                    logger.info("${game.title}: Update Available $newVersion")
+                }
 
-        val newVersion = f95Game.version
-        if (newVersion != currentVersion) {
-            newGame = newGame.copy(updateAvailable = true, availableVersion = newVersion)
-            logger.info("${game.title}: Update Available $newVersion")
+                return UpdateChecker.UpdateResult(newGame, newVersion != currentVersion, null)
+            }
         }
-
-        return UpdateChecker.UpdateResult(newGame, newVersion != currentVersion, null)
     }
 
     private suspend fun runIfNotAlreadyRunning(run: suspend () -> List<UpdateChecker.UpdateResult>): List<UpdateChecker.UpdateResult> {

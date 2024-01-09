@@ -1,13 +1,14 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 
-class EditGameViewModel(private val gamesRepository: GamesRepository, private val game: Game) : ViewModel() {
+class EditGameScreenModel(private val gamesRepository: GamesRepository, private val game: Game) : ScreenModel {
     val title = MutableStateFlow(game.title)
     val imageUrl = MutableStateFlow(game.imageUrl)
     val checkForUpdates = MutableStateFlow(game.checkForUpdates)
@@ -16,7 +17,7 @@ class EditGameViewModel(private val gamesRepository: GamesRepository, private va
     val executablePaths: StateFlow<List<String>> get() = _executablePaths
 
     fun save() =
-        viewModelScope.launch {
+        screenModelScope.launch {
             val executablePath = executablePaths.value.removeEmptyValues()
             val title = title.value
             val imageUrl = imageUrl.value
@@ -28,21 +29,21 @@ class EditGameViewModel(private val gamesRepository: GamesRepository, private va
     fun setExecutablePath(
         index: Int,
         executablePath: String,
-    ) = viewModelScope.launch {
+    ) = screenModelScope.launch {
         val executablePaths = executablePaths.value.toMutableList()
         executablePaths[index] = executablePath
         _executablePaths.emit(executablePaths)
     }
 
     fun deleteExecutablePath(index: Int) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             val executablePaths = executablePaths.value.toMutableList()
             executablePaths.removeAt(index)
             _executablePaths.emit(executablePaths)
         }
 
     fun addExecutablePath() =
-        viewModelScope.launch {
+        screenModelScope.launch {
             val executablePaths = executablePaths.value.toMutableList()
             executablePaths.add("")
             _executablePaths.emit(executablePaths)

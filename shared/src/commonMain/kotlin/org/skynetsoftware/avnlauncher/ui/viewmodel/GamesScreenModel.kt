@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -25,15 +26,15 @@ import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 
-class GamesViewModel(
+class GamesScreenModel(
     private val gamesRepository: GamesRepository,
     private val settingsManager: SettingsManager,
     private val updateChecker: UpdateChecker,
     private val gameLauncher: GameLauncher,
     private val eventCenter: EventCenter,
     private val executableFinder: ExecutableFinder,
-) : ViewModel() {
-    private val repoGames = gamesRepository.games.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+) : ScreenModel {
+    private val repoGames = gamesRepository.games.stateIn(screenModelScope, SharingStarted.Lazily, emptyList())
 
     val searchQuery = MutableStateFlow("")
 
@@ -54,15 +55,15 @@ class GamesViewModel(
                 },
                 sortDirection,
             )
-        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        }.stateIn(screenModelScope, SharingStarted.Lazily, emptyList())
 
     private val firstPlayedTime = repoGames.map { games ->
         games.minOfOrNull { it.added } ?: 0L
-    }.stateIn(viewModelScope, SharingStarted.Lazily, 0L)
+    }.stateIn(screenModelScope, SharingStarted.Lazily, 0L)
 
     val totalPlayTime = repoGames.map { games ->
         games.sumOf { it.playTime }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, 0L)
+    }.stateIn(screenModelScope, SharingStarted.Lazily, 0L)
 
     val averagePlayTime: StateFlow<Float> = combine(firstPlayedTime, totalPlayTime) { firstPlayedTime, totalPlayTime ->
         val now = Clock.System.now().toEpochMilliseconds()
@@ -70,7 +71,7 @@ class GamesViewModel(
         val totalPlayTimeDays = totalPlayTime / 86400000f
         val dailyPlayTimeHours = (totalPlayTimeDays / totalTimeDays) * 24f
         dailyPlayTimeHours
-    }.stateIn(viewModelScope, SharingStarted.Lazily, 0f)
+    }.stateIn(screenModelScope, SharingStarted.Lazily, 0f)
 
     val showExecutablePathPicker = MutableStateFlow<Game?>(null)
 
@@ -79,7 +80,7 @@ class GamesViewModel(
 
     init {
         // check paths
-        viewModelScope.launch {
+        screenModelScope.launch {
             gamesRepository.refresh()
             val gamesToUpdate = executableFinder.validateExecutables(gamesRepository.all())
             gamesRepository.updateExecutablePaths(gamesToUpdate)
@@ -87,29 +88,29 @@ class GamesViewModel(
     }
 
     fun setFilter(filter: Filter) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             settingsManager.setSelectedFilter(filter)
         }
 
     fun setSortOrder(sortOrder: SortOrder) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             settingsManager.setSelectedSortOrder(sortOrder)
         }
 
     fun setSortDirection(sortDirection: SortDirection) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             settingsManager.setSelectedSortDirection(sortDirection)
         }
 
     fun resetUpdateAvailable(
         availableVersion: String,
         game: Game,
-    ) = viewModelScope.launch {
+    ) = screenModelScope.launch {
         gamesRepository.updateGame(game.f95ZoneThreadId, false, availableVersion, null)
     }
 
     fun togglePlaying(game: Game) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             gamesRepository.updatePlayState(
                 game.f95ZoneThreadId,
                 if (game.playState == PlayState.Playing) {
@@ -121,7 +122,7 @@ class GamesViewModel(
         }
 
     fun toggleCompleted(game: Game) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             gamesRepository.updatePlayState(
                 game.f95ZoneThreadId,
                 if (game.playState == PlayState.Completed) {
@@ -133,7 +134,7 @@ class GamesViewModel(
         }
 
     fun toggleWaitingForUpdate(game: Game) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             gamesRepository.updatePlayState(
                 game.f95ZoneThreadId,
                 if (game.playState == PlayState.WaitingForUpdate) {
@@ -145,27 +146,27 @@ class GamesViewModel(
         }
 
     fun toggleHidden(game: Game) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             gamesRepository.updateHidden(game.f95ZoneThreadId, !game.hidden)
         }
 
     fun updateRating(
         rating: Int,
         game: Game,
-    ) = viewModelScope.launch {
+    ) = screenModelScope.launch {
         gamesRepository.updateRating(game.f95ZoneThreadId, rating)
     }
 
     fun startUpdateCheck() {
         updateChecker.startUpdateCheck(true) { updateResult ->
-            viewModelScope.launch {
+            screenModelScope.launch {
                 _updateCheckComplete.emit(updateResult)
             }
         }
     }
 
     fun launchGame(game: Game) =
-        viewModelScope.launch {
+        screenModelScope.launch {
             val executablePaths = game.executablePaths
             if (game.executablePaths.isEmpty()) {
                 eventCenter.emit(Event.ToastMessage(MR.strings.gameLauncherInvalidExecutableToast, game.title))
@@ -180,7 +181,7 @@ class GamesViewModel(
     fun launchGame(
         game: Game,
         executablePath: String,
-    ) = viewModelScope.launch {
+    ) = screenModelScope.launch {
         showExecutablePathPicker.emit(null)
         gameLauncher.launch(game, executablePath)
     }

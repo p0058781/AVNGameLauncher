@@ -5,6 +5,7 @@ import io.ktor.client.statement.bodyAsText
 import org.jsoup.Jsoup
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.f95.model.F95Game
+import org.skynetsoftware.avnlauncher.utils.Result
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 
 actual val f95ParserKoinModule = module {
@@ -59,9 +60,9 @@ private class F95ParserJsoup : F95Parser {
                 tags.add(it.text())
             }
             val game = F95Game(gameThreadId, title, imageUrl, version, rating, firstReleaseDate, releaseDate, tags)
-            Result.success(game)
+            Result.Ok(game)
         } catch (t: Throwable) {
-            Result.failure(t)
+            Result.Error(t)
         }
     }
 }
