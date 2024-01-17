@@ -1,0 +1,22 @@
+name: PR Pipeline
+on: [push]
+
+jobs:
+  build:
+    env: 
+      RUNNER_TOOL_CACHE: /toolcache
+    name: Build & Test
+
+    runs-on: linux
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3-beta
+      - name: Build & Test
+        run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease
+      - name: Upload kover report
+        uses: actions/upload-artifact@v3
+        with:
+          name: kover-report.zip
+          path: "**/build/reports/kover/*"
