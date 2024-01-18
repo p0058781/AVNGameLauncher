@@ -12,11 +12,13 @@ import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.state.StateHandler
+import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 
 class MainScreenModel(
     private val eventCenter: EventCenter,
     stateHandler: StateHandler,
     private val settingsRepository: SettingsRepository,
+    private val updateChecker: UpdateChecker,
 ) : ScreenModel {
     val state: StateFlow<State> = stateHandler.state
     val sfwMode = settingsRepository.sfwModeEnabled
@@ -49,4 +51,11 @@ class MainScreenModel(
         screenModelScope.launch {
             settingsRepository.setSfwModeEnabled(!sfwMode.value)
         }
+
+    fun startUpdateCheck() {
+        screenModelScope.launch {
+            val updateCheckResult = updateChecker.startUpdateCheck(this, true)
+            eventCenter.emit(Event.ToastMessage(updateCheckResult))
+        }
+    }
 }

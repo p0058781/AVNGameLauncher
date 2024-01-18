@@ -2,9 +2,7 @@ package org.skynetsoftware.avnlauncher.ui.viewmodel
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -13,7 +11,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
@@ -29,7 +26,6 @@ import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 class GamesScreenModel(
     private val gamesRepository: GamesRepository,
     private val settingsRepository: SettingsRepository,
-    private val updateChecker: UpdateChecker,
     private val gameLauncher: GameLauncher,
     private val eventCenter: EventCenter,
     private val executableFinder: ExecutableFinder,
@@ -74,9 +70,6 @@ class GamesScreenModel(
     }.stateIn(screenModelScope, SharingStarted.Lazily, 0f)
 
     val showExecutablePathPicker = MutableStateFlow<Game?>(null)
-
-    private val _updateCheckComplete = MutableSharedFlow<List<UpdateChecker.UpdateResult>>(replay = 0)
-    val updateCheckComplete: SharedFlow<List<UpdateChecker.UpdateResult>?> get() = _updateCheckComplete
 
     init {
         // check paths
@@ -154,14 +147,6 @@ class GamesScreenModel(
         game: Game,
     ) = screenModelScope.launch {
         gamesRepository.updateRating(game.f95ZoneThreadId, rating)
-    }
-
-    fun startUpdateCheck() {
-        updateChecker.startUpdateCheck(true) { updateResult ->
-            screenModelScope.launch {
-                _updateCheckComplete.emit(updateResult)
-            }
-        }
     }
 
     fun launchGame(game: Game) =
