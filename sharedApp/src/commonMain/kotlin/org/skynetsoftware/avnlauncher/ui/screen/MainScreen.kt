@@ -54,7 +54,6 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.seiko.imageloader.LocalImageLoader
 import com.seiko.imageloader.model.ImageRequest
-import com.seiko.imageloader.model.blur
 import com.seiko.imageloader.rememberImagePainter
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -84,6 +83,7 @@ import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
+import kotlin.random.Random
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -469,17 +469,19 @@ private fun GameItem(
             Column(
                 modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),
             ) {
+                val modifier = Modifier
                 Image(
                     painter = rememberImagePainter(
                         request = ImageRequest {
-                            data(game.imageUrl)
                             if (sfwMode) {
-                                blur(30)
+                                data("https://picsum.photos/seed/${game.f95ZoneThreadId}/400/200")
+                            } else {
+                                data(game.imageUrl)
                             }
                         },
                     ),
                     contentDescription = null,
-                    modifier = Modifier.aspectRatio(3.5f),
+                    modifier = modifier.aspectRatio(3.5f),
                     contentScale = ContentScale.Crop,
                 )
 
@@ -487,7 +489,7 @@ private fun GameItem(
                     modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).fillMaxWidth(),
                 ) {
                     Text(
-                        text = game.title,
+                        text = game.sfwFilterTitle(sfwMode),
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f),
@@ -667,4 +669,62 @@ fun UpdateCheckResult.buildToastMessage(): String {
             }
         }
     }
+}
+
+private val randomPhrases = arrayOf(
+    "Wouldn't Harm a Fly",
+    "A Cold Fish",
+    "Wake Up Call",
+    "Between a Rock and a Hard Place",
+    "Playing Possum",
+    "Top Drawer",
+    "Flea Market",
+    "Don't Look a Gift Horse In The Mouth",
+    "A Day Late and a Dollar Short",
+    "Cup Of Joe",
+    "Break The Ice",
+    "Eat My Hat",
+    "Barking Up The Wrong Tree",
+    "Short End of the Stick",
+    "Under the Weather",
+    "Right Out of the Gate",
+    "Drawing a Blank",
+    "Scot-free",
+    "Jaws of Death",
+    "Fish Out Of Water",
+    "Quick On the Draw",
+    "Go For Broke",
+    "Hands Down",
+    "No-Brainer",
+    "Playing For Keeps",
+    "Elephant in the Room",
+    "Cry Over Spilt Milk",
+    "What Goes Up Must Come Down",
+    "Mouth-watering",
+    "A Hair’s Breadth",
+    "Money Doesn't Grow On Trees",
+    "Up In Arms",
+    "All Greek To Me",
+    "A Dime a Dozen",
+    "Burst Your Bubble",
+    "Tough It Out",
+    "Ugly Duckling",
+    "Under Your Nose",
+    "Not the Sharpest Tool in the Shed",
+    "A Busy Bee",
+    "Quick and Dirty",
+    "Foaming At The Mouth",
+    "Fit as a Fiddle",
+    "Tug of War",
+    "Plot Thickens - The",
+    "Everything But The Kitchen Sink",
+    "A Dog in the Manger",
+    "Keep Your Eyes Peeled",
+    "Man of Few Words",
+    "A Cut Below",
+    "A Lemon",
+)
+
+private fun Game.sfwFilterTitle(enabled: Boolean): String {
+    return if (enabled) randomPhrases.random(Random(f95ZoneThreadId)) else title
 }

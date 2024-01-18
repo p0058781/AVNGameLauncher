@@ -31,7 +31,6 @@ kotlin {
                 implementation(libs.koin.compose)
 
                 implementation(libs.image.loader)
-                implementation(libs.image.loader.extension.blur)
                 implementation(libs.slf4j.simple)
 
                 implementation(libs.voyager.navigator)
