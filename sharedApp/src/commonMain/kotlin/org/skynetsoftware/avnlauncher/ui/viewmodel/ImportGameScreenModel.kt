@@ -28,6 +28,11 @@ class ImportGameScreenModel(
             }
         }
 
+    fun resetState() =
+        screenModelScope.launch {
+            _state.emit(State.Idle)
+        }
+
     sealed class State {
         object Idle : State()
 

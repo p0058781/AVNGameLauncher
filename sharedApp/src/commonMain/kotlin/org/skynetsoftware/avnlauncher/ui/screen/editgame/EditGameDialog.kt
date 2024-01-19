@@ -42,6 +42,7 @@ import org.skynetsoftware.avnlauncher.domain.model.label
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
+import org.skynetsoftware.avnlauncher.ui.screen.applyPlatformSpecificHeight
 import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameScreenModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
@@ -65,7 +66,7 @@ fun EditGameDialog(
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
+            modifier = Modifier.applyPlatformSpecificHeight().verticalScroll(rememberScrollState()),
         ) {
             Column(
                 modifier = Modifier.padding(10.dp),

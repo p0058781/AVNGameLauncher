@@ -13,6 +13,8 @@ val gameImportKoinModule = module {
     }
 }
 
+class GameExistsException : Exception()
+
 interface GameImport {
     suspend fun importGame(threadId: Int): Result<Game>
 }
@@ -34,8 +36,13 @@ private class GameImportImpl(
                         this.copy(executablePaths = executablePath)
                     }
                 }
-                gamesRepository.insertGame(game)
-                Result.Ok(game)
+                val existingGame = gamesRepository.get(game.f95ZoneThreadId)
+                if (existingGame == null) {
+                    gamesRepository.insertGame(game)
+                    Result.Ok(game)
+                } else {
+                    Result.Error(GameExistsException())
+                }
             }
         }
     }

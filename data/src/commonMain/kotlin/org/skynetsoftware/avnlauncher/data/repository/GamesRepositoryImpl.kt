@@ -22,6 +22,7 @@ internal fun Module.gamesRepositoryKoinModule() {
     }
 }
 
+@Suppress("TooManyFunctions")
 internal class GamesRepositoryImpl(
     private val realm: Realm,
 ) : GamesRepository {
@@ -31,6 +32,10 @@ internal class GamesRepositoryImpl(
 
     override suspend fun all(): List<Game> {
         return realm.query<RealmGame>().find().map(RealmGame::toGame)
+    }
+
+    override suspend fun get(id: Int): Game? {
+        return realm.query<RealmGame>("f95ZoneThreadId == $0", id).first().find()?.toGame()
     }
 
     override suspend fun updateRating(

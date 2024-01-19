@@ -10,6 +10,8 @@ interface GamesRepository {
     // read
     suspend fun all(): List<Game>
 
+    suspend fun get(id: Int): Game?
+
     // write
 
     suspend fun updateRating(
