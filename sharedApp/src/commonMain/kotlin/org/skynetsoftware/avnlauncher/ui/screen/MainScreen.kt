@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,14 +16,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -64,11 +60,8 @@ import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalDraggableArea
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
-import org.skynetsoftware.avnlauncher.domain.model.SortDirection
-import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
@@ -85,11 +78,14 @@ import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 import kotlin.random.Random
 
+private const val GAME_IMAGE_ASPECT_RATIO = 3.5f
+
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
 data class MainScreen(
     val exitApplication: () -> Unit,
 ) : Screen {
+    @Suppress("LongMethod")
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
@@ -107,7 +103,8 @@ data class MainScreen(
 
         val totalPlayTime by remember { gamesScreenModel.totalPlayTime }.collectAsState()
         val averagePlayTime by remember { gamesScreenModel.averagePlayTime }.collectAsState()
-        var searchQuery by remember { gamesScreenModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
+        var searchQuery by remember { gamesScreenModel.searchQuery }
+            .collectAsMutableState(context = Dispatchers.Main.immediate)
         val globalState by remember { mainScreenModel.state }.collectAsState()
         var importGameDialogVisible by remember { mutableStateOf(false) }
         var settingsDialogVisible by remember { mutableStateOf(false) }
@@ -267,6 +264,7 @@ data class MainScreen(
             )
         }
         toastMessage?.let {
+            @Suppress("SpreadOperator")
             val message = when (it.message) {
                 is String -> it.message
                 is StringResource -> stringResource(it.message, *it.args)
@@ -290,115 +288,6 @@ data class MainScreen(
                     settingsDialogVisible = false
                 },
             )
-        }
-    }
-}
-
-@Composable
-expect fun ToolbarActions(
-    modifier: Modifier = Modifier,
-    sfwMode: Boolean,
-    startUpdateCheck: () -> Unit,
-    onImportGameClicked: () -> Unit,
-    onSettingsClicked: () -> Unit,
-    onSfwModeClicked: () -> Unit,
-    exitApplication: () -> Unit,
-)
-
-@Composable
-private fun SortFilter(
-    games: List<Game>,
-    currentFilter: Filter,
-    currentSortOrder: SortOrder,
-    currentSortDirection: SortDirection,
-    modifier: Modifier = Modifier,
-    setFilter: (filter: Filter) -> Unit,
-    setSortOrder: (sortOrder: SortOrder) -> Unit,
-    setSortDirection: (sortDirection: SortDirection) -> Unit,
-) {
-    var showFilterDropdown by remember { mutableStateOf(false) }
-    var showSortOrderDropdown by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = modifier,
-    ) {
-        Row {
-            Row(
-                modifier = Modifier.clickable {
-                    showFilterDropdown = true
-                },
-            ) {
-                Text(stringResource(MR.strings.filterLabel))
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    buildString {
-                        append(currentFilter.label)
-                        append("(")
-                        append(games.size)
-                        append(")")
-                    },
-                )
-            }
-            Spacer(modifier = Modifier.width(5.dp))
-            Text("|")
-            Spacer(modifier = Modifier.width(5.dp))
-            Row(
-                modifier = Modifier.clickable {
-                    showSortOrderDropdown = true
-                },
-            ) {
-                Text(stringResource(MR.strings.sortLabel))
-                Spacer(modifier = Modifier.width(5.dp))
-                Text(
-                    buildString {
-                        append(currentSortOrder.label)
-                        append("(")
-                        append(currentSortDirection.label)
-                        append(")")
-                    },
-                )
-            }
-        }
-        DropdownMenu(
-            expanded = showFilterDropdown,
-            onDismissRequest = {
-                showFilterDropdown = false
-            },
-        ) {
-            Filter.entries.forEach {
-                DropdownMenuItem(
-                    onClick = {
-                        showFilterDropdown = false
-                        setFilter(it)
-                    },
-                ) {
-                    Text(it.label)
-                }
-            }
-        }
-        DropdownMenu(
-            expanded = showSortOrderDropdown,
-            onDismissRequest = {
-                showSortOrderDropdown = false
-            },
-        ) {
-            SortOrder.entries.forEach {
-                DropdownMenuItem(
-                    onClick = {
-                        showSortOrderDropdown = false
-                        if (currentSortOrder != it) {
-                            setSortOrder(it)
-                        } else {
-                            when (currentSortDirection) {
-                                SortDirection.Ascending -> setSortDirection(SortDirection.Descending)
-                                SortDirection.Descending -> setSortDirection(SortDirection.Ascending)
-                            }
-                        }
-                    },
-                ) {
-                    Text(it.label)
-                }
-            }
         }
     }
 }
@@ -439,6 +328,7 @@ private fun GamesList(
     }
 }
 
+@Suppress("LongMethod")
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun GameItem(
@@ -481,7 +371,7 @@ private fun GameItem(
                         },
                     ),
                     contentDescription = null,
-                    modifier = modifier.aspectRatio(3.5f),
+                    modifier = modifier.aspectRatio(GAME_IMAGE_ASPECT_RATIO),
                     contentScale = ContentScale.Crop,
                 )
 
@@ -501,7 +391,11 @@ private fun GameItem(
                             togglePlaying(game)
                         },
                         colorFilter = ColorFilter.tint(
-                            if (game.playState == PlayState.Playing) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
+                            if (game.playState == PlayState.Playing) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                MaterialTheme.colors.onSurface
+                            },
                         ),
                     )
                     Image(
@@ -511,7 +405,11 @@ private fun GameItem(
                             toggleCompleted(game)
                         },
                         colorFilter = ColorFilter.tint(
-                            if (game.playState == PlayState.Completed) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface,
+                            if (game.playState == PlayState.Completed) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                MaterialTheme.colors.onSurface
+                            },
                         ),
                     )
                     Image(
@@ -626,21 +524,11 @@ private fun InfoItem(
 }
 
 @Composable
-expect fun RowScope.ToolbarTitle(content: @Composable RowScope.() -> Unit)
-
-@Composable
-expect fun RowScope.ToolbarSearch(content: @Composable RowScope.() -> Unit)
-
-@Composable
-expect fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit)
-
-@Composable
 private fun State.buildText() =
     buildString {
         when (val state = this@buildText) {
             State.Idle -> append(stringResource(MR.strings.stateIdle))
             is State.Playing -> append(stringResource(MR.strings.statePlaying, state.game.title))
-            State.Syncing -> append(stringResource(MR.strings.stateSyncing))
             State.UpdateCheckRunning -> append(stringResource(MR.strings.stateCheckingForUpdates))
         }
     }

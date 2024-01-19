@@ -53,16 +53,14 @@ private class UpdateCheckerImpl(
             val updatesResult = games.map { game ->
                 scope.async {
                     val lastRedirectUrl = game.lastRedirectUrl
+                    var updatedRedirectUrl: String? = null
 
                     val result = if (fastUpdateCheck) {
                         val newRedirectUrl = f95Repository.getRedirectUrl(game.f95ZoneThreadId).valueOrNull()
                         if (newRedirectUrl != lastRedirectUrl) {
                             val slowResult = doSlowUpdateCheck(game)
                             newRedirectUrl?.let {
-                                gamesRepository.updateLastRedirectUrl(
-                                    game.f95ZoneThreadId,
-                                    newRedirectUrl,
-                                )
+                                updatedRedirectUrl = it
                             }
                             slowResult
                         } else {
@@ -71,7 +69,14 @@ private class UpdateCheckerImpl(
                     } else {
                         doSlowUpdateCheck(game)
                     }
-                    val newGame = result.game.copy(lastUpdateCheck = now)
+                    val newGame = result.game.copy(
+                        lastUpdateCheck = now,
+                        lastRedirectUrl = if (updatedRedirectUrl == null) {
+                            result.game.lastRedirectUrl
+                        } else {
+                            updatedRedirectUrl
+                        },
+                    )
 
                     result.copy(game = newGame)
                 }

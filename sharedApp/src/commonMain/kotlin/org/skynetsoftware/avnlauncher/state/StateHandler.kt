@@ -30,8 +30,6 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
                 when (event) {
                     Event.PlayingEnded -> activeStates.removeAll { state -> state is State.Playing }
                     is Event.PlayingStarted -> activeStates.add(State.Playing(event.game))
-                    Event.SyncCompleted -> activeStates.remove(State.Syncing)
-                    Event.SyncStarted -> activeStates.add(State.Syncing)
                     Event.UpdateCheckComplete -> activeStates.remove(State.UpdateCheckRunning)
                     Event.UpdateCheckStarted -> activeStates.add(State.UpdateCheckRunning)
                     is Event.ToastMessage<*> -> {
@@ -47,27 +45,27 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
 }
 
 class ActiveStates {
-    private val activeStates = HashSet<State>()
+    private val states = HashSet<State>()
     var highestPriority: State = State.Idle
         private set
 
     fun add(state: State) {
-        activeStates.add(state)
+        states.add(state)
         updateHighestPriority(state)
     }
 
     fun remove(state: State) {
-        activeStates.remove(state)
+        states.remove(state)
         calculateHighestPriority()
     }
 
     fun removeAll(predicate: (State) -> Boolean) {
-        activeStates.removeAll(predicate)
+        states.removeAll(predicate)
         calculateHighestPriority()
     }
 
     private fun calculateHighestPriority() {
-        highestPriority = activeStates.minByOrNull { it.priority } ?: State.Idle
+        highestPriority = states.minByOrNull { it.priority } ?: State.Idle
     }
 
     private fun updateHighestPriority(newState: State) {
@@ -83,8 +81,6 @@ sealed class State(val id: Int, val priority: Int) {
     object UpdateCheckRunning : State(1, 1)
 
     class Playing(val game: Game) : State(2, 2)
-
-    object Syncing : State(3, 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

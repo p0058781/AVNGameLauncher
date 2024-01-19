@@ -37,19 +37,24 @@ private class ExecutableFinderDesktop(
                     logger.warning("No executable found for '${game.title}'")
                 }
             } else {
-                val mutableExecutablePaths = executablePaths.toMutableSet()
-                mutableExecutablePaths.forEach {
-                    val executablePathFile = File(it)
-                    if (!executablePathFile.exists()) {
-                        mutableExecutablePaths.remove(it)
-                    }
-                }
-                if (mutableExecutablePaths.size != executablePaths.size) {
-                    gamesToUpdate.add(game.f95ZoneThreadId to mutableExecutablePaths)
+                val updatedExecutables = removeNonExistingExecutables(executablePaths)
+                if (updatedExecutables.size != executablePaths.size) {
+                    gamesToUpdate.add(game.f95ZoneThreadId to updatedExecutables)
                 }
             }
         }
         return gamesToUpdate
+    }
+
+    private fun removeNonExistingExecutables(executablePaths: Set<String>): Set<String> {
+        val mutableExecutablePaths = executablePaths.toMutableSet()
+        mutableExecutablePaths.forEach {
+            val executablePathFile = File(it)
+            if (!executablePathFile.exists()) {
+                mutableExecutablePaths.remove(it)
+            }
+        }
+        return mutableExecutablePaths
     }
 
     private fun getGamesRootDir(): File? {
@@ -57,7 +62,7 @@ private class ExecutableFinderDesktop(
         if (gamesDir !is Option.Some) {
             return null
         }
-        return gamesDir.value.value?.let { File(it) } ?: return null
+        return gamesDir.value.value?.let { File(it) }
     }
 
     override fun findExecutables(title: String): Set<String> {
@@ -78,7 +83,7 @@ private class ExecutableFinderDesktop(
                         .filter { f -> platformFilter(f) }
                         .findFirst().getOrNull()?.toFile()
                 }?.absolutePath
-            }?.toSet() ?: emptySet()
+            }?.toSet().orEmpty()
     }
 
     private fun platformFilter(path: Path): Boolean {

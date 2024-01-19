@@ -4,7 +4,7 @@ import io.realm.kotlin.MutableRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
-import io.realm.kotlin.ext.realmSetOf
+import io.realm.kotlin.ext.toRealmSet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.Clock
@@ -22,6 +22,7 @@ internal fun Module.gamesRepositoryKoinModule() {
     }
 }
 
+@Suppress("TooManyFunctions")
 internal class GamesRepositoryImpl(
     private val realm: Realm,
 ) : GamesRepository {
@@ -31,48 +32,6 @@ internal class GamesRepositoryImpl(
 
     override suspend fun all(): List<Game> {
         return realm.query<RealmGame>().find().map(RealmGame::toGame)
-    }
-
-    override suspend fun updatePlayTime(
-        id: Int,
-        playTime: Long,
-    ) = realmWrite {
-        findRealmGame(id)?.playTime = playTime
-    }
-
-    override suspend fun updateLastPlayed(
-        id: Int,
-        lastPlayed: Long,
-    ) = realmWrite {
-        findRealmGame(id)?.lastPlayed = lastPlayed
-    }
-
-    override suspend fun updateLastUpdateCheck(
-        id: Int,
-        lastUpdateCheck: Long,
-    ) = realmWrite {
-        findRealmGame(id)?.lastUpdateCheck = lastUpdateCheck
-    }
-
-    override suspend fun updateUpdateAvailable(
-        id: Int,
-        updateAvailable: Boolean,
-    ) = realmWrite {
-        findRealmGame(id)?.updateAvailable = updateAvailable
-    }
-
-    override suspend fun updateAvailableVersion(
-        id: Int,
-        availableVersion: String?,
-    ) = realmWrite {
-        findRealmGame(id)?.availableVersion = availableVersion
-    }
-
-    override suspend fun updateVersion(
-        id: Int,
-        version: String,
-    ) = realmWrite {
-        findRealmGame(id)?.version = version
     }
 
     override suspend fun updateRating(
@@ -96,61 +55,12 @@ internal class GamesRepositoryImpl(
         findRealmGame(id)?.playState = playState.name
     }
 
-    override suspend fun updateExecutablePaths(
-        id: Int,
-        executablePaths: Set<String>,
-    ) = realmWrite {
-        findRealmGame(id)?.executablePaths = realmSetOf(*executablePaths.toTypedArray())
-    }
-
     override suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>) =
         realmWrite {
             games.forEach {
-                findRealmGame(it.first)?.executablePaths = realmSetOf(*it.second.toTypedArray())
+                findRealmGame(it.first)?.executablePaths = it.second.toRealmSet()
             }
         }
-
-    override suspend fun updateTitle(
-        id: Int,
-        title: String,
-    ) = realmWrite {
-        findRealmGame(id)?.title = title
-    }
-
-    override suspend fun updateImageUrl(
-        id: Int,
-        imageUrl: String,
-    ) = realmWrite {
-        findRealmGame(id)?.imageUrl = imageUrl
-    }
-
-    override suspend fun updateReleaseDate(
-        id: Int,
-        releaseDate: Long,
-    ) = realmWrite {
-        findRealmGame(id)?.releaseDate = releaseDate
-    }
-
-    override suspend fun updateFirstReleaseDate(
-        id: Int,
-        firstReleaseDate: Long,
-    ) = realmWrite {
-        findRealmGame(id)?.firstReleaseDate = firstReleaseDate
-    }
-
-    override suspend fun updateLastRedirectUrl(
-        id: Int,
-        lastRedirectUrl: String,
-    ) = realmWrite {
-        findRealmGame(id)?.lastRedirectUrl = lastRedirectUrl
-    }
-
-    override suspend fun updateCheckForUpdates(
-        id: Int,
-        checkForUpdates: Boolean,
-    ) = realmWrite {
-        findRealmGame(id)?.checkForUpdates = checkForUpdates
-    }
 
     override suspend fun insertGame(game: Game) =
         realmWrite {
@@ -176,7 +86,7 @@ internal class GamesRepositoryImpl(
         realmGame?.checkForUpdates = checkForUpdates
         realmGame?.title = title
         realmGame?.imageUrl = imageUrl
-        realmGame?.executablePaths = realmSetOf(*executablePaths.toTypedArray())
+        realmGame?.executablePaths = executablePaths.toRealmSet()
     }
 
     override suspend fun updateGame(

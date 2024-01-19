@@ -1,5 +1,6 @@
 package org.skynetsoftware.avnlauncher.sync
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -41,8 +42,9 @@ private class SyncServiceImpl(
     private val gamesRepository: GamesRepository,
     private val syncApi: SyncApi,
     private val settingsRepository: SettingsRepository,
+    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : SyncService {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + coroutineDispatcher)
 
     private var syncJob: Job? = null
 

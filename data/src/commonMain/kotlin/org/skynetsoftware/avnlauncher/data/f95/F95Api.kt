@@ -12,6 +12,7 @@ import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
 
 private const val F95_ZONE_BASE_URL = "https://f95zone.to"
+private const val REQUEST_TIMEOUT = 60000L
 
 internal fun Module.f95ApiKoinModule() {
     single<F95Api> { F95ApiImpl(get(), get()) }
@@ -34,7 +35,7 @@ private class F95ApiImpl(
     private val gameThreadUrlRegex = Regex("https://f95zone.to/threads/.+\\.(\\d+)")
     private val httpClient = HttpClient {
         install(HttpTimeout) {
-            requestTimeoutMillis = 60000
+            requestTimeoutMillis = REQUEST_TIMEOUT
         }
         install(Logging) {
             level = LogLevel.NONE

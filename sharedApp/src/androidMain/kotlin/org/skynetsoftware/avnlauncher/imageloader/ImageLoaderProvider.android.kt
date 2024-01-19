@@ -4,21 +4,23 @@ import android.content.Context
 import com.seiko.imageloader.ImageLoader
 import com.seiko.imageloader.cache.memory.maxSizePercent
 import com.seiko.imageloader.component.setupDefaultComponents
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.config.ConfigManager
 import org.skynetsoftware.avnlauncher.logger.Logger
 
-actual val imageLoaderKoinModule = module {
-    single<ImageLoader> { imageLoader(get(), get(), get()) }
-}
+actual fun imageLoaderKoinModule(coroutineDispatcher: CoroutineDispatcher) =
+    module {
+        single<ImageLoader> { imageLoader(get(), get(), get(), coroutineDispatcher) }
+    }
 
 private fun imageLoader(
     context: Context,
     configManager: ConfigManager,
     avnLauncherLogger: Logger,
-) = ImageLoader(requestCoroutineContext = Dispatchers.IO) {
+    coroutineDispatcher: CoroutineDispatcher,
+) = ImageLoader(requestCoroutineContext = coroutineDispatcher) {
     logger = ImageLoaderLogger(avnLauncherLogger)
     options {
         playAnimate = false
@@ -28,11 +30,11 @@ private fun imageLoader(
     }
     interceptor {
         memoryCacheConfig {
-            maxSizePercent(context, 0.25)
+            maxSizePercent(context, MEMORY_CACHE_MAX_SIZE_PERCENT)
         }
         diskCacheConfig {
             directory(configManager.cacheDir.toPath().resolve("images"))
-            maxSizeBytes(512L * 1024 * 1024) // 512MB
+            maxSizeBytes(DISK_CACHE_MAX_SIZE_BYTES)
         }
     }
 }

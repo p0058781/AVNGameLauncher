@@ -17,6 +17,10 @@ import java.awt.Dimension
 import java.awt.Toolkit
 import java.lang.reflect.Field
 
+private const val DEFAULT_WINDOW_WIDTH_PERCENT = 0.7f
+private const val DEFAULT_WINDOW_HEIGHT_PERCENT = 0.72f
+
+@Suppress("TooGenericExceptionCaught")
 fun main() {
     try {
         val xToolkit = Toolkit.getDefaultToolkit()
@@ -24,6 +28,7 @@ fun main() {
         awtAppClassNameField.setAccessible(true)
         awtAppClassNameField.set(xToolkit, StringDesc.Resource(MR.strings.appName).localized())
     } catch (e: Exception) {
+        @Suppress("PrintStackTrace")
         e.printStackTrace()
     }
 
@@ -55,7 +60,7 @@ fun main() {
 
 fun getDefaultWindowSize(): DpSize {
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
-    val width: Int = (screenSize.width * 0.7f).toInt()
-    val height: Int = (screenSize.height * 0.72f).toInt()
+    val width: Int = (screenSize.width * DEFAULT_WINDOW_WIDTH_PERCENT).toInt()
+    val height: Int = (screenSize.height * DEFAULT_WINDOW_HEIGHT_PERCENT).toInt()
     return DpSize(width.dp, height.dp)
 }

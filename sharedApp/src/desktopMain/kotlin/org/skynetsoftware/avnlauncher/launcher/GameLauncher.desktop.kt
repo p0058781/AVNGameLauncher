@@ -30,7 +30,11 @@ private class GameLauncherDesktop(
     ) {
         if (processStarterThread?.running == true) {
             eventCenter.emit(
-                Event.ToastMessage(MR.strings.gameLauncherAnotherGameRunning, game.title, processStarterThread?.game?.title ?: ""),
+                Event.ToastMessage(
+                    message = MR.strings.gameLauncherAnotherGameRunning,
+                    game.title,
+                    processStarterThread?.game?.title.orEmpty(),
+                ),
             )
             return
         }
@@ -55,7 +59,7 @@ private class GameLauncherDesktop(
                 eventCenter.emit(Event.PlayingStarted(game))
                 logger.info("game starting: ${game.title}")
                 running = true
-                val process = ProcessBuilder(*createCommand(executablePath)).apply {
+                val process = ProcessBuilder(createCommand(executablePath)).apply {
                     redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     redirectError(ProcessBuilder.Redirect.DISCARD)
                 }.start()
@@ -73,7 +77,9 @@ private class GameLauncherDesktop(
                     repository.updateGame(game.f95ZoneThreadId, totalTime, System.currentTimeMillis())
                 }
                 logger.info(
-                    "game exited: ${game.title}, exit code: ${process.exitValue()} elapsedTime: $elapsedTime, totalTime: $totalTime",
+                    """game exited: ${game.title}, exit code: ${process.exitValue()} 
+                        elapsedTime: $elapsedTime, totalTime: $totalTime
+                    """.trimIndent(),
                 )
             } catch (t: Throwable) {
                 logger.error(t)
@@ -86,12 +92,12 @@ private class GameLauncherDesktop(
             }
         }
 
-        private fun createCommand(executablePath: String): Array<String> {
+        private fun createCommand(executablePath: String): List<String> {
             return when (os) {
                 OS.Linux,
                 OS.Windows,
-                -> arrayOf(executablePath)
-                OS.Mac -> arrayOf("open", "-W", executablePath)
+                -> listOf(executablePath)
+                OS.Mac -> listOf("open", "-W", executablePath)
             }
         }
     }

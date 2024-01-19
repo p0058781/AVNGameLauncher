@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package org.skynetsoftware.avnlauncher.utils
 
 import java.text.SimpleDateFormat

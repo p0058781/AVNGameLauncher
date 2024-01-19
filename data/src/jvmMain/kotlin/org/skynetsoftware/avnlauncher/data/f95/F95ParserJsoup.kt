@@ -9,6 +9,8 @@ import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import java.text.SimpleDateFormat
 
+private const val ONE_SECOND_MILLIS = 1000L
+
 internal actual fun Module.f95ParserKoinModule() {
     single<F95Parser> { F95ParserJsoup() }
 }
@@ -57,7 +59,7 @@ private class F95ParserJsoup : F95Parser {
                     document.select(".listInline > li:nth-child(2) > a:nth-child(3) > time:nth-child(1)").first()
                         ?.attr("data-time")?.toLongOrNull()
                         ?: throw IllegalArgumentException("cant parse firstReleaseDate")
-                ) * 1000L
+                ) * ONE_SECOND_MILLIS
             val tagsContainer = document.select(".js-tagList a.tagItem")
             val tags = hashSetOf<String>()
             tagsContainer.forEach {

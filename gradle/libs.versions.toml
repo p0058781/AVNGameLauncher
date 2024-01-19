@@ -34,6 +34,7 @@ mosaic = "0.9.1"
 jline = "3.25.0"
 kover = "0.7.5"
 commons-compress = "1.25.0"
+detekt = "1.23.3"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -107,3 +108,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 moko-resource-generator = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

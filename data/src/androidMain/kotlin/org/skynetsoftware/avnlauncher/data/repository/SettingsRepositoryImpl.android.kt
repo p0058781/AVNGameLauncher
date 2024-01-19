@@ -15,5 +15,7 @@ internal actual class SettingsRepositoryImpl(settings: Settings, configManager: 
     SettingsRepositoryShared(settings, configManager) {
     override val gamesDir: Option<out StateFlow<String?>> = Option.None()
 
-    override suspend fun setGamesDir(gamesDir: String) {}
+    override suspend fun setGamesDir(gamesDir: String) {
+        // no-op on android
+    }
 }

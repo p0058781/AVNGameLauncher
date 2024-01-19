@@ -58,42 +58,50 @@ actual fun GamePicker(
                     verticalArrangement = Arrangement.spacedBy(20.dp),
                 ) {
                     items(activities) {
-                        val icon = it.loadIcon(LocalContext.current.packageManager)
-                        val name = it.loadLabel(LocalContext.current.packageManager)
-                        val packageName = it.activityInfo.packageName
-
-                        Row(
-                            modifier = Modifier.clickable {
-                                onGamePicked(packageName)
-                            },
-                        ) {
-                            Image(
-                                modifier = Modifier.size(48.dp),
-                                painter = rememberDrawablePainter(icon),
-                                contentDescription = "icon",
-                            )
-                            Spacer(
-                                modifier = Modifier.width(10.dp),
-                            )
-                            Column(
-                                modifier = Modifier,
-                            ) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = name.toString(),
-                                    maxLines = 1,
-                                    color = MaterialTheme.colors.onSurface,
-                                )
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = packageName.toString(),
-                                    maxLines = 1,
-                                )
-                            }
-                        }
+                        Item(it, onGamePicked)
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun Item(
+    resolveInfo: ResolveInfo,
+    onGamePicked: (game: String?) -> Unit,
+) {
+    val icon = resolveInfo.loadIcon(LocalContext.current.packageManager)
+    val name = resolveInfo.loadLabel(LocalContext.current.packageManager)
+    val packageName = resolveInfo.activityInfo.packageName
+
+    Row(
+        modifier = Modifier.clickable {
+            onGamePicked(packageName)
+        },
+    ) {
+        Image(
+            modifier = Modifier.size(48.dp),
+            painter = rememberDrawablePainter(icon),
+            contentDescription = "icon",
+        )
+        Spacer(
+            modifier = Modifier.width(10.dp),
+        )
+        Column(
+            modifier = Modifier,
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = name.toString(),
+                maxLines = 1,
+                color = MaterialTheme.colors.onSurface,
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = packageName.toString(),
+                maxLines = 1,
+            )
         }
     }
 }
@@ -104,5 +112,5 @@ actual fun GamesDirPicker(
     currentDir: String?,
     onDirPicked: (dir: String?) -> Unit,
 ) {
-    throw IllegalStateException("GamesDirPicker is not supported on android")
+    error("GamesDirPicker is not supported on android")
 }

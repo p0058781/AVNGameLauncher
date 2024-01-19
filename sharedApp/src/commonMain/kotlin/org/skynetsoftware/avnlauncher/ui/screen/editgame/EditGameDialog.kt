@@ -40,6 +40,7 @@ import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameScreenModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 
+@Suppress("LongMethod")
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun EditGameDialog(

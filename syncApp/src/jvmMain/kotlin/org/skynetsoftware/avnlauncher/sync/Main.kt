@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import com.jakewharton.mosaic.runMosaicBlocking
 import com.jakewharton.mosaic.ui.Column
 import com.jakewharton.mosaic.ui.Text
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jline.terminal.TerminalBuilder
@@ -27,7 +28,7 @@ fun main() {
     SyncMain().run()
 }
 
-private class SyncMain : KoinComponent {
+private class SyncMain(private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO) : KoinComponent {
     private val syncService by inject<SyncService>()
 
     fun run() =
@@ -52,7 +53,7 @@ private class SyncMain : KoinComponent {
                 }
             }
 
-            withContext(Dispatchers.IO) {
+            withContext(coroutineDispatcher) {
                 val terminal = TerminalBuilder.terminal()
                 terminal.enterRawMode()
                 val reader = terminal.reader()

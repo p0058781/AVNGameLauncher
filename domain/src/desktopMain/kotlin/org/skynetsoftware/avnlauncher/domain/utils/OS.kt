@@ -12,7 +12,7 @@ val os = when {
     osName.contains("mac") -> {
         OS.Mac
     }
-    else -> throw IllegalStateException("Operating System: '$osName' is not supported\nPlease contact developer.")
+    else -> error("Operating System: '$osName' is not supported\nPlease contact developer.")
 }
 
 enum class OS {

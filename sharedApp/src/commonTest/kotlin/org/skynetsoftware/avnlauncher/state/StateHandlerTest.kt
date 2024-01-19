@@ -25,9 +25,6 @@ class StateHandlerTest {
                 State.UpdateCheckRunning::class -> {
                     ids.add(State.UpdateCheckRunning.id)
                 }
-                State.Syncing::class -> {
-                    ids.add(State.Syncing.id)
-                }
                 State.Playing::class -> {
                     ids.add(State.Playing(game).id)
                 }

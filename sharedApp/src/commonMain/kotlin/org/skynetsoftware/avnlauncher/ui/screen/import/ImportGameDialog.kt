@@ -29,6 +29,7 @@ import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameScreenModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 
+@Suppress("LongMethod")
 @Composable
 fun ImportGameDialog(
     importGameScreenModel: ImportGameScreenModel = koinInject(),
@@ -77,7 +78,9 @@ fun ImportGameDialog(
                 }
 
                 is ImportGameScreenModel.State.Imported -> {
-                    mainScreenModel.showToast(stringResource(MR.strings.importGameDialogSuccessToast, stateCopy.game.title))
+                    mainScreenModel.showToast(
+                        stringResource(MR.strings.importGameDialogSuccessToast, stateCopy.game.title),
+                    )
                     onCloseRequest()
                 }
 
@@ -91,7 +94,12 @@ fun ImportGameDialog(
                 }
 
                 is ImportGameScreenModel.State.Error -> {
-                    mainScreenModel.showToast(stringResource(MR.strings.importGameDialogErrorToast, stateCopy.error.message ?: ""))
+                    mainScreenModel.showToast(
+                        message = stringResource(
+                            MR.strings.importGameDialogErrorToast,
+                            stateCopy.error.message.orEmpty(),
+                        ),
+                    )
                     onCloseRequest()
                 }
             }

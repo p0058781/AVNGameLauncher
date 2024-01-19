@@ -11,6 +11,8 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.skynetsoftware.avnlauncher.resources.R
 
+private const val RATING_MAX = 5
+
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun RatingBar(
@@ -21,7 +23,7 @@ fun RatingBar(
     Row(
         modifier,
     ) {
-        for (i in 0 until 5) {
+        for (i in 0 until RATING_MAX) {
             Image(
                 painter = painterResource(if (i < rating) R.images.starFull else R.images.starEmpty),
                 modifier = Modifier.size(20.dp).clickable {

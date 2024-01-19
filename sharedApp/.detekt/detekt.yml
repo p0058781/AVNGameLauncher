@@ -1,0 +1,16 @@
+complexity:
+  LongParameterList:
+    functionThreshold: 20
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+
+style:
+  MagicNumber:
+    ignorePropertyDeclaration: true
+    ignoreEnums: true

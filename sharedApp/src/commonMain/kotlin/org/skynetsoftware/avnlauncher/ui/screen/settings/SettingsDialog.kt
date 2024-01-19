@@ -36,6 +36,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamesDirPicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.SettingsScreenModel
 
+@Suppress("LongMethod")
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SettingsDialog(
