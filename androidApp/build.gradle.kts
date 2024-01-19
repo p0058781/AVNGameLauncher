@@ -41,6 +41,19 @@ android {
         excludes += "META-INF/AL2.0"
         excludes += "META-INF/LGPL2.1"
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore.jks")
+            storePassword = "@vng@m31@unch3r"
+            keyAlias = "avngamelauncher"
+            keyPassword = "@vng@m31@unch3r"
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
 
 }
 
