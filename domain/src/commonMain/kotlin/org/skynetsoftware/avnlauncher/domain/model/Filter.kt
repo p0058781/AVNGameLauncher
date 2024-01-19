@@ -14,7 +14,7 @@ sealed class Filter(val label: String) {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.updateAvailable }
     }
 
-    object HiddenGames : Filter("Hidden Games") {
+    object HiddenGames : Filter("Archived Games") {
         override fun filter(input: List<Game>) = input.filter { it.hidden }
     }
 

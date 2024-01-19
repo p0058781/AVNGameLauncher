@@ -12,6 +12,8 @@ class EditGameScreenModel(private val gamesRepository: GamesRepository, private 
     val title = MutableStateFlow(game.title)
     val imageUrl = MutableStateFlow(game.imageUrl)
     val checkForUpdates = MutableStateFlow(game.checkForUpdates)
+    val currentPlayState = MutableStateFlow(game.playState)
+    val hidden = MutableStateFlow(game.hidden)
 
     private val _executablePaths = MutableStateFlow(game.executablePaths.addSingleEmptyValueIfEmptySet())
     val executablePaths: StateFlow<List<String>> get() = _executablePaths
@@ -22,8 +24,18 @@ class EditGameScreenModel(private val gamesRepository: GamesRepository, private 
             val title = title.value
             val imageUrl = imageUrl.value
             val checkForUpdates = checkForUpdates.value
+            val playState = currentPlayState.value
+            val hidden = hidden.value
 
-            gamesRepository.updateGame(game.f95ZoneThreadId, title, executablePath, imageUrl, checkForUpdates)
+            gamesRepository.updateGame(
+                game.f95ZoneThreadId,
+                title,
+                executablePath,
+                imageUrl,
+                checkForUpdates,
+                playState,
+                hidden,
+            )
         }
 
     fun setExecutablePath(

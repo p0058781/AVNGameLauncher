@@ -17,28 +17,21 @@ interface GamesRepository {
         rating: Int,
     )
 
-    suspend fun updateHidden(
-        id: Int,
-        hidden: Boolean,
-    )
-
-    suspend fun updatePlayState(
-        id: Int,
-        playState: PlayState,
-    )
-
     suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>)
 
     suspend fun insertGame(game: Game)
 
     suspend fun updateGames(games: List<Game>)
 
+    @Suppress("LongParameterList")
     suspend fun updateGame(
         id: Int,
         title: String,
         executablePaths: Set<String>,
         imageUrl: String,
         checkForUpdates: Boolean,
+        playState: PlayState,
+        hidden: Boolean,
     )
 
     suspend fun updateGame(
