@@ -13,12 +13,12 @@ plugins {
 
     alias(libs.plugins.jetbrains.compose).apply(false)
 
-    alias(libs.plugins.realm.kotlin).apply(false)
     alias(libs.plugins.ktor.plugin).apply(false)
     alias(libs.plugins.ktlint.plugin).apply(false)
     alias(libs.plugins.moko.resource.generator).apply(false)
     alias(libs.plugins.kover).apply(false)
     alias(libs.plugins.detekt).apply(false)
+    alias(libs.plugins.sqldelight).apply(false)
 }
 
 subprojects {
@@ -43,6 +43,9 @@ subprojects {
 
     tasks.withType<Detekt>().configureEach {
         exclude("**/MR.kt")
+        exclude("**/GameEntityQueries.kt")
+        exclude("**/Database.kt")
+        exclude("**/DatabaseImpl.kt")
         reports {
             html.required.set(true)
             xml.required.set(false)
@@ -52,5 +55,11 @@ subprojects {
         }
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all { kotlinOptions.allWarningsAsErrors = true }
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+        kotlinOptions.allWarningsAsErrors = true
+        compilerOptions {
+            freeCompilerArgs.add("-Xexpect-actual-classes")
+        }
+    }
+
 }

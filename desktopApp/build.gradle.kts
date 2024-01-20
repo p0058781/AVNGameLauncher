@@ -41,19 +41,32 @@ kotlin {
                     exclude("icudtl.dat")
                 }
 
+                fun Jar.excludeUnsupportedPlatforms() {
+                    exclude("org/sqlite/native/Linux/arm*/*")
+                    exclude("org/sqlite/native/Linux/ppc64/*")
+                    exclude("org/sqlite/native/Linux/x86/*")
+                    exclude("org/sqlite/native/Linux-Musl/x86/*")
+                    exclude("org/sqlite/native/FreeBSD/**")
+                    exclude("org/sqlite/native/Linux-Android/**")
+                }
+
                 fun Jar.excludeWindowsLibs() {
                     exclude("jni/windows/*")
                     exclude("skiko-windows*.dll")
+                    exclude("org/sqlite/native/Windows/**")
                 }
 
                 fun Jar.excludeLinuxLibs() {
                     exclude("jni/linux/*")
                     exclude("libskiko-linux*.so")
+                    exclude("org/sqlite/native/Linux/**")
+                    exclude("org/sqlite/native/Linux-Musl/**")
                 }
 
                 fun Jar.excludeMacOSLibs() {
                     exclude("jni/macos/*")
                     exclude("libskiko-macos*.dylib")
+                    exclude("org/sqlite/native/Mac/**")
                 }
 
                 fun ProGuardTask.config(taskSuffix: String, fileNameSuffix: String) {
@@ -74,36 +87,47 @@ kotlin {
                 }
                 register<Jar>("fatJarWinX64") {
                     fatJarCommon()
+                    excludeUnsupportedPlatforms()
                     excludeLinuxLibs()
                     excludeMacOSLibs()
                     archiveBaseName.set("${project.name}-fat-windows-x64")
                 }
                 register<Jar>("fatJarLinuxX64") {
                     fatJarCommon()
+                    excludeUnsupportedPlatforms()
                     excludeWindowsLibs()
                     excludeMacOSLibs()
                     exclude("libskiko-linux-arm64.so")
+                    exclude("org/sqlite/native/Linux/aarch64/*")
+                    exclude("org/sqlite/native/Linux-Musl/aarch64/*")
                     archiveBaseName.set("${project.name}-fat-linux-x64")
                 }
                 register<Jar>("fatJarLinuxArm64") {
                     fatJarCommon()
+                    excludeUnsupportedPlatforms()
                     excludeWindowsLibs()
                     excludeMacOSLibs()
                     exclude("libskiko-linux-x64.so")
+                    exclude("org/sqlite/native/Linux/x86_64/*")
+                    exclude("org/sqlite/native/Linux-Musl/x86_64/*")
                     archiveBaseName.set("${project.name}-fat-linux-arm64")
                 }
                 register<Jar>("fatJarMacOSX64") {
                     fatJarCommon()
+                    excludeUnsupportedPlatforms()
                     excludeWindowsLibs()
                     excludeLinuxLibs()
                     exclude("libskiko-macos-arm64.dylib")
+                    exclude("org/sqlite/native/Mac/aarch64/*")
                     archiveBaseName.set("${project.name}-fat-macos-x64")
                 }
                 register<Jar>("fatJarMacOSArm64") {
                     fatJarCommon()
+                    excludeUnsupportedPlatforms()
                     excludeWindowsLibs()
                     excludeLinuxLibs()
                     exclude("libskiko-macos-x64.dylib")
+                    exclude("org/sqlite/native/Mac/x86_64/*")
                     archiveBaseName.set("${project.name}-fat-macos-arm64")
                 }
 
@@ -179,30 +203,5 @@ compose.desktop {
         jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
         jvmArgs("-Dapple.awt.application.appearance=system")
-
-        buildTypes.release.proguard {
-            obfuscate.set(true)
-            optimize.set(true)
-            configurationFiles.from("proguard-rules.pro")
-        }
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Exe)
-            packageName = "avn-launcher-v3"
-            packageVersion = "1.0.0"
-
-            val iconsRoot = project.file("../sharedApp/src/commonMain/resources")
-            macOS {
-                packageName = "AVN Game Launcher"
-                iconFile.set(iconsRoot.resolve("icon.icns"))
-            }
-            windows {
-                iconFile.set(iconsRoot.resolve("icon.ico"))
-                upgradeUuid = "822cc90d-718b-4087-b337-bb203005f9ad"
-            }
-            linux {
-                iconFile.set(iconsRoot.resolve("icon.png"))
-            }
-        }
     }
 }

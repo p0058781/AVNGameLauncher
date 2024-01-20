@@ -4,15 +4,15 @@ import java.net.URL
 
 
 private val URL_JDK_LINUX_X64 =
-    URL("https://corretto.aws/downloads/resources/17.0.9.8.1/amazon-corretto-17.0.9.8.1-linux-x64.tar.gz")
+    URL("https://corretto.aws/downloads/resources/17.0.10.7.1/amazon-corretto-17.0.10.7.1-linux-x64.tar.gz")
 private val URL_JDK_LINUX_AARCH64 =
-    URL("https://corretto.aws/downloads/resources/17.0.9.8.1/amazon-corretto-17.0.9.8.1-linux-aarch64.tar.gz")
+    URL("https://corretto.aws/downloads/resources/17.0.10.7.1/amazon-corretto-17.0.10.7.1-linux-aarch64.tar.gz")
 private val URL_JDK_WINDOWS_x64 =
-    URL("https://corretto.aws/downloads/resources/17.0.9.8.1/amazon-corretto-17.0.9.8.1-windows-x64-jdk.zip")
+    URL("https://corretto.aws/downloads/resources/17.0.10.7.1/amazon-corretto-17.0.10.7.1-windows-x64-jdk.zip")
 private val URL_JDK_MACOS_x64 =
-    URL("https://corretto.aws/downloads/resources/17.0.9.8.1/amazon-corretto-17.0.9.8.1-macosx-x64.tar.gz")
+    URL("https://corretto.aws/downloads/resources/17.0.10.7.1/amazon-corretto-17.0.10.7.1-macosx-x64.tar.gz")
 private val URL_JDK_MACOS_AARCH64 =
-    URL("https://corretto.aws/downloads/resources/17.0.9.8.1/amazon-corretto-17.0.9.8.1-macosx-aarch64.tar.gz")
+    URL("https://corretto.aws/downloads/resources/17.0.10.7.1/amazon-corretto-17.0.10.7.1-macosx-aarch64.tar.gz")
 
 enum class Platform {
     LinuxX64, LinuxArm64, WindowsX64, MacOSX64, MacOSArm64;
@@ -53,5 +53,5 @@ fun Platform.jdkDownloadUrl(): URL {
 }
 
 fun Platform.jdkVersion(): String {
-    return "17.0.9"
+    return "17.0.10"
 }

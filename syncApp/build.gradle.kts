@@ -46,3 +46,7 @@ kotlin {
         }
     }
 }
+
+mosaic {
+    kotlinCompilerPlugin.set("1.5.4")
+}
