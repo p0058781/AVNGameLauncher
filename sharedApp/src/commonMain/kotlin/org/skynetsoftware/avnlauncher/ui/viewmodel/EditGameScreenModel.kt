@@ -10,7 +10,7 @@ import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 
 class EditGameScreenModel(private val gamesRepository: GamesRepository, private val game: Game) : ScreenModel {
     val title = MutableStateFlow(game.title)
-    val imageUrl = MutableStateFlow(game.imageUrl)
+    val imageUrl = MutableStateFlow(game.customImageUrl ?: game.imageUrl)
     val checkForUpdates = MutableStateFlow(game.checkForUpdates)
     val currentPlayState = MutableStateFlow(game.playState)
     val hidden = MutableStateFlow(game.hidden)
@@ -22,7 +22,7 @@ class EditGameScreenModel(private val gamesRepository: GamesRepository, private 
         screenModelScope.launch {
             val executablePath = executablePaths.value.removeEmptyValues()
             val title = title.value
-            val imageUrl = imageUrl.value
+            val customImageUrl = imageUrl.value
             val checkForUpdates = checkForUpdates.value
             val playState = currentPlayState.value
             val hidden = hidden.value
@@ -31,7 +31,7 @@ class EditGameScreenModel(private val gamesRepository: GamesRepository, private 
                 game.f95ZoneThreadId,
                 title,
                 executablePath,
-                imageUrl,
+                customImageUrl,
                 checkForUpdates,
                 playState,
                 hidden,

@@ -8,6 +8,7 @@ import org.skynetsoftware.avnlauncher.domain.model.PlayState
 data class SyncGame(
     val title: String,
     val imageUrl: String,
+    val customImageUrl: String?,
     val f95ZoneThreadId: Int,
     val executablePaths: Set<String>,
     val version: String,
@@ -32,6 +33,7 @@ fun SyncGame.toGame() =
     Game(
         title = title,
         imageUrl = imageUrl,
+        customImageUrl = customImageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
         executablePaths = executablePaths,
         version = version,
@@ -56,6 +58,7 @@ fun Game.toSyncGame() =
     SyncGame(
         title = title,
         imageUrl = imageUrl,
+        customImageUrl = customImageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
         executablePaths = executablePaths,
         version = version,

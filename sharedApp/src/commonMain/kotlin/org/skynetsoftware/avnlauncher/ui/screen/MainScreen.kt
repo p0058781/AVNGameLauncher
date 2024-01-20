@@ -344,7 +344,7 @@ private fun GameItem(
                                 if (sfwMode) {
                                     data("https://picsum.photos/seed/${game.f95ZoneThreadId}/400/200")
                                 } else {
-                                    data(game.imageUrl)
+                                    data(game.customImageUrl ?: game.imageUrl)
                                 }
                             },
                         ),

@@ -95,6 +95,7 @@ sqldelight {
     databases {
         create("Database") {
             packageName.set("org.skynetsoftware.avnlauncher.data")
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
         }
     }
 }
