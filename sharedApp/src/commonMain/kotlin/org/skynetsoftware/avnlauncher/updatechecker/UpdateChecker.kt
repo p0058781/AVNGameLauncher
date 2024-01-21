@@ -47,7 +47,6 @@ private class UpdateCheckerImpl(
             val now = Clock.System.now().toEpochMilliseconds()
             val games = gamesRepository.all()
                 .filter { forceUpdateCheck || now > it.lastUpdateCheck + UPDATE_CHECK_INTERVAL }
-                .filter { !it.updateAvailable }
                 .filter { it.checkForUpdates }
             val fastUpdateCheck = settingsRepository.fastUpdateCheck.value
             val updatesResult = games.map { game ->
