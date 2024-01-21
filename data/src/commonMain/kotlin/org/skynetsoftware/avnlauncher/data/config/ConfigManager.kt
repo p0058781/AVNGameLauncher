@@ -13,7 +13,7 @@ abstract class ConfigManagerShared {
     open val selectedFilterDefault: Filter = Filter.All
     open val selectedSortOrderDefault: SortOrder = SortOrder.LastPlayed
     open val selectedSortOrderDirectionDefault: SortDirection = SortDirection.Descending
-    open val fastUpdateCheckDefault: Boolean = false
+    open val fastUpdateCheckDefault: Boolean = true
     abstract val sfwModeEnabledDefault: Boolean
 }
 
