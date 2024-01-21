@@ -2,6 +2,7 @@ package org.skynetsoftware.avnlauncher.data.f95
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
@@ -32,7 +33,7 @@ class F95ApiTest : KoinTest {
         99159, 85280, 78309, 125534, 45004, 55994, 106380, 113520, 91617, 82710, 111945, 67104, 77680, 95537,
         66753, 35068, 50840, 118423, 58369, 10361, 133769, 103587, 161185, 143959, 146412, 161093, 65970, 130096,
         90033, 87477, 163962, 158551, 143045, 164483, 126219, 140107, 58555, 135723, 16569, 140310, 147103, 125324,
-        110808, 66912, 93557, 135123, 25264,
+        110808, 66912, 93557, 135123, 25264, 23184
     )*/
     private val gameIds = listOf(
         75232,
@@ -40,6 +41,8 @@ class F95ApiTest : KoinTest {
         49572,
         9242,
         62625,
+        45993,
+        23184,
     )
 
     private val f95Api: F95Api by inject()
@@ -97,5 +100,23 @@ class F95ApiTest : KoinTest {
         runBlocking {
             val redirectUrl = f95Api.getRedirectUrl(92601)
             assertEquals("https://f95zone.to/threads/going-rogue-ch-7-deluxe-ker.92601/", redirectUrl.valueOrNull())
+        }
+
+    @Test
+    fun `getGame returns valid imageUrl`() =
+        runBlocking {
+            gameIds.forEach {
+                val result = f95Api.getGame(it)
+                when (result) {
+                    is Result.Error -> {
+                        println(it)
+                        result.exception.printStackTrace()
+                    }
+                    is Result.Ok -> {
+                        assertTrue(result.value.imageUrl.toHttpUrlOrNull() != null)
+                    }
+                }
+                assertTrue(result is Result.Ok)
+            }
         }
 }

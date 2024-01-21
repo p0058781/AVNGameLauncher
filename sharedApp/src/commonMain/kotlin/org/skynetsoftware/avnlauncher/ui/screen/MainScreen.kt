@@ -475,28 +475,9 @@ private fun State.buildText() =
 
 @Composable
 fun UpdateCheckResult.buildToastMessage(): String {
-    return buildString {
-        val updates = this@buildToastMessage.games.filter { it.updateAvailable }
-        if (updates.isNotEmpty()) {
-            appendLine(
-                stringResource(MR.strings.toastUpdateAvailable),
-            )
-            updates.forEach {
-                appendLine(it.game.title)
-            }
-        } else {
-            appendLine(stringResource(MR.strings.toastNoUpdatesAvailable))
-        }
-        val exceptions = this@buildToastMessage.games.filter { it.exception != null }
-        if (exceptions.isNotEmpty()) {
-            appendLine(stringResource(MR.strings.toastException))
-            exceptions.forEach {
-                append(it.game.title)
-                append(": ")
-                append(it.exception?.message)
-            }
-        }
-    }
+    val updates = this@buildToastMessage.games.filter { it.updateAvailable }
+    val exceptions = this@buildToastMessage.games.filter { it.exception != null }
+    return stringResource(MR.strings.updateCheckUpdateAvailable, updates.size, exceptions.size)
 }
 
 private val randomPhrases = arrayOf(
