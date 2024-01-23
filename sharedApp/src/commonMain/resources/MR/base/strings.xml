@@ -47,6 +47,8 @@
     <string name="gamePickerPickGame">Pick Game</string>
     <string name="settingsDialogForceDarkTheme">Force Dark Theme</string>
     <string name="settingsDialogForceDarkThemeDescription">Dark Theme will be forced even if system is set to Light Theme</string>
+    <string name="settingsDialogPeriodicUpdateChecks">Periodic Update Checks</string>
+    <string name="settingsDialogPeriodicUpdateChecksDescription">Check for updates every 1h (This will be adjustable in the future)</string>
     <string name="pickeExecutablePathDialogTitle">Pick Executable</string>
     <string name="playStateLabelNone">Not Playing</string>
     <string name="playStateLabelPlaying">Playing</string>

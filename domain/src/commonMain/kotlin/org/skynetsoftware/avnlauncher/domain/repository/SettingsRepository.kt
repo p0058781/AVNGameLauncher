@@ -15,6 +15,7 @@ interface SettingsRepository {
     val lastSyncTime: StateFlow<Long>
     val sfwModeEnabled: StateFlow<Boolean>
     val forceDarkTheme: StateFlow<Boolean>
+    val periodicUpdateChecksEnabled: StateFlow<Boolean>
 
     suspend fun setSelectedFilter(filter: Filter)
 
@@ -31,4 +32,6 @@ interface SettingsRepository {
     suspend fun setSfwModeEnabled(sfwModeEnabled: Boolean)
 
     suspend fun setForceDarkTheme(forceDarkTheme: Boolean)
+
+    suspend fun setPeriodicUpdateChecksEnabled(periodicUpdateChecksEnabled: Boolean)
 }
