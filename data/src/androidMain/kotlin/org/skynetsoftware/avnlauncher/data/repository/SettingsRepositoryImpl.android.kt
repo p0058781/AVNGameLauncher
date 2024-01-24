@@ -3,7 +3,7 @@ package org.skynetsoftware.avnlauncher.data.repository
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
-import org.skynetsoftware.avnlauncher.data.config.ConfigManager
+import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Option
 

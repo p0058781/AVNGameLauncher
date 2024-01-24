@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.data
 
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.data.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.database.databaseKoinModule
 import org.skynetsoftware.avnlauncher.data.database.driverFactoryKoinModule
 import org.skynetsoftware.avnlauncher.data.f95.f95ApiKoinModule
@@ -15,7 +14,6 @@ val dataKoinModule = module {
     databaseKoinModule()
     gamesRepositoryKoinModule()
     settingsKoinModule()
-    configKoinModule()
     f95ParserKoinModule()
     f95ApiKoinModule()
     f95RepositoryKoinModule()

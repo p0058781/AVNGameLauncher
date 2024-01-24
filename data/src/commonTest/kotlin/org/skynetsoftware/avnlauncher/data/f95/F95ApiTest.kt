@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.domain.utils.valueOrNull
@@ -51,6 +52,7 @@ class F95ApiTest : KoinTest {
     fun beforeTest() {
         startKoin {
             modules(
+                configKoinModule,
                 dataKoinModule,
                 loggerKoinModule,
             )

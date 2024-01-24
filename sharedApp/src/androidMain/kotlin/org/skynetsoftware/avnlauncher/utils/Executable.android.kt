@@ -24,7 +24,7 @@ private class ExecutableFinderAndroid(
                 if (executables.isNotEmpty()) {
                     gamesToUpdate.add(game.f95ZoneThreadId to executables)
                 } else {
-                    logger.warning("No executable found for '${game.title}'")
+                    logger.debug("No executable found for '${game.title}'")
                 }
             } else {
                 val updatedExecutablePaths = removeNotFoundExecutablePaths(executablePaths)

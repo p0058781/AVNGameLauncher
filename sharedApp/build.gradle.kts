@@ -18,6 +18,7 @@ kotlin {
                 implementation(project(":data"))
                 implementation(project(":domain"))
                 implementation(project(":logger"))
+                implementation(project(":config"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
@@ -31,7 +32,6 @@ kotlin {
                 implementation(libs.koin.compose)
 
                 implementation(libs.image.loader)
-                implementation(libs.slf4j.simple)
 
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.screenmodel)
@@ -72,7 +72,6 @@ kotlin {
             dependsOn(jvmMain)
             dependencies {
                 implementation(compose.desktop.common)
-
                 implementation(libs.mpfilepicker)
             }
         }
