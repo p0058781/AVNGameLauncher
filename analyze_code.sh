@@ -1,10 +1,10 @@
 #!/bin/bash
 
-./gradlew --console=plain ktLintCheck && \
-./gradlew --console=plain detektMetadataJvmMain && \
-./gradlew --console=plain detektJvmMain && \
-./gradlew --console=plain detektMetadataMain && \
-./gradlew --console=plain detektMetadataCommonMain && \
-./gradlew --console=plain detektAndroidRelease && \
-./gradlew --console=plain detektAndroidDebug && \
-./gradlew --console=plain detektDesktopMain
+./gradlew $1 --console=plain ktLintCheck && \
+./gradlew $1 --console=plain detektMetadataJvmMain && \
+./gradlew $1 --console=plain detektJvmMain && \
+./gradlew $1 --console=plain detektMetadataMain && \
+./gradlew $1 --console=plain detektMetadataCommonMain && \
+./gradlew $1 --console=plain detektAndroidRelease && \
+./gradlew $1 --console=plain detektAndroidDebug && \
+./gradlew $1 --console=plain detektDesktopMain

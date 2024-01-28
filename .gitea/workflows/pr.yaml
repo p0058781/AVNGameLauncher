@@ -14,7 +14,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3-beta
       - name: KTLint & Detekt
-        run: ./analyze_code.sh
+        run: ./analyze_code.sh -q
       - name: Build & Test
         run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease
       - name: Upload kover report

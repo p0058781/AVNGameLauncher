@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.stringResource
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -54,8 +55,9 @@ fun EditGameDialog(
     mainScreenModel: MainScreenModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
-    var title by remember { editGameScreenModel.title }.collectAsMutableState()
-    var imageUrl by remember { editGameScreenModel.imageUrl }.collectAsMutableState()
+    var title by remember { editGameScreenModel.title }.collectAsMutableState(context = Dispatchers.Main.immediate)
+    var imageUrl by remember { editGameScreenModel.imageUrl }
+        .collectAsMutableState(context = Dispatchers.Main.immediate)
     val executablePaths by remember { editGameScreenModel.executablePaths }.collectAsState()
     var checkForUpdates by remember { editGameScreenModel.checkForUpdates }.collectAsMutableState()
     var currentPlayState by remember { editGameScreenModel.currentPlayState }.collectAsMutableState()

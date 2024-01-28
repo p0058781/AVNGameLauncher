@@ -19,13 +19,6 @@ private class F95RepositoryImpl(private val f95Api: F95Api) : F95Repository {
         }
     }
 
-    override suspend fun getGame(gameThreadUrl: String): Result<Game> {
-        return when (val result = f95Api.getGame(gameThreadUrl)) {
-            is Result.Error -> Result.Error(result.exception)
-            is Result.Ok -> Result.Ok(result.value.toGame())
-        }
-    }
-
     override suspend fun getRedirectUrl(gameThreadId: Int): Result<String> {
         return when (val result = f95Api.getRedirectUrl(gameThreadId)) {
             is Result.Error -> Result.Error(result.exception)

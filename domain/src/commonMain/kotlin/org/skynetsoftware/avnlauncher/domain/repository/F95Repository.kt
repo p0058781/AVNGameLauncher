@@ -6,7 +6,5 @@ import org.skynetsoftware.avnlauncher.domain.utils.Result
 interface F95Repository {
     suspend fun getGame(gameThreadId: Int): Result<Game>
 
-    suspend fun getGame(gameThreadUrl: String): Result<Game>
-
     suspend fun getRedirectUrl(gameThreadId: Int): Result<String>
 }

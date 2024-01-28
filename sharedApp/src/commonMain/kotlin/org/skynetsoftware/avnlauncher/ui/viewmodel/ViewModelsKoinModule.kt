@@ -7,5 +7,5 @@ val viewModelsKoinModule = module {
     factory<EditGameScreenModel> { EditGameScreenModel(get(), get()) }
     factory<MainScreenModel> { MainScreenModel(get(), get(), get(), get()) }
     factory<SettingsScreenModel> { SettingsScreenModel(get()) }
-    factory<ImportGameScreenModel> { ImportGameScreenModel(get()) }
+    factory<ImportGameScreenModel> { ImportGameScreenModel(get(), get()) }
 }

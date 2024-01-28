@@ -23,8 +23,6 @@ private fun Int.createF95ThreadUrl() = "${F95_ZONE_BASE_URL}/threads/$this"
 internal interface F95Api {
     suspend fun getGame(gameThreadId: Int): Result<F95Game>
 
-    suspend fun getGame(gameThreadUrl: String): Result<F95Game>
-
     suspend fun getRedirectUrl(gameThreadId: Int): Result<String>
 }
 
@@ -32,7 +30,6 @@ private class F95ApiImpl(
     private val f95Parser: F95Parser,
     private val logger: Logger,
 ) : F95Api {
-    private val gameThreadUrlRegex = Regex("https://f95zone.to/threads/.+\\.(\\d+)")
     private val httpClient = HttpClient {
         install(HttpTimeout) {
             requestTimeoutMillis = REQUEST_TIMEOUT
@@ -51,20 +48,6 @@ private class F95ApiImpl(
         } catch (t: Throwable) {
             logger.error(t)
             Result.Error(t)
-        }
-    }
-
-    override suspend fun getGame(gameThreadUrl: String): Result<F95Game> {
-        val threadId = gameThreadUrlRegex.find(gameThreadUrl)?.groups?.get(1)?.value?.toIntOrNull()
-        return if (threadId == null) {
-            Result.Error(IllegalStateException("Failed to parse gameThreadUrl"))
-        } else {
-            try {
-                return f95Parser.parseGame(httpClient.get(gameThreadUrl), threadId)
-            } catch (t: Throwable) {
-                logger.error(t)
-                Result.Error(t)
-            }
         }
     }
 

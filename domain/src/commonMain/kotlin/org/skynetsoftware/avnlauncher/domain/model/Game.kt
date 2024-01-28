@@ -22,4 +22,5 @@ data class Game(
     val tags: Set<String>,
     val lastRedirectUrl: String?,
     val checkForUpdates: Boolean,
+    val firstPlayed: Long,
 )

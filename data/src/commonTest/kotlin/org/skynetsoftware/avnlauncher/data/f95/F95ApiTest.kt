@@ -78,19 +78,9 @@ class F95ApiTest : KoinTest {
         }
 
     @Test
-    fun `getGame with gameThreadUrl returns Result success for valid url`() =
+    fun `getGame with invalid gameThreadId returns Result failure`() =
         runTest {
-            val result = f95Api.getGame("https://f95zone.to/threads/erotica-ep-6-daniels-k.161013/")
-            if (result is Result.Error) {
-                result.exception.printStackTrace()
-            }
-            assertTrue(result is Result.Ok)
-        }
-
-    @Test
-    fun `getGame with gameThreadUrl returns Result failure for invalid url`() =
-        runTest {
-            val result = f95Api.getGame("google.com")
+            val result = f95Api.getGame(1234567)
             if (result is Result.Error) {
                 result.exception.printStackTrace()
             }
