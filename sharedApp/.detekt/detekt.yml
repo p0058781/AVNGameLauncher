@@ -1,6 +1,7 @@
 complexity:
   LongParameterList:
     functionThreshold: 20
+    ignoreAnnotated: ['Composable']
 
 exceptions:
   TooGenericExceptionCaught:
