@@ -1,10 +1,13 @@
-package org.skynetsoftware.avnlauncher.ui.screen
+package org.skynetsoftware.avnlauncher.ui.screen.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
@@ -14,6 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.stringResource
 import org.skynetsoftware.avnlauncher.MR
@@ -28,6 +33,7 @@ fun SortFilter(
     currentFilter: Filter,
     currentSortOrder: SortOrder,
     currentSortDirection: SortDirection,
+    updateAvailableIndicatorVisible: Boolean,
     modifier: Modifier = Modifier,
     setFilter: (filter: Filter) -> Unit,
     setSortOrder: (sortOrder: SortOrder) -> Unit,
@@ -37,7 +43,7 @@ fun SortFilter(
         modifier = modifier,
     ) {
         Row {
-            Filter(currentFilter, games.size, setFilter)
+            Filter(currentFilter, games.size, updateAvailableIndicatorVisible, setFilter)
             Spacer(modifier = Modifier.width(5.dp))
             Text("|")
             Spacer(modifier = Modifier.width(5.dp))
@@ -100,6 +106,7 @@ fun Sort(
 fun Filter(
     currentFilter: Filter,
     filteredItemsCount: Int,
+    updateAvailableIndicatorVisible: Boolean,
     setFilter: (filter: Filter) -> Unit,
 ) {
     var showFilterDropdown by remember { mutableStateOf(false) }
@@ -118,6 +125,11 @@ fun Filter(
                 append(")")
             },
         )
+        if (updateAvailableIndicatorVisible) {
+            Box(
+                modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
+            )
+        }
     }
     DropdownMenu(
         expanded = showFilterDropdown,
@@ -133,6 +145,11 @@ fun Filter(
                 },
             ) {
                 Text(it.label)
+                if (updateAvailableIndicatorVisible && it == Filter.GamesWithUpdate) {
+                    Box(
+                        modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
+                    )
+                }
             }
         }
     }

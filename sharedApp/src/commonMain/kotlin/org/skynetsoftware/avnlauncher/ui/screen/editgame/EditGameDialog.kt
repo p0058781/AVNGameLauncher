@@ -58,6 +58,8 @@ fun EditGameDialog(
     var title by remember { editGameScreenModel.title }.collectAsMutableState(context = Dispatchers.Main.immediate)
     var imageUrl by remember { editGameScreenModel.imageUrl }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
+    var notes by remember { editGameScreenModel.notes }
+        .collectAsMutableState(context = Dispatchers.Main.immediate)
     val executablePaths by remember { editGameScreenModel.executablePaths }.collectAsState()
     var checkForUpdates by remember { editGameScreenModel.checkForUpdates }.collectAsMutableState()
     var currentPlayState by remember { editGameScreenModel.currentPlayState }.collectAsMutableState()
@@ -90,6 +92,15 @@ fun EditGameDialog(
                         imageUrl = it
                     },
                     label = { Text(stringResource(MR.strings.editGameInputLabelImageUrl)) },
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = notes ?: "",
+                    onValueChange = {
+                        notes = it
+                    },
+                    label = { Text(stringResource(MR.strings.editGameInputLabelNotes)) },
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 ExecutablePaths(

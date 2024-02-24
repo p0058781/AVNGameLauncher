@@ -18,7 +18,7 @@ internal fun Module.f95ApiKoinModule() {
     single<F95Api> { F95ApiImpl(get(), get()) }
 }
 
-private fun Int.createF95ThreadUrl() = "${F95_ZONE_BASE_URL}/threads/$this"
+fun Int.createF95ThreadUrl() = "${F95_ZONE_BASE_URL}/threads/$this"
 
 internal interface F95Api {
     suspend fun getGame(gameThreadId: Int): Result<F95Game>

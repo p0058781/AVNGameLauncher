@@ -23,4 +23,5 @@ data class Game(
     val lastRedirectUrl: String?,
     val checkForUpdates: Boolean,
     val firstPlayed: Long,
+    val notes: String?,
 )

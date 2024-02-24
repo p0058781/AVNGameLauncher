@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.domain.model
 
 enum class PlayState {
-    None,
     Playing,
     WaitingForUpdate,
     Completed,
@@ -9,7 +8,7 @@ enum class PlayState {
 
     companion object {
         fun fromString(playState: String?): PlayState {
-            return entries.find { it.name == playState } ?: None
+            return entries.find { it.name == playState } ?: error("Invalid value '$playState'")
         }
     }
 }

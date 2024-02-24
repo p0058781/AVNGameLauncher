@@ -1,4 +1,4 @@
-package org.skynetsoftware.avnlauncher.ui.screen
+package org.skynetsoftware.avnlauncher.ui.screen.main
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.Composable

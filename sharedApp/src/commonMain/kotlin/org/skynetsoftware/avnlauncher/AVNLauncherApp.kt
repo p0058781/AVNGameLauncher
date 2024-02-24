@@ -12,6 +12,7 @@ import org.skynetsoftware.avnlauncher.data.gameImportKoinModule
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
+import org.skynetsoftware.avnlauncher.link.externalLinkUtilsKoinModule
 import org.skynetsoftware.avnlauncher.logger.logUncaughtExceptions
 import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
 import org.skynetsoftware.avnlauncher.state.eventCenterModule
@@ -39,6 +40,7 @@ object AVNLauncherApp {
                 eventCenterModule,
                 stateHandlerModule,
                 executableFinderKoinModule,
+                externalLinkUtilsKoinModule,
             )
         }
 

@@ -30,6 +30,7 @@ internal fun Game.toGameEntity() =
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
+        notes = notes,
     )
 
 internal fun GameEntity.toGame() =
@@ -56,6 +57,7 @@ internal fun GameEntity.toGame() =
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
+        notes = notes,
     )
 
 internal fun F95Game.toGame() =
@@ -82,4 +84,5 @@ internal fun F95Game.toGame() =
         lastRedirectUrl = null,
         checkForUpdates = true,
         firstPlayed = Clock.System.now().toEpochMilliseconds(),
+        notes = null,
     )

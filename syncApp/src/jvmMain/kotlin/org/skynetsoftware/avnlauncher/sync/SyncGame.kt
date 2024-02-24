@@ -28,6 +28,7 @@ data class SyncGame(
     val lastRedirectUrl: String?,
     val checkForUpdates: Boolean,
     val firstPlayed: Long,
+    val notes: String?,
 )
 
 fun SyncGame.toGame() =
@@ -54,6 +55,7 @@ fun SyncGame.toGame() =
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
+        notes = notes,
     )
 
 fun Game.toSyncGame() =
@@ -80,4 +82,5 @@ fun Game.toSyncGame() =
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
+        notes = notes,
     )

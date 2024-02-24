@@ -2,6 +2,8 @@ package org.skynetsoftware.avnlauncher.domain.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class PlayStateTest {
     @Test
@@ -13,12 +15,22 @@ class PlayStateTest {
     }
 
     @Test
-    fun `fromString returns None for null value`() {
-        assertEquals(PlayState.None, PlayState.fromString(null))
+    fun `fromString throws exception for null value`() {
+        try {
+            PlayState.fromString(null)
+            assertFalse(false)
+        } catch (e: IllegalStateException) {
+            assertTrue(true)
+        }
     }
 
     @Test
-    fun `fromString returns None for invalid value`() {
-        assertEquals(PlayState.None, PlayState.fromString("bla bla"))
+    fun `fromString throws exception for invalid value`() {
+        try {
+            PlayState.fromString("invalid value")
+            assertFalse(false)
+        } catch (e: IllegalStateException) {
+            assertTrue(true)
+        }
     }
 }
