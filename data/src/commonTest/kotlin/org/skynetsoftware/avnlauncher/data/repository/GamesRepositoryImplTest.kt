@@ -175,6 +175,7 @@ class GamesRepositoryImplTest : KoinTest {
                     checkForUpdates = capture(gameEntitySlots.checkForUpdates),
                     firstPlayed = capture(gameEntitySlots.firstPlayed),
                     notes = captureNullable(gameEntitySlots.notes),
+                    favorite = capture(gameEntitySlots.favorite),
                     f95ZoneThreadId = capture(gameEntitySlots.f95ZoneThreadId),
                 )
             } answers {
@@ -201,6 +202,7 @@ class GamesRepositoryImplTest : KoinTest {
                     checkForUpdates = gameEntitySlots.checkForUpdates.captured,
                     firstPlayed = gameEntitySlots.firstPlayed.captured,
                     notes = gameEntitySlots.notes.captured,
+                    favorite = gameEntitySlots.favorite.captured,
                     f95ZoneThreadId = gameEntitySlots.f95ZoneThreadId.captured,
                 )
             }
@@ -231,6 +233,7 @@ class GamesRepositoryImplTest : KoinTest {
                     checkForUpdates = expected.checkForUpdates,
                     firstPlayed = expected.firstPlayed,
                     notes = expected.notes,
+                    favorite = expected.favorite,
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
@@ -483,6 +486,7 @@ class GamesRepositoryImplTest : KoinTest {
             customImageUrl = getRandomString(33),
             firstPlayed = System.currentTimeMillis(),
             notes = getRandomString(55),
+            favorite = (0..1).random() == 1,
         )
     }
 

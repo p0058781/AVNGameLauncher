@@ -28,7 +28,8 @@ CREATE TABLE GameEntity (
     checkForUpdates INTEGER AS Boolean NOT NULL DEFAULT 1,
     customImageUrl TEXT,
     firstPlayed INTEGER NOT NULL,
-    notes TEXT
+    notes TEXT,
+    favorite INTEGER AS Boolean NOT NULL
 );
 
 all:
@@ -69,7 +70,8 @@ SET title = ?,
     lastRedirectUrl = ?,
     checkForUpdates = ?,
     firstPlayed = ?,
-    notes = ?
+    notes = ?,
+    favorite = ?
 WHERE f95ZoneThreadId = ?;
 
 updateGame2:
@@ -94,4 +96,9 @@ updatePlayTime:
 UPDATE GameEntity
 SET playTime = ?,
     lastPlayed = ?
+WHERE f95ZoneThreadId = ?;
+
+updateFavorite:
+UPDATE GameEntity
+SET favorite = ?
 WHERE f95ZoneThreadId = ?;

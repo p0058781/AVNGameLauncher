@@ -115,6 +115,13 @@ class GamesScreenModel(
         gamesRepository.updateRating(game.f95ZoneThreadId, rating)
     }
 
+    fun updateFavorite(
+        favorite: Boolean,
+        game: Game,
+    ) = screenModelScope.launch {
+        gamesRepository.updateFavorite(game.f95ZoneThreadId, favorite)
+    }
+
     fun launchGame(game: Game) =
         screenModelScope.launch {
             val executablePaths = game.executablePaths

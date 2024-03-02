@@ -183,4 +183,5 @@ private fun Game.mergeWith(f95Game: Game) =
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
         notes = notes,
+        favorite = favorite,
     )

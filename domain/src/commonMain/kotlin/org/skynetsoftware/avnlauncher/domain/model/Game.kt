@@ -24,4 +24,5 @@ data class Game(
     val checkForUpdates: Boolean,
     val firstPlayed: Long,
     val notes: String?,
+    val favorite: Boolean,
 )

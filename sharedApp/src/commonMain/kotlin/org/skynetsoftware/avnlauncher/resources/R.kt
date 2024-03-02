@@ -26,5 +26,7 @@ object R {
         const val link = "link.png"
         const val maximize = "maximize.png"
         const val minimize = "minimize.png"
+        const val heart_filled = "heart_filled.png"
+        const val heart = "heart.png"
     }
 }

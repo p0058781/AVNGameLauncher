@@ -29,6 +29,7 @@ data class SyncGame(
     val checkForUpdates: Boolean,
     val firstPlayed: Long,
     val notes: String?,
+    val favorite: Boolean,
 )
 
 fun SyncGame.toGame() =
@@ -56,6 +57,7 @@ fun SyncGame.toGame() =
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
         notes = notes,
+        favorite = favorite,
     )
 
 fun Game.toSyncGame() =
@@ -83,4 +85,5 @@ fun Game.toSyncGame() =
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
         notes = notes,
+        favorite = favorite,
     )

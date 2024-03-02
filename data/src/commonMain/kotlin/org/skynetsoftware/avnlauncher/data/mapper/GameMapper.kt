@@ -31,6 +31,7 @@ internal fun Game.toGameEntity() =
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
         notes = notes,
+        favorite = favorite,
     )
 
 internal fun GameEntity.toGame() =
@@ -58,6 +59,7 @@ internal fun GameEntity.toGame() =
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
         notes = notes,
+        favorite = favorite,
     )
 
 internal fun F95Game.toGame() =
@@ -85,4 +87,5 @@ internal fun F95Game.toGame() =
         checkForUpdates = true,
         firstPlayed = Clock.System.now().toEpochMilliseconds(),
         notes = null,
+        favorite = false,
     )
