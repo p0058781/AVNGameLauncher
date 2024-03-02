@@ -94,7 +94,7 @@ abstract class PlatformNativePackageTask : DefaultTask() {
             .exec(arrayOf("jdeps", "--print-module-deps", "--ignore-missing-deps", jarFile.absolutePath)).inputStream
         val reader = BufferedReader(InputStreamReader(inputStream))
         val modsString = reader.readText().trim()
-        return modsString.split(",")
+        return modsString.split(",").toMutableList().apply { if (!contains("jdk.crypto.ec")) { add("jdk.crypto.ec") } }.toList()
     }
 
     private fun jarFileName(): String {
