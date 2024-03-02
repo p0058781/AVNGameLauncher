@@ -94,6 +94,8 @@ private val playedDateTimeFormat = SimpleDateFormat("MMM dd, yyyy HH:mm")
 
 data class MainScreen(
     val exitApplication: () -> Unit,
+    val setMaximized: () -> Unit,
+    val setFloating: () -> Unit,
 ) : Screen {
     @Suppress("LongMethod")
     @Composable
@@ -106,6 +108,7 @@ data class MainScreen(
         val currentSortOrder by remember { gamesScreenModel.sortOrder }.collectAsState()
         val currentSortDirection by remember { gamesScreenModel.sortDirection }.collectAsState()
         val sfwMode by remember { mainScreenModel.sfwMode }.collectAsState()
+        val maximized by remember { mainScreenModel.windowMaximized }.collectAsState()
 
         var selectedGame by remember { mutableStateOf<Game?>(null) }
         val toastMessage by remember { mainScreenModel.toastMessage }.collectAsState()
@@ -123,7 +126,6 @@ data class MainScreen(
         var settingsDialogVisible by remember { mutableStateOf(false) }
 
         val draggableArea = LocalDraggableArea.current
-
         Column {
             draggableArea?.invoke {
                 TopAppBar {
@@ -196,6 +198,7 @@ data class MainScreen(
                     }
                     ToolbarActions(
                         sfwMode = sfwMode,
+                        maximized = maximized,
                         startUpdateCheck = {
                             mainScreenModel.startUpdateCheck()
                         },
@@ -207,6 +210,9 @@ data class MainScreen(
                         },
                         onSfwModeClicked = {
                             mainScreenModel.toggleSfwMode()
+                        },
+                        onToggleMaximizedClicked = {
+                            mainScreenModel.toggleMaximized(setMaximized, setFloating)
                         },
                         exitApplication = exitApplication,
                     )

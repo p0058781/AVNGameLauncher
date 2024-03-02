@@ -24,5 +24,7 @@ object R {
         const val back = "back.png"
         const val f95Logo = "f95_logo.png"
         const val link = "link.png"
+        const val maximize = "maximize.png"
+        const val minimize = "minimize.png"
     }
 }

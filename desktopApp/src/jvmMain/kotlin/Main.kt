@@ -4,9 +4,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import dev.icerock.moko.resources.compose.stringResource
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
@@ -34,14 +35,15 @@ fun main() {
 
     AVNLauncherApp.onCreate()
     application {
+        val windowState = rememberWindowState(
+            position = WindowPosition.Aligned(Alignment.Center),
+            size = getDefaultWindowSize(),
+        )
         Window(
             onCloseRequest = ::exitApplication,
             title = stringResource(MR.strings.appName),
             icon = painterResource(R.images.appIcon),
-            state = WindowState(
-                position = WindowPosition.Aligned(Alignment.Center),
-                size = getDefaultWindowSize(),
-            ),
+            state = windowState,
             undecorated = true,
         ) {
             MainView(
@@ -52,6 +54,12 @@ fun main() {
                     WindowDraggableArea {
                         content()
                     }
+                },
+                setMaximized = {
+                    windowState.placement = WindowPlacement.Maximized
+                },
+                setFloating = {
+                    windowState.placement = WindowPlacement.Floating
                 },
             )
         }

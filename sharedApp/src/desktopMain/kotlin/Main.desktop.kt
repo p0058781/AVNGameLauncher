@@ -7,13 +7,17 @@ import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreen
 fun MainView(
     exitApplication: () -> Unit,
     draggableArea: @Composable (content: @Composable () -> Unit) -> Unit,
+    setMaximized: () -> Unit,
+    setFloating: () -> Unit,
 ) = Navigator(
     exitApplication = exitApplication,
     draggableArea = draggableArea,
+    setMaximized = setMaximized,
+    setFloating = setFloating,
 )
 
 @Preview
 @Composable
 fun AppPreview() {
-    MainScreen(exitApplication = {})
+    MainScreen(exitApplication = {}, setMaximized = {}, setFloating = {})
 }

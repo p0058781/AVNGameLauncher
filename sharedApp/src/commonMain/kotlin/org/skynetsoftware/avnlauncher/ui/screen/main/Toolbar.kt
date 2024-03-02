@@ -17,9 +17,11 @@ expect fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit)
 expect fun ToolbarActions(
     modifier: Modifier = Modifier,
     sfwMode: Boolean,
+    maximized: Boolean,
     startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onSfwModeClicked: () -> Unit,
+    onToggleMaximizedClicked: () -> Unit,
     exitApplication: () -> Unit,
 )

@@ -3,5 +3,5 @@ import org.skynetsoftware.avnlauncher.Navigator
 
 @Composable
 fun MainView(exitApplication: () -> Unit) {
-    Navigator(exitApplication = exitApplication, draggableArea = { it() })
+    Navigator(exitApplication = exitApplication, draggableArea = { it() }, setMaximized = {}, setFloating = {})
 }

@@ -34,10 +34,12 @@ actual fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit) {
 actual fun ToolbarActions(
     modifier: Modifier,
     sfwMode: Boolean,
+    maximized: Boolean,
     startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onSfwModeClicked: () -> Unit,
+    onToggleMaximizedClicked: () -> Unit,
     exitApplication: () -> Unit,
 ) {
     Row(
