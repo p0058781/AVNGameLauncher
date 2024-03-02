@@ -17,6 +17,7 @@ class FilterTest {
     @Test
     fun `entries returns all values`() {
         val entries = Filter.entries
+        assertEquals(7, entries.size)
         assertContains(entries, Filter.All)
         assertContains(entries, Filter.Playing)
         assertContains(entries, Filter.Completed)

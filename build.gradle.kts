@@ -1,5 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
 
 plugins {
     alias(libs.plugins.kotlin.jvm).apply(false)
@@ -60,6 +61,18 @@ subprojects {
         kotlinOptions.allWarningsAsErrors = true
         compilerOptions {
             freeCompilerArgs.add("-Xexpect-actual-classes")
+        }
+    }
+
+    configure<KoverReportExtension> {
+        filters {
+            excludes {
+                classes(
+                    "org.skynetsoftware.avnlauncher.data.data.DatabaseImpl*",
+                    "org.skynetsoftware.avnlauncher.data.GameEntityQueries*",
+                    "org.skynetsoftware.avnlauncher.data.GameEntity*",
+                )
+            }
         }
     }
 

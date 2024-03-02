@@ -8,7 +8,8 @@ import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Option
 
 internal actual fun Module.settingsKoinModule() {
-    single<SettingsRepository> { SettingsRepositoryImpl(Settings(), get()) }
+    single { Settings() }
+    single<SettingsRepository> { SettingsRepositoryImpl(get(), get()) }
 }
 
 internal actual class SettingsRepositoryImpl(settings: Settings, configManager: ConfigManager) :

@@ -1,22 +1,27 @@
+@file:Suppress("MatchingDeclarationName")
+
 package org.skynetsoftware.avnlauncher.data.database
 
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.adapter.primitive.FloatColumnAdapter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
+import org.jetbrains.annotations.VisibleForTesting
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.Database
 import org.skynetsoftware.avnlauncher.data.GameEntity
 
-private object StringSetAdapter : ColumnAdapter<Set<String>, String> {
+@VisibleForTesting
+internal object StringSetAdapter : ColumnAdapter<Set<String>, String> {
     override fun decode(databaseValue: String) =
-        if (databaseValue.isEmpty()) {
+        if (databaseValue.isBlank()) {
             setOf()
         } else {
-            databaseValue.split(",").toSet()
+            databaseValue.split(",").toMutableList().apply { removeAll { it.isBlank() } }.map { it.trim() }.toSet()
         }
 
-    override fun encode(value: Set<String>) = value.joinToString(separator = ",")
+    override fun encode(value: Set<String>) =
+        value.toMutableSet().apply { removeAll { it.isBlank() } }.joinToString(separator = ",") { it.trim() }
 }
 
 internal fun Module.databaseKoinModule() {

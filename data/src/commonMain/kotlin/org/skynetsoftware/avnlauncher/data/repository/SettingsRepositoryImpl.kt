@@ -48,14 +48,6 @@ abstract class SettingsRepositoryShared internal constructor(
     }
     override val selectedSortDirection: StateFlow<SortDirection> get() = _selectedSortDirection
 
-    private val _fastUpdateCheck = MutableStateFlow {
-        settings.getBoolean(
-            SettingsRepository::fastUpdateCheck.name,
-            configManager.fastUpdateCheckDefault,
-        )
-    }
-    override val fastUpdateCheck: StateFlow<Boolean> get() = _fastUpdateCheck
-
     private val _lastSyncTime =
         MutableStateFlow { settings.getLong(SettingsRepository::lastSyncTime.name, 0L) }
     override val lastSyncTime: StateFlow<Long> get() = _lastSyncTime
@@ -91,11 +83,6 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setSelectedSortDirection(sortDirection: SortDirection) {
         _selectedSortDirection.emit(sortDirection)
         settings[SettingsRepository::selectedSortDirection.name] = sortDirection.name
-    }
-
-    override suspend fun setFastUpdateCheck(fastUpdateCheck: Boolean) {
-        _fastUpdateCheck.emit(fastUpdateCheck)
-        settings[SettingsRepository::fastUpdateCheck.name] = fastUpdateCheck
     }
 
     override suspend fun setLastSyncTime(lastSyncTime: Long) {
