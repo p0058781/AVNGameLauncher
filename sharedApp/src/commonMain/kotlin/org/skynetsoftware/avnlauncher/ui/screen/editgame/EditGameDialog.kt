@@ -61,6 +61,8 @@ fun EditGameDialog(
     var notes by remember { editGameScreenModel.notes }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
     val executablePaths by remember { editGameScreenModel.executablePaths }.collectAsState()
+    val findingExecutablePathsInProgress by remember { editGameScreenModel.findingExecutablePathsInProgress }
+        .collectAsState()
     var checkForUpdates by remember { editGameScreenModel.checkForUpdates }.collectAsMutableState()
     var currentPlayState by remember { editGameScreenModel.currentPlayState }.collectAsMutableState()
     var hidden by remember { editGameScreenModel.hidden }.collectAsMutableState()
@@ -147,6 +149,15 @@ fun EditGameDialog(
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+                Button(
+                    enabled = !findingExecutablePathsInProgress,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        editGameScreenModel.findExecutablePaths()
+                    },
+                ) {
+                    Text(stringResource(MR.strings.editDialogButtonDetectPaths))
+                }
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {

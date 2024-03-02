@@ -42,6 +42,7 @@
     <string name="editGameDialogCheckForUpdates">Check for Updates</string>
     <string name="editGameDialogPlayState">Play State</string>
     <string name="editGameDialogArchived">Archived</string>
+    <string name="editDialogButtonDetectPaths">Detect Game Executables</string>
     <string name="gameLauncherInvalidExecutableToast">Can\'t launch \'%s\', executablePath is invalid</string>
     <string name="gameLauncherAnotherGameRunning">Can\'t start \'%s\', \'%s\' is already running</string>
     <string name="settings">Settings</string>

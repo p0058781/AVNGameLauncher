@@ -13,7 +13,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.extension
-import kotlin.jvm.optionals.getOrNull
 
 actual val executableFinderKoinModule = module {
     single<ExecutableFinder> { ExecutableFinderDesktop(get(), get(), get()) }
@@ -76,14 +75,11 @@ private class ExecutableFinderDesktop(
         title: String,
     ): Set<String> {
         return gamesDirRoot.listFiles()
-            ?.filter { it.isDirectory }
-            ?.filter { it.name == title }?.mapNotNull {
+            ?.filter { it.isDirectory }?.firstOrNull { it.name == title }?.let {
                 Files.walk(Paths.get(it.absolutePath)).use { files ->
-                    files
-                        .filter { f -> platformFilter(f) }
-                        .findFirst().getOrNull()?.toFile()
-                }?.absolutePath
-            }?.toSet().orEmpty()
+                    files.filter { f -> platformFilter(f) }.toList().mapNotNull { it.toFile().absolutePath }.toSet()
+                }
+            }.orEmpty()
     }
 
     private fun platformFilter(path: Path): Boolean {
