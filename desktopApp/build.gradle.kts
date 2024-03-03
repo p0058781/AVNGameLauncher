@@ -18,7 +18,7 @@ plugins {
 }
 
 group = "org.skynetsoftware.avnlauncher"
-version = "0.0.1"//TODO make version global (desktop + android)
+version = "1.0.0"
 
 kotlin {
     jvm {
