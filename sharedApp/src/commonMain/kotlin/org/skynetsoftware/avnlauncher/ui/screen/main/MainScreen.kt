@@ -8,6 +8,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +26,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Chip
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -43,10 +47,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getNavigatorScreenModel
@@ -86,6 +94,7 @@ import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 import java.net.URI
+import java.util.regex.Pattern
 import kotlin.random.Random
 
 private const val GAME_IMAGE_ASPECT_RATIO = 3.5f
@@ -242,6 +251,7 @@ data class MainScreen(
             GamesList(
                 games = games,
                 sfwMode = sfwMode,
+                query = searchQuery,
                 editGame = {
                     selectedGame = it
                 },
@@ -312,6 +322,7 @@ data class MainScreen(
 private fun GamesList(
     games: List<Game>,
     sfwMode: Boolean,
+    query: String?,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
@@ -328,6 +339,7 @@ private fun GamesList(
             GameItem(
                 game = game,
                 sfwMode = sfwMode,
+                query = query,
                 editGame = editGame,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
@@ -338,12 +350,13 @@ private fun GamesList(
     }
 }
 
-@Suppress("LongMethod")
-@OptIn(ExperimentalResourceApi::class)
+@Suppress("LongMethod", "CyclomaticComplexMethod")
+@OptIn(ExperimentalResourceApi::class, ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
 @Composable
 private fun GameItem(
     game: Game,
     sfwMode: Boolean,
+    query: String?,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
@@ -396,7 +409,7 @@ private fun GameItem(
                     modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).fillMaxWidth(),
                 ) {
                     Text(
-                        text = game.sfwFilterTitle(sfwMode),
+                        text = game.titleWithSfwFilterAndSearchMatchHighlight(sfwMode, query),
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f),
@@ -458,6 +471,22 @@ private fun GameItem(
                         stringResource(MR.strings.infoLabelReleaseDate),
                         releaseDateValue,
                     )
+
+                    if (!query.isNullOrBlank()) {
+                        FlowRow {
+                            game.tags.filter { it.lowercase().contains(query.lowercase()) }.forEach {
+                                Chip(
+                                    modifier = Modifier.padding(horizontal = 2.dp),
+                                    onClick = {},
+                                ) {
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.overline,
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                     game.notes?.let {
                         Spacer(
@@ -623,6 +652,39 @@ private val randomPhrases = arrayOf(
     "A Lemon",
 )
 
-private fun Game.sfwFilterTitle(enabled: Boolean): String {
-    return if (enabled) randomPhrases.random(Random(f95ZoneThreadId)) else title
+private fun Game.titleWithSfwFilterAndSearchMatchHighlight(
+    sfwMode: Boolean,
+    query: String?,
+): AnnotatedString {
+    return buildAnnotatedString {
+        if (sfwMode) {
+            append(randomPhrases.random(Random(f95ZoneThreadId)))
+        } else {
+            if (!query.isNullOrBlank()) {
+                val highlightRanges = Regex(Pattern.quote(query.lowercase()))
+                    .findAll(title.lowercase())
+                    .map { it.range.first to it.range.first + query.length }.toList()
+                if (highlightRanges.isEmpty()) {
+                    append(title)
+                } else {
+                    var start = 0
+                    var highlightRangeIndex = 0
+                    while (start < title.length && highlightRangeIndex < highlightRanges.size) {
+                        val highlightRange = highlightRanges[highlightRangeIndex]
+                        append(title.substring(start, highlightRange.first))
+                        withStyle(SpanStyle(color = Color.Yellow)) {
+                            append(title.substring(highlightRange.first, highlightRange.second))
+                        }
+                        start = highlightRange.second
+                        highlightRangeIndex++
+                    }
+                    if (start < title.length) {
+                        append(title.substring(start, title.length))
+                    }
+                }
+            } else {
+                append(title)
+            }
+        }
+    }
 }
