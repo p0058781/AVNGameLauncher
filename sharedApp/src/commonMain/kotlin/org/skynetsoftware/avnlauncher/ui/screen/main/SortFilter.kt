@@ -75,28 +75,28 @@ fun Sort(
                 append(")")
             },
         )
-    }
-    DropdownMenu(
-        expanded = showSortOrderDropdown,
-        onDismissRequest = {
-            showSortOrderDropdown = false
-        },
-    ) {
-        SortOrder.entries.forEach {
-            DropdownMenuItem(
-                onClick = {
-                    showSortOrderDropdown = false
-                    if (currentSortOrder != it) {
-                        setSortOrder(it)
-                    } else {
-                        when (currentSortDirection) {
-                            SortDirection.Ascending -> setSortDirection(SortDirection.Descending)
-                            SortDirection.Descending -> setSortDirection(SortDirection.Ascending)
+        DropdownMenu(
+            expanded = showSortOrderDropdown,
+            onDismissRequest = {
+                showSortOrderDropdown = false
+            },
+        ) {
+            SortOrder.entries.forEach {
+                DropdownMenuItem(
+                    onClick = {
+                        showSortOrderDropdown = false
+                        if (currentSortOrder != it) {
+                            setSortOrder(it)
+                        } else {
+                            when (currentSortDirection) {
+                                SortDirection.Ascending -> setSortDirection(SortDirection.Descending)
+                                SortDirection.Descending -> setSortDirection(SortDirection.Ascending)
+                            }
                         }
-                    }
-                },
-            ) {
-                Text(it.label)
+                    },
+                ) {
+                    Text(it.label)
+                }
             }
         }
     }
@@ -130,25 +130,25 @@ fun Filter(
                 modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
             )
         }
-    }
-    DropdownMenu(
-        expanded = showFilterDropdown,
-        onDismissRequest = {
-            showFilterDropdown = false
-        },
-    ) {
-        Filter.entries.forEach {
-            DropdownMenuItem(
-                onClick = {
-                    showFilterDropdown = false
-                    setFilter(it)
-                },
-            ) {
-                Text(it.label)
-                if (updateAvailableIndicatorVisible && it == Filter.GamesWithUpdate) {
-                    Box(
-                        modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
-                    )
+        DropdownMenu(
+            expanded = showFilterDropdown,
+            onDismissRequest = {
+                showFilterDropdown = false
+            },
+        ) {
+            Filter.entries.forEach {
+                DropdownMenuItem(
+                    onClick = {
+                        showFilterDropdown = false
+                        setFilter(it)
+                    },
+                ) {
+                    Text(it.label)
+                    if (updateAvailableIndicatorVisible && it == Filter.GamesWithUpdate) {
+                        Box(
+                            modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
+                        )
+                    }
                 }
             }
         }
