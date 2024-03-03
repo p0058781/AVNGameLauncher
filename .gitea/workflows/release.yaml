@@ -1,8 +1,8 @@
-name: PR Pipeline
+name: Release Pipeline
 on:
   push:
     tags:
-      - release/**
+      - '**'
 
 jobs:
   build:
