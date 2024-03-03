@@ -2,7 +2,7 @@ name: PR Pipeline
 on:
   push:
     tags:
-      - release/**
+      - *
 
 jobs:
   build:
