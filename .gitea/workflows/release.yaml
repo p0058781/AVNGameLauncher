@@ -1,8 +1,8 @@
-name: PR Pipeline
+name: Release Pipeline
 on:
   push:
     tags:
-      - release/**
+      - '**'
 
 jobs:
   build:
@@ -21,28 +21,12 @@ jobs:
         run: ./analyze_code.sh -q
       - name: Build & Test
         run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease releaseJar packageLinuxX64 packageWinX64 packageMacOSX64 assembleRelease
-      - name: Upload kover report
-        uses: actions/upload-artifact@v3
+      - name: Create a Release
+        uses: akkuman/gitea-release-action@v1
         with:
-          name: kover-report.zip
-          path: "**/build/reports/kover/*"
-      - name: Upload Android APK
-        uses: actions/upload-artifact@v3
-        with:
-          name: android-apks.zip
-          path: androidApp/build/outputs/apk/release/*.apk
-      - name: Upload Desktop JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: desktop-jars.zip
-          path: desktopApp/build/libs/desktopApp-release-*.jar
-      - name: Upload desktop native package
-        uses: actions/upload-artifact@v3
-        with:
-          name: desktop-native-packages.zip
-          path: desktopApp/build/package/**/release-*.zip
-      - name: Upload desktop proguard mapping.txt
-        uses: actions/upload-artifact@v3
-        with:
-          name: mapping.txt
-          path: desktopApp/build/proguard/mapping.txt
+          files: |-
+            **/build/reports/kover/*
+            androidApp/build/outputs/apk/release/*.apk
+            desktopApp/build/libs/desktopApp-release-*.jar
+            desktopApp/build/package/**/release-*.zip
+            desktopApp/build/proguard/mapping.txt
