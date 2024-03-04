@@ -24,7 +24,7 @@ jobs:
       - name: Create a Release
         uses: akkuman/gitea-release-action@v1
         with:
-          prerelease: ${{ ! contains(github.ref_name, '_pre') }}
+          prerelease: ${{ contains(github.ref_name, '_pre') }}
           files: |-
             **/build/reports/kover/*
             androidApp/build/outputs/apk/release/*.apk
