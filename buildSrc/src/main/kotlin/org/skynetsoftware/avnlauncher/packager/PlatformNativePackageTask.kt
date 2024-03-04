@@ -209,7 +209,6 @@ abstract class PlatformNativePackageTask : DefaultTask() {
                   it
                 }
             }
-            println("relativePath: $relativePath, target: $target, file: $it, dir: $dir")
             addFileToZip(zipArchiveOutputStream, it, relativePath)
         }
     }
@@ -227,7 +226,7 @@ abstract class PlatformNativePackageTask : DefaultTask() {
     private fun addFileToZip(zipArchiveOutputStream: ZipArchiveOutputStream, file: File, name: String) {
         val entry = ZipArchiveEntry(file, name)
         zipArchiveOutputStream.putArchiveEntry(entry)
-        if (platform==Platform.LinuxX64 || platform==Platform.LinuxArm64) {
+        if (platform==Platform.LinuxX64 || platform==Platform.LinuxArm64 || platform==Platform.MacOSX64 || platform == Platform.MacOSArm64) {
             keepPosixPermissions(file, entry)
         }
         file.inputStream().copyTo(zipArchiveOutputStream)
