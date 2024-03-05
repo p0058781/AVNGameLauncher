@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -21,9 +20,7 @@ import org.skynetsoftware.avnlauncher.launcher.GameLauncher
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
-
-private const val HOURS_IN_DAY = 24f
-private const val ONE_DAY_MS = 86400000f
+import org.skynetsoftware.avnlauncher.utils.calculateAveragePlayTime
 
 @Suppress("TooManyFunctions")
 class GamesScreenModel(
@@ -78,11 +75,7 @@ class GamesScreenModel(
     }.stateIn(screenModelScope, SharingStarted.Lazily, 0L)
 
     val averagePlayTime: StateFlow<Float> = combine(firstPlayedTime, totalPlayTime) { firstPlayedTime, totalPlayTime ->
-        val now = Clock.System.now().toEpochMilliseconds()
-        val totalTimeDays = (now - firstPlayedTime) / ONE_DAY_MS
-        val totalPlayTimeDays = totalPlayTime / ONE_DAY_MS
-        val dailyPlayTimeHours = (totalPlayTimeDays / totalTimeDays) * HOURS_IN_DAY
-        dailyPlayTimeHours
+        calculateAveragePlayTime(firstPlayedTime, totalPlayTime)
     }.stateIn(screenModelScope, SharingStarted.Lazily, 0f)
 
     val showExecutablePathPicker = MutableStateFlow<Game?>(null)
