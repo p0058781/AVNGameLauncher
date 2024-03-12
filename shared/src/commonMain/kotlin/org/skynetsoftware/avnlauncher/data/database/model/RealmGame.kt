@@ -8,7 +8,7 @@ class RealmGame : RealmObject {
     @PrimaryKey
     var title: String = ""
     var imageUrl: String = ""
-    var f95ZoneUrl: String = ""
+    var f95ZoneThreadId: Int = -1
     var executablePath: String? = null
     var version: String = ""
     var playTime: Long = 0L

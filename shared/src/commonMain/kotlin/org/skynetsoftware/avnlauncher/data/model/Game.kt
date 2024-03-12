@@ -1,12 +1,13 @@
 package org.skynetsoftware.avnlauncher.data.model
 
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
+import org.skynetsoftware.avnlauncher.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.f95.model.F95Game
 
 data class Game(
     val title: String,
     val imageUrl: String,
-    val f95ZoneUrl: String,
+    val f95ZoneThreadId: Int,
     val executablePath: String?,
     val version: String,
     val playTime: Long,
@@ -24,7 +25,7 @@ data class Game(
 fun Game.toRealmGame() = RealmGame().apply {
     title = this@toRealmGame.title
     imageUrl = this@toRealmGame.imageUrl
-    f95ZoneUrl = this@toRealmGame.f95ZoneUrl
+    f95ZoneThreadId = this@toRealmGame.f95ZoneThreadId
     executablePath = this@toRealmGame.executablePath
     version = this@toRealmGame.version
     playTime = this@toRealmGame.playTime
@@ -42,7 +43,7 @@ fun Game.toRealmGame() = RealmGame().apply {
 fun RealmGame.toGame() = Game(
     title = title,
     imageUrl = imageUrl,
-    f95ZoneUrl = f95ZoneUrl,
+    f95ZoneThreadId = f95ZoneThreadId,
     executablePath = executablePath,
     version = version,
     playTime = playTime,
@@ -60,7 +61,7 @@ fun RealmGame.toGame() = Game(
 fun F95Game.toRealmGame() = RealmGame().apply {
     title = this@toRealmGame.title
     imageUrl = this@toRealmGame.imageUrl
-    f95ZoneUrl = this@toRealmGame.f95ZoneUrl
+    f95ZoneThreadId = this@toRealmGame.threadId
     version = this@toRealmGame.version
     rating = this@toRealmGame.rating
     releaseDate = this@toRealmGame.releaseDate

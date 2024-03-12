@@ -18,7 +18,7 @@ fun ImportGameDialog(
     onCloseRequest: () -> Unit = {},
     showToast: (message: String) -> Unit = {},
 ) {
-    var f95Url by remember { mutableStateOf<String?>(null) }
+    var threadId by remember { mutableStateOf<String?>(null) }
     var importing by remember { mutableStateOf(false) }
 
     DialogWindow(
@@ -43,20 +43,20 @@ fun ImportGameDialog(
                 ) {
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = f95Url ?: "",
+                        value = threadId ?: "",
                         onValueChange = {
-                            f95Url = it
+                            threadId = it
                         },
-                        label = { Text("F95 URL") }
+                        label = { Text("F95 Thread ID") }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = f95Url.isNullOrBlank().not(),
+                        enabled = threadId.isNullOrBlank().not(),
                         onClick = {
-                            f95Url?.let {
+                            threadId?.let {
                                 importing = true
-                                gameImport.importGame(it) {
+                                gameImport.importGame(it.toInt()) {
                                     importing = false
                                     onCloseRequest()
                                     showToast("Game Imported: '$it'")

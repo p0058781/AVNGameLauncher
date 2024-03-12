@@ -9,7 +9,9 @@ import org.skynetsoftware.avnlauncher.data.repository.gamesRepositoryKoinModule
 import org.skynetsoftware.avnlauncher.data.settings.settingsKoinModule
 import org.skynetsoftware.avnlauncher.data.updateCheckerKoinModule
 import org.skynetsoftware.avnlauncher.f95.f95ApiKoinModule
+import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
+import org.skynetsoftware.avnlauncher.logging.UncaughtExceptionHandlerLogger
 import org.skynetsoftware.avnlauncher.logging.loggerKoinModule
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModelsKoinModule
 
@@ -18,6 +20,7 @@ object AVNLauncherApp {
         startKoin {
             initKoin()
             modules(
+                imageLoaderKoinModule,
                 settingsKoinModule,
                 loggerKoinModule,
                 databaseKoinModule,

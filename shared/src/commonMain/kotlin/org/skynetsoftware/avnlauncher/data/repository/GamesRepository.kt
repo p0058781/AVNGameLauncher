@@ -1,5 +1,6 @@
 package org.skynetsoftware.avnlauncher.data.repository
 
+import io.realm.kotlin.MutableRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.notifications.ResultsChange
@@ -56,8 +57,8 @@ interface GamesRepository {
     suspend fun insertGame(
         title: String,
         imageUrl: String,
-        f95ZoneUrl: String,
-        executablePath: String,
+        threadId: Int,
+        executablePath: String?,
         version: String
     )
 
@@ -99,7 +100,7 @@ private class GamesRepositoryImpl(
         return sortOrder.sort(filter.filter(results.list.map { it.toGame() }), sortDirection)
     }
 
-    private fun findRealmGame(game: Game) = realm.query<RealmGame>("title == $0", game.title).first().find()
+    private fun MutableRealm.findRealmGame(game: Game) = query<RealmGame>("title == $0", game.title).first().find()
 
     override suspend fun all(): List<Game> {
         return realm.query<RealmGame>().find().map(RealmGame::toGame)
@@ -160,14 +161,14 @@ private class GamesRepositoryImpl(
     override suspend fun insertGame(
         title: String,
         imageUrl: String,
-        f95ZoneUrl: String,
-        executablePath: String,
+        threadId: Int,
+        executablePath: String?,
         version: String
     ) = realm.write {
         val game = RealmGame().apply {
             this.title = title
             this.imageUrl = imageUrl
-            this.f95ZoneUrl = f95ZoneUrl
+            this.f95ZoneThreadId = threadId
             this.executablePath = executablePath
             this.version = version
         }

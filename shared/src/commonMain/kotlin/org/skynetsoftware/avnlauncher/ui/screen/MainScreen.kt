@@ -44,7 +44,7 @@ import org.skynetsoftware.avnlauncher.ui.theme.materialColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
-import org.skynetsoftware.avnlauncher.utils.imageLoader
+import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
 @Composable
 fun MainScreen() {
@@ -308,7 +308,7 @@ private fun GamesList(
     val games by remember { gamesViewModem.games }.collectAsState()
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive((Toolkit.getDefaultToolkit().screenSize.width / 5).dp),
+        columns = GridCells.Adaptive(gamesGridCellMinSizeDp()),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(10.dp)
@@ -331,7 +331,7 @@ private fun GameItem(
     val cardHover by cardHoverInteractionSource.collectIsHoveredAsState()
 
     CompositionLocalProvider(
-        LocalImageLoader provides imageLoader(koinInject())
+        LocalImageLoader provides koinInject()
     ) {
         Card(
             backgroundColor = if (cardHover) CardHoverColor else CardColor,
