@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -26,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
@@ -38,8 +36,6 @@ import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
-import org.skynetsoftware.avnlauncher.ui.theme.Foreground
-import org.skynetsoftware.avnlauncher.ui.theme.Gray
 import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
@@ -100,7 +96,7 @@ fun EditGameDialog(
                             modifier = Modifier.size(20.dp).clickable {
                                 showFilePicker = true
                             },
-                            colorFilter = ColorFilter.tint(Color.White),
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
                         )
                     },
                 )
@@ -128,7 +124,6 @@ fun EditGameDialog(
                         mainViewModel.showToast(R.strings.editGameToastGameUpdated)
                     },
                     shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Gray, contentColor = Foreground),
                 ) {
                     Text(
                         text = R.strings.editGameButtonSave,
