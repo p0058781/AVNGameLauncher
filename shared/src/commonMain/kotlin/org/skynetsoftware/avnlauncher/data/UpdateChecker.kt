@@ -10,6 +10,7 @@ import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
+import org.skynetsoftware.avnlauncher.data.model.mergeWith
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.f95.F95Api
 import org.skynetsoftware.avnlauncher.logging.Logger
@@ -134,18 +135,16 @@ private class UpdateCheckerImpl(
         val currentVersion = game.version
         logger.info("doing slow update check for: ${game.title}")
         val f95Game = f95Api.getGame(game.f95ZoneThreadId).getOrThrow()
-        // TODO update RealmGame with new data, merge with existing
+
+        var newGame = game.mergeWith(f95Game)
+
         val newVersion = f95Game.version
-        val releaseDate = f95Game.releaseDate
         if (newVersion != currentVersion) {
-            gamesRepository.updateUpdateAvailable(true, game)
-            gamesRepository.updateAvailableVersion(newVersion, game)
+            newGame = newGame.copy(updateAvailable = true, availableVersion = newVersion)
             logger.info("${game.title}: Update Available $newVersion")
         }
 
-        if (releaseDate != game.releaseDate) {
-            gamesRepository.updateReleaseDate(releaseDate, game)
-        }
+        gamesRepository.updateGame(newGame)
 
         return UpdateChecker.UpdateResult(game, newVersion != currentVersion, null)
     }
