@@ -74,4 +74,6 @@
     <string name="systemNotificationDescriptionUpdateAvailable">There is updated available for %d games</string>
     <string name="systemNotificationUpdatesChannelTitle">Game Updates</string>
     <string name="systemNotificationUpdatesChannelDescription">Notifications for new Game Versions</string>
+    <string name="noGamesTextPart1">You don\'t have any games currently\nChange filter or click</string>
+    <string name="noGamesTextPart2">in the top bar to import game.</string>
 </resources>

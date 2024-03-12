@@ -25,6 +25,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Card
 import androidx.compose.material.Chip
 import androidx.compose.material.ExperimentalMaterialApi
@@ -48,6 +50,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -56,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getNavigatorScreenModel
 import cafe.adriel.voyager.koin.getScreenModel
@@ -318,6 +323,7 @@ data class MainScreen(
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun GamesList(
     games: List<Game>,
@@ -329,23 +335,61 @@ private fun GamesList(
     updateRating: (rating: Int, game: Game) -> Unit,
     updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(gamesGridCellMinSizeDp()),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(10.dp),
-    ) {
-        items(games) { game ->
-            GameItem(
-                game = game,
-                sfwMode = sfwMode,
-                query = query,
-                editGame = editGame,
-                launchGame = launchGame,
-                resetUpdateAvailable = resetUpdateAvailable,
-                updateRating = updateRating,
-                updateFavorite = updateFavorite,
+    if (games.isEmpty()) {
+        val modId = "importIcon"
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = buildAnnotatedString {
+                    append(stringResource(MR.strings.noGamesTextPart1))
+                    append(" ")
+                    appendInlineContent(modId, "[importIcon]")
+                    append(" ")
+                    append(stringResource(MR.strings.noGamesTextPart2))
+                },
+                inlineContent = mapOf(
+                    Pair(
+                        modId,
+                        InlineTextContent(
+                            Placeholder(
+                                width = 20.sp,
+                                height = 20.sp,
+                                placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
+                            ),
+                        ) {
+                            Icon(
+                                painter = painterResource(R.images.import),
+                                contentDescription = "",
+                                tint = Color.White,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        },
+                    ),
+                ),
+                textAlign = TextAlign.Center,
             )
+        }
+    } else {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(gamesGridCellMinSizeDp()),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(10.dp),
+        ) {
+            items(games) { game ->
+                GameItem(
+                    game = game,
+                    sfwMode = sfwMode,
+                    query = query,
+                    editGame = editGame,
+                    launchGame = launchGame,
+                    resetUpdateAvailable = resetUpdateAvailable,
+                    updateRating = updateRating,
+                    updateFavorite = updateFavorite,
+                )
+            }
         }
     }
 }
