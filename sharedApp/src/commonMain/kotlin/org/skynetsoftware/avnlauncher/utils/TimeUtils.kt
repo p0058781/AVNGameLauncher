@@ -27,3 +27,8 @@ fun formatPlayTime(playTime: Long?): String {
         else -> stringResource(MR.strings.nSeconds, seconds)
     }
 }
+
+fun Int?.hoursToMilliseconds(): Long? {
+    this ?: return null
+    return this * ONE_HOUR_SECONDS * ONE_SECOND_MILLIS
+}

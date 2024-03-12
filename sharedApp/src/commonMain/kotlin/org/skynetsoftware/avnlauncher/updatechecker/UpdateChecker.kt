@@ -186,4 +186,5 @@ private fun Game.mergeWith(f95Game: Game) =
         tags = f95Game.tags,
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
+        firstPlayed = firstPlayed,
     )

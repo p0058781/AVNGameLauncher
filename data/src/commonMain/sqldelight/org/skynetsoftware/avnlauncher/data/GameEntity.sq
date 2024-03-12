@@ -26,7 +26,8 @@ CREATE TABLE GameEntity (
     tags TEXT AS Set<String> NOT NULL,
     lastRedirectUrl TEXT,
     checkForUpdates INTEGER AS Boolean NOT NULL DEFAULT 1,
-    customImageUrl TEXT
+    customImageUrl TEXT,
+    firstPlayed INTEGER NOT NULL
 );
 
 all:
@@ -65,7 +66,8 @@ SET title = ?,
     availableVersion = ?,
     tags = ?,
     lastRedirectUrl = ?,
-    checkForUpdates = ?
+    checkForUpdates = ?,
+    firstPlayed = ?
 WHERE f95ZoneThreadId = ?;
 
 updateGame2:

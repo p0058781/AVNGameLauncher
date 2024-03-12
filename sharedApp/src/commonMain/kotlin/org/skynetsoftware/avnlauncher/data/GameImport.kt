@@ -13,10 +13,22 @@ val gameImportKoinModule = module {
     }
 }
 
-class GameExistsException : Exception()
-
 interface GameImport {
-    suspend fun importGame(threadId: Int): Result<Game>
+    suspend fun importGame(
+        threadId: Int,
+        playTime: Long? = null,
+        firstPlayed: Long? = null,
+    ): Result<Game>
+
+    suspend fun importGame(
+        threadUrl: String,
+        playTime: Long? = null,
+        firstPlayed: Long? = null,
+    ): Result<Game>
+
+    class GameExistsException : Exception()
+
+    class InvalidUrlException : Exception()
 }
 
 private class GameImportImpl(
@@ -24,7 +36,13 @@ private class GameImportImpl(
     private val f95Repository: F95Repository,
     private val executableFinder: ExecutableFinder,
 ) : GameImport {
-    override suspend fun importGame(threadId: Int): Result<Game> {
+    private val gameThreadUrlRegex = Regex("https://f95zone.to/threads/.+l\\.(\\d+).*")
+
+    override suspend fun importGame(
+        threadId: Int,
+        playTime: Long?,
+        firstPlayed: Long?,
+    ): Result<Game> {
         return when (val f95GameResult = f95Repository.getGame(threadId)) {
             is Result.Error -> Result.Error(f95GameResult.exception)
             is Result.Ok -> {
@@ -35,15 +53,37 @@ private class GameImportImpl(
                     } else {
                         this.copy(executablePaths = executablePath)
                     }
+                }.run {
+                    if (playTime == null) {
+                        this
+                    } else {
+                        this.copy(playTime = playTime)
+                    }
+                }.run {
+                    if (firstPlayed == null) {
+                        this
+                    } else {
+                        this.copy(firstPlayed = firstPlayed)
+                    }
                 }
                 val existingGame = gamesRepository.get(game.f95ZoneThreadId)
                 if (existingGame == null) {
                     gamesRepository.insertGame(game)
                     Result.Ok(game)
                 } else {
-                    Result.Error(GameExistsException())
+                    Result.Error(GameImport.GameExistsException())
                 }
             }
         }
+    }
+
+    override suspend fun importGame(
+        threadUrl: String,
+        playTime: Long?,
+        firstPlayed: Long?,
+    ): Result<Game> {
+        val threadId = gameThreadUrlRegex.matchEntire(threadUrl)?.groupValues?.getOrNull(1)?.toIntOrNull()
+            ?: return Result.Error(GameImport.InvalidUrlException())
+        return importGame(threadId, playTime, firstPlayed)
     }
 }

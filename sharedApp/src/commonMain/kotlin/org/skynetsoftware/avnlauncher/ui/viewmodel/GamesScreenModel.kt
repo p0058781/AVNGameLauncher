@@ -61,7 +61,7 @@ class GamesScreenModel(
         }.stateIn(screenModelScope, SharingStarted.Lazily, emptyList())
 
     private val firstPlayedTime = repoGames.map { games ->
-        games.minOfOrNull { it.added } ?: 0L
+        games.minOfOrNull { it.firstPlayed } ?: 0L
     }.stateIn(screenModelScope, SharingStarted.Lazily, 0L)
 
     val totalPlayTime = repoGames.map { games ->

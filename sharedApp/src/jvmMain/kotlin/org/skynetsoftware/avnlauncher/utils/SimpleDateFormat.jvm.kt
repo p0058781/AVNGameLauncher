@@ -5,7 +5,7 @@ package org.skynetsoftware.avnlauncher.utils
 import java.text.SimpleDateFormat
 
 actual class SimpleDateFormat actual constructor(pattern: String) {
-    private val platformSimpleDateFormat = SimpleDateFormat(pattern)
+    private val platformSimpleDateFormat = SimpleDateFormat(pattern).apply { isLenient = false }
 
     actual fun format(date: Long): String {
         return platformSimpleDateFormat.format(date)

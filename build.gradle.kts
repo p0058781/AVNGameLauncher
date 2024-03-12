@@ -1,6 +1,3 @@
-import com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorExtension
-import guru.nidi.graphviz.attribute.Color
-import guru.nidi.graphviz.attribute.Style
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 

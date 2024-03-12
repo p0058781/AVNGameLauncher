@@ -22,8 +22,8 @@ private class LoggerImpl(
         val console = builder.newAppender("stdout", "Console")
 
         val fileAppender = builder.newAppender("rolling", "RollingFile")
-        fileAppender.addAttribute("fileName", File(configManager.dataDir, "/log.txt").absolutePath)
-        fileAppender.addAttribute("filePattern", "log-%d{MM-dd-yy}.txt.gz")
+        fileAppender.addAttribute("fileName", File(configManager.dataDir, "log.txt").absolutePath)
+        fileAppender.addAttribute("filePattern", File(configManager.dataDir, "log-%d{MM-dd-yy}.txt.gz").absolutePath)
         val triggeringPolicies = builder.newComponent("Policies")
             .addComponent(
                 builder.newComponent("CronTriggeringPolicy")
