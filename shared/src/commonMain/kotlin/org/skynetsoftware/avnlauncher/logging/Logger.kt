@@ -2,12 +2,11 @@ package org.skynetsoftware.avnlauncher.logging
 
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.data.model.Logs
+import org.skynetsoftware.avnlauncher.data.database.model.RealmLog
 
 val loggerKoinModule = module {
     single<Logger> { LoggerImpl(get()) }
@@ -49,10 +48,10 @@ private class LoggerImpl(database: Database) : Logger {
         println("$severity[${dateTimeFormatter.format(time)}]: $message")
         coroutineScope.launch {
             transaction {
-                Logs.insert {
-                    it[Logs.time] = time.toEpochMilliseconds()
-                    it[Logs.logMessage] = message
-                    it[Logs.severity] = severity.name
+                RealmLog.insert {
+                    it[RealmLog.time] = time.toEpochMilliseconds()
+                    it[RealmLog.logMessage] = message
+                    it[RealmLog.severity] = severity.name
                 }
             }
         }

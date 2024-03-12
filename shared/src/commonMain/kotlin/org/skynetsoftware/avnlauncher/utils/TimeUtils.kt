@@ -1,8 +1,10 @@
 package org.skynetsoftware.avnlauncher.utils
 
+import org.skynetsoftware.avnlauncher.resources.R
+
 fun formatPlayTime(playTime: Long?): String {
     if(playTime == null || playTime == 0L) {
-        return "-"
+        return R.strings.noValue
     }
     val totalSeconds = playTime / 1000
 
