@@ -15,27 +15,34 @@ private class ExecutableFinderAndroid(
     private val application: Application,
     private val logger: Logger,
 ) : ExecutableFinder {
-    override fun validateExecutables(games: List<Game>): List<Pair<Game, String>> {
-        val gamesToUpdate = ArrayList<Pair<Game, String>>()
+    override fun validateExecutables(games: List<Game>): List<Pair<Int, Set<String>>> {
+        val gamesToUpdate = ArrayList<Pair<Int, Set<String>>>()
         games.forEach { game ->
-            if (game.executablePath.isNullOrEmpty()) {
-                val executable = findExecutable(game.title)
-                if (executable != null) {
-                    gamesToUpdate.add(game to executable)
+            val executablePaths = game.executablePaths
+            if (executablePaths.isEmpty()) {
+                val executables = findExecutables(game.title)
+                if (executables.isNotEmpty()) {
+                    gamesToUpdate.add(game.f95ZoneThreadId to executables)
                 } else {
                     logger.warning("No executable found for '${game.title}'")
                 }
             } else {
-                val executablePathFile = File(game.executablePath)
-                if (!executablePathFile.exists()) {
-                    gamesToUpdate.add(game to "")
+                val mutableExecutablePaths = executablePaths.toMutableSet()
+                mutableExecutablePaths.forEach {
+                    val executablePathFile = File(it)
+                    if (!executablePathFile.exists()) {
+                        mutableExecutablePaths.remove(it)
+                    }
+                }
+                if (mutableExecutablePaths.size != executablePaths.size) {
+                    gamesToUpdate.add(game.f95ZoneThreadId to mutableExecutablePaths)
                 }
             }
         }
         return gamesToUpdate
     }
 
-    override fun findExecutable(title: String): String? {
-        return application.packageManager.getInstalledApplications(0).find { it.name == title }?.packageName
+    override fun findExecutables(title: String): Set<String> {
+        return application.packageManager.getInstalledApplications(0).filter { it.name == title }.map { it.packageName }.toSet()
     }
 }

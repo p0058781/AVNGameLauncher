@@ -2,15 +2,14 @@ package org.skynetsoftware.avnlauncher.launcher
 
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.logging.Logger
-import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.OS
-import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.os
 
 actual val gameLauncherKoinModule = module {
@@ -36,9 +35,9 @@ private class GameLauncherDesktop(
         executablePath: String,
     ) {
         if (processStarterThread?.running == true) {
-            val message = R.strings.gameLauncherAnotherGameRunning.format(game.title, processStarterThread?.game?.title)
-            logger.warning(message)
-            eventCenter.emit(Event.ToastMessage(message))
+            eventCenter.emit(
+                Event.ToastMessage(MR.strings.gameLauncherAnotherGameRunning, game.title, processStarterThread?.game?.title ?: ""),
+            )
             return
         }
 

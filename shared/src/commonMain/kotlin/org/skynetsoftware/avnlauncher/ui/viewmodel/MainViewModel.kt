@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,14 +23,14 @@ class MainViewModel(
     val remoteClientMode = configManager.remoteClientMode
     val sfwMode = settingsManager.sfwModeEnabled
 
-    private val _toastMessage = MutableStateFlow<String?>(null)
-    val toastMessage: StateFlow<String?> get() = _toastMessage
+    private val _toastMessage = MutableStateFlow<Event.ToastMessage<*>?>(null)
+    val toastMessage: StateFlow<Event.ToastMessage<*>?> get() = _toastMessage
 
     init {
         viewModelScope.launch {
             eventCenter.events.collect {
-                if (it is Event.ToastMessage) {
-                    _toastMessage.emit(it.message)
+                if (it is Event.ToastMessage<*>) {
+                    _toastMessage.emit(it)
                     delay(it.duration)
                     _toastMessage.emit(null)
                 }
@@ -38,6 +39,10 @@ class MainViewModel(
     }
 
     fun showToast(message: String) {
+        eventCenter.emit(Event.ToastMessage(message))
+    }
+
+    fun showToast(message: StringResource) {
         eventCenter.emit(Event.ToastMessage(message))
     }
 

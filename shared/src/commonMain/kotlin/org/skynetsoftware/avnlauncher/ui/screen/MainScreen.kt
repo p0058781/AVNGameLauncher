@@ -54,11 +54,15 @@ import com.seiko.imageloader.model.ImageRequest
 import com.seiko.imageloader.model.blur
 import com.seiko.imageloader.rememberImagePainter
 import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
+import dev.icerock.moko.resources.StringResource
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
+import org.skynetsoftware.avnlauncher.MR
+import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.repository.Filter
@@ -76,7 +80,6 @@ import org.skynetsoftware.avnlauncher.ui.theme.lightColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
-import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
@@ -107,6 +110,12 @@ fun MainScreen(
     var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
     var showExecutablePathPicker by gamesViewModel.showExecutablePathPicker.collectAsMutableState()
 
+    val updateResult by gamesViewModel.updateCheckComplete.collectAsState(null)
+
+    updateResult?.let {
+        mainViewModel.showToast(it.buildToastMessage())
+    }
+
     MaterialTheme(
         colors = if (isSystemInDarkTheme()) darkColors else lightColors,
     ) {
@@ -122,11 +131,11 @@ fun MainScreen(
                                 modifier = Modifier.padding(start = 10.dp, end = 10.dp),
                             ) {
                                 Text(
-                                    text = R.strings.appName,
+                                    text = stringResource(MR.strings.appName),
                                     style = MaterialTheme.typography.h6,
                                     color = MaterialTheme.colors.onSurface,
                                 )
-                                Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
+                                Text(stringResource(MR.strings.totalPlayTime, formatPlayTime(totalPlayTime), averagePlayTime))
                             }
                         }
                         ToolbarSearch {
@@ -141,7 +150,7 @@ fun MainScreen(
                                     },
                                     placeholder = {
                                         Text(
-                                            text = R.strings.searchLabel,
+                                            text = stringResource(MR.strings.searchLabel),
                                             style = MaterialTheme.typography.body2,
                                         )
                                     },
@@ -278,8 +287,13 @@ fun MainScreen(
             )
         }
         toastMessage?.let {
+            val message = when (it.message) {
+                is String -> it.message
+                is StringResource -> stringResource(it.message, *it.args)
+                else -> null
+            } ?: return@let
             Toast(
-                text = it,
+                text = message,
             )
         }
     }
@@ -320,7 +334,7 @@ private fun SortFilter(
                     showFilterDropdown = true
                 },
             ) {
-                Text(R.strings.filterLabel)
+                Text(stringResource(MR.strings.filterLabel))
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     buildString {
@@ -339,7 +353,7 @@ private fun SortFilter(
                     showSortOrderDropdown = true
                 },
             ) {
-                Text(R.strings.sortLabel)
+                Text(stringResource(MR.strings.sortLabel))
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
                     buildString {
@@ -574,16 +588,25 @@ private fun GameItem(
                 Column(
                     modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth(),
                 ) {
-                    InfoItem(R.strings.infoLabelPlayTime, formatPlayTime(game.playTime))
-                    InfoItem(R.strings.infoLabelVersion, game.version)
-                    InfoItem(R.strings.infoLabelAvailableVersion, game.availableVersion ?: R.strings.noValue)
+                    InfoItem(stringResource(MR.strings.infoLabelPlayTime), formatPlayTime(game.playTime))
+                    InfoItem(stringResource(MR.strings.infoLabelVersion), game.version)
                     InfoItem(
-                        R.strings.infoLabelReleaseDate,
-                        if (game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate),
+                        stringResource(MR.strings.infoLabelAvailableVersion),
+                        game.availableVersion ?: stringResource(MR.strings.noValue),
                     )
                     InfoItem(
-                        R.strings.infoLabelFirstReleaseDate,
-                        if (game.firstReleaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.firstReleaseDate),
+                        stringResource(MR.strings.infoLabelReleaseDate),
+                        if (game.releaseDate <= 0L) stringResource(MR.strings.noValue) else releaseDateFormat.format(game.releaseDate),
+                    )
+                    InfoItem(
+                        stringResource(MR.strings.infoLabelFirstReleaseDate),
+                        if (game.firstReleaseDate <= 0L) {
+                            stringResource(
+                                MR.strings.noValue,
+                            )
+                        } else {
+                            releaseDateFormat.format(game.firstReleaseDate)
+                        },
                     )
                 }
                 RatingBar(
@@ -627,12 +650,39 @@ expect fun RowScope.ToolbarSearch(content: @Composable RowScope.() -> Unit)
 @Composable
 expect fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit)
 
+@Composable
 private fun State.buildText() =
     buildString {
         when (val state = this@buildText) {
-            State.Idle -> append(R.strings.stateIdle)
-            is State.Playing -> append(R.strings.statePlaying.format(state.game.title))
-            State.Syncing -> append(R.strings.stateSyncing)
-            State.UpdateCheckRunning -> append(R.strings.stateCheckingForUpdates)
+            State.Idle -> append(stringResource(MR.strings.stateIdle))
+            is State.Playing -> append(stringResource(MR.strings.statePlaying, state.game.title))
+            State.Syncing -> append(stringResource(MR.strings.stateSyncing))
+            State.UpdateCheckRunning -> append(stringResource(MR.strings.stateCheckingForUpdates))
         }
     }
+
+@Composable
+fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
+    return buildString {
+        val updates = this@buildToastMessage.filter { it.updateAvailable }
+        if (updates.isNotEmpty()) {
+            appendLine(
+                stringResource(MR.strings.toastUpdateAvailable),
+            )
+            updates.forEach {
+                appendLine(it.game.title)
+            }
+        } else {
+            appendLine(stringResource(MR.strings.toastNoUpdatesAvailable))
+        }
+        val exceptions = this@buildToastMessage.filter { it.exception != null }
+        if (exceptions.isNotEmpty()) {
+            appendLine(stringResource(MR.strings.toastException))
+            exceptions.forEach {
+                append(it.game.title)
+                append(": ")
+                append(it.exception?.message)
+            }
+        }
+    }
+}

@@ -29,15 +29,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
+import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
+import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
-import org.skynetsoftware.avnlauncher.utils.format
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -52,7 +53,7 @@ fun EditGameDialog(
     var checkForUpdates by remember { editGameViewModel.checkForUpdates }.collectAsMutableState()
 
     Dialog(
-        title = R.strings.editGameDialogTitle.format(title),
+        title = stringResource(MR.strings.editGameDialogTitle, title),
         onDismiss = onCloseRequest,
     ) {
         Surface(
@@ -70,7 +71,7 @@ fun EditGameDialog(
                     onValueChange = {
                         title = it
                     },
-                    label = { Text(R.strings.editGameInputLabelTitle) },
+                    label = { Text(stringResource(MR.strings.editGameInputLabelTitle)) },
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 TextField(
@@ -79,7 +80,7 @@ fun EditGameDialog(
                     onValueChange = {
                         imageUrl = it
                     },
-                    label = { Text(R.strings.editGameInputLabelImageUrl) },
+                    label = { Text(stringResource(MR.strings.editGameInputLabelImageUrl)) },
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 executablePaths.forEachIndexed { index, executablePath ->
@@ -91,7 +92,7 @@ fun EditGameDialog(
                             value = executablePath,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text(R.strings.editGameInputLabelExecutablePath) },
+                            label = { Text(stringResource(MR.strings.editGameInputLabelExecutablePath)) },
                             trailingIcon = {
                                 Image(
                                     painter = painterResource(R.images.edit),
@@ -138,7 +139,7 @@ fun EditGameDialog(
                         },
                     )
                     Text(
-                        text = R.strings.editGameDialogCheckForUpdates,
+                        text = stringResource(MR.strings.editGameDialogCheckForUpdates),
                         modifier = Modifier.align(Alignment.CenterVertically),
                     )
                 }
@@ -148,12 +149,12 @@ fun EditGameDialog(
                     onClick = {
                         editGameViewModel.save()
                         onCloseRequest()
-                        mainViewModel.showToast(R.strings.editGameToastGameUpdated)
+                        mainViewModel.showToast(MR.strings.editGameToastGameUpdated)
                     },
                     shape = MaterialTheme.shapes.medium,
                 ) {
                     Text(
-                        text = R.strings.editGameButtonSave,
+                        text = stringResource(MR.strings.editGameButtonSave),
                     )
                 }
             }

@@ -10,7 +10,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.skynetsoftware.avnlauncher.resources.R
+import dev.icerock.moko.resources.compose.stringResource
+import org.skynetsoftware.avnlauncher.MR
 
 @Composable
 fun PickExecutableDialog(
@@ -19,7 +20,7 @@ fun PickExecutableDialog(
     onExecutablePicked: (executablePath: String) -> Unit,
 ) {
     Dialog(
-        title = R.strings.pickeExecutablePathDialogTitle,
+        title = stringResource(MR.strings.pickeExecutablePathDialogTitle),
         onDismiss = onCloseRequest,
     ) {
         Surface(
