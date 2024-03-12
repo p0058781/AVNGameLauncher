@@ -10,19 +10,23 @@ jobs:
       RUNNER_TOOL_CACHE: /toolcache
     name: Build & Test
 
-    runs-on: linux
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3-beta
-
+      - name: Set up our JDK environment
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: corretto
       - name: KTLint & Detekt
         run: ./analyze_code.sh -q
       - name: Build & Test
         run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease releaseJar packageLinuxX64 packageWinX64 packageMacOSX64 assembleRelease
       - name: Create a Release
-        uses: akkuman/gitea-release-action@v1
+        uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ contains(github.ref_name, '_pre') }}
           files: |-
