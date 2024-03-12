@@ -1,0 +1,1 @@
+ALTER TABLE GameEntity DROP COLUMN lastRedirectUrl;

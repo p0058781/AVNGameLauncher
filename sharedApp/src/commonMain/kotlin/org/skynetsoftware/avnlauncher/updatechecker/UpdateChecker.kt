@@ -16,11 +16,12 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
-import org.skynetsoftware.avnlauncher.domain.utils.valueOrNull
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import kotlin.math.max
+
+private const val UPDATE_CHECK_MAX_GAMES_IN_SINGLE_REQUEST = 100
 
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
@@ -93,54 +94,87 @@ private class UpdateCheckerImpl(
     ): UpdateCheckResult {
         return runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
-            val now = Clock.System.now().toEpochMilliseconds()
-            val games = gamesRepository.all()
-                .filter { forceUpdateCheck || now > it.lastUpdateCheck + configManager.updateCheckInterval }
-                .filter { it.checkForUpdates }
-            val updatesResult = games.map { game ->
-                scope.async {
-                    val lastRedirectUrl = game.lastRedirectUrl
-                    var updatedRedirectUrl: String? = null
-
-                    val newRedirectUrl = f95Repository.getRedirectUrl(game.f95ZoneThreadId).valueOrNull()
-                    val result = if (newRedirectUrl != lastRedirectUrl) {
-                        val slowResult = doSlowUpdateCheck(game)
-                        newRedirectUrl?.let {
-                            updatedRedirectUrl = it
-                        }
-                        slowResult
-                    } else {
-                        UpdateCheckGame(game, false, null)
-                    }
-                    val newGame = result.game.copy(
-                        lastUpdateCheck = now,
-                        lastRedirectUrl = if (updatedRedirectUrl == null) {
-                            result.game.lastRedirectUrl
-                        } else {
-                            updatedRedirectUrl
-                        },
-                    )
-
-                    result.copy(game = newGame)
-                }
-            }.map {
-                it.await()
+            val start = Clock.System.now().toEpochMilliseconds()
+            val allGames = getGamesToCheckForUpdate(forceUpdateCheck)
+            logger.info("Checking ${allGames.size} games for updates")
+            val updateCheckResults = checkForUpdates(allGames)
+            logger.info(
+                "Update check took ${Clock.System.now().toEpochMilliseconds() - start}ms," +
+                    " made ${updateCheckResults.size} requests",
+            )
+            val gamesToUpdate = ArrayList<Game>()
+            val exceptions = ArrayList<Throwable>()
+            updateCheckResults.forEach {
+                gamesToUpdate.addAll(it.updates)
+                exceptions.addAll(it.exceptions)
             }
-            gamesRepository.updateGames(updatesResult.map { it.game })
-            if (updatesResult.none { it.updateAvailable }) {
+            if (gamesToUpdate.isEmpty()) {
                 logger.info("No Updates Available")
             }
-            val result = UpdateCheckResult(updatesResult)
-            eventCenter.emit(Event.UpdateCheckComplete(result))
-            result
+            logger.info("Updating ${gamesToUpdate.size} games")
+            val updateResult = gamesToUpdate.map {
+                scope.async {
+                    updateGameFromF95(it)
+                }
+            }.map { it.await() }
+
+            val gamesWithUpdate = ArrayList<Game>()
+            updateResult.forEach {
+                when (it) {
+                    is Result.Error -> exceptions.add(it.exception)
+                    is Result.Ok -> gamesWithUpdate.add(it.value)
+                }
+            }
+
+            val mergedResult = UpdateCheckResult(
+                updates = gamesWithUpdate,
+                exceptions = exceptions,
+            )
+            gamesRepository.updateGames(gamesWithUpdate)
+            eventCenter.emit(Event.UpdateCheckComplete(mergedResult))
+            mergedResult
         }
     }
 
-    private suspend fun doSlowUpdateCheck(game: Game): UpdateCheckGame {
+    private suspend fun getGamesToCheckForUpdate(forceUpdateCheck: Boolean): List<Game> {
+        val now = Clock.System.now().toEpochMilliseconds()
+        return gamesRepository.all()
+            .filter { forceUpdateCheck || now > it.lastUpdateCheck + configManager.updateCheckInterval }
+            .filter { it.checkForUpdates }
+    }
+
+    private suspend fun checkForUpdates(games: List<Game>): List<UpdateCheckResult> {
+        return games.chunked(UPDATE_CHECK_MAX_GAMES_IN_SINGLE_REQUEST).map { gamesChunk ->
+            scope.async {
+                val versions = f95Repository.getVersions(gamesChunk.map { it.f95ZoneThreadId })
+                when (versions) {
+                    is Result.Error -> UpdateCheckResult(
+                        updates = emptyList(),
+                        exceptions = listOf(versions.exception),
+                    )
+
+                    is Result.Ok -> {
+                        val gamesWithUpdates = gamesChunk.filter {
+                            val remoteVersion = versions.value[it.f95ZoneThreadId] ?: false
+                            it.version != remoteVersion && it.availableVersion != remoteVersion
+                        }
+                        UpdateCheckResult(
+                            updates = gamesWithUpdates,
+                            exceptions = emptyList(),
+                        )
+                    }
+                }
+            }
+        }.map {
+            it.await()
+        }
+    }
+
+    private suspend fun updateGameFromF95(game: Game): Result<Game> {
         val currentVersion = game.version
-        logger.info("doing slow update check for: ${game.title}")
+        logger.info("Updating game data from F95: ${game.title}")
         return when (val f95Game = f95Repository.getGame(game.f95ZoneThreadId)) {
-            is Result.Error -> UpdateCheckGame(game, false, f95Game.exception)
+            is Result.Error -> Result.Error(f95Game.exception)
             is Result.Ok -> {
                 var newGame = game.mergeWith(f95Game.value)
 
@@ -150,14 +184,14 @@ private class UpdateCheckerImpl(
                     logger.info("${game.title}: Update Available $newVersion")
                 }
 
-                return UpdateCheckGame(newGame, newVersion != currentVersion, null)
+                return Result.Ok(newGame)
             }
         }
     }
 
     private suspend fun runIfNotAlreadyRunning(run: suspend () -> UpdateCheckResult): UpdateCheckResult {
         if (updateCheckRunning) {
-            return UpdateCheckResult(emptyList())
+            return UpdateCheckResult(emptyList(), emptyList())
         }
         updateCheckRunning = true
         val result = run()
@@ -187,7 +221,6 @@ private fun Game.mergeWith(f95Game: Game) =
         playState = playState,
         availableVersion = availableVersion,
         tags = f95Game.tags,
-        lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
         notes = notes,

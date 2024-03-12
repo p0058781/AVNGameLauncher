@@ -43,7 +43,7 @@ class CheckForUpdatesWorker(private val context: Context, workerParameters: Work
         logger.debug("doWork")
         return withContext(Dispatchers.IO) {
             val result = updateChecker.checkForUpdates(this, true)
-            val count = result.games.count { it.updateAvailable }
+            val count = result.updates.count { it.updateAvailable }
             if (count > 0) {
                 sendNotification(count)
             }

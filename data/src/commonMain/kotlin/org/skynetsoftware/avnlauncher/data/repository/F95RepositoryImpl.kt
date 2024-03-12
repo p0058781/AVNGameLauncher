@@ -4,6 +4,7 @@ import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.f95.F95Api
 import org.skynetsoftware.avnlauncher.data.mapper.toGame
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.Versions
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 
@@ -19,10 +20,10 @@ private class F95RepositoryImpl(private val f95Api: F95Api) : F95Repository {
         }
     }
 
-    override suspend fun getRedirectUrl(gameThreadId: Int): Result<String> {
-        return when (val result = f95Api.getRedirectUrl(gameThreadId)) {
+    override suspend fun getVersions(gameThreadIds: List<Int>): Result<Versions> {
+        return when (val result = f95Api.getVersions(gameThreadIds)) {
             is Result.Error -> Result.Error(result.exception)
-            is Result.Ok -> Result.Ok(result.value)
+            is Result.Ok -> Result.Ok(result.value.msg)
         }
     }
 }

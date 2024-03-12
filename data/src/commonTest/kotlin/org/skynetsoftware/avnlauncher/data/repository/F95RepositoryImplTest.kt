@@ -12,6 +12,7 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.skynetsoftware.avnlauncher.data.f95.F95Api
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
+import org.skynetsoftware.avnlauncher.data.f95.model.F95Versions
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import kotlin.test.AfterTest
@@ -54,11 +55,11 @@ class F95RepositoryImplTest : KoinTest {
         }
 
     @Test
-    fun `getRedirectUrl calls f95Api getRedirectUrl`() =
+    fun `getVersions calls f95Api getVersions`() =
         runTest {
-            coEvery { f95Api.getRedirectUrl(0) } returns Result.Ok("")
-            f95Repository.getRedirectUrl(0)
-            coVerify { f95Api.getRedirectUrl(0) }
+            coEvery { f95Api.getVersions(any()) } returns Result.Ok(F95Versions("ok", emptyMap()))
+            f95Repository.getVersions(emptyList())
+            coVerify { f95Api.getVersions(any()) }
             confirmVerified(f95Api)
         }
 
@@ -79,18 +80,18 @@ class F95RepositoryImplTest : KoinTest {
         }
 
     @Test
-    fun `getRedirectUrl returns Result#Ok on success`() =
+    fun `getVersion returns Result#Ok on success`() =
         runTest {
-            coEvery { f95Api.getRedirectUrl(0) } returns Result.Ok("")
-            val result = f95Repository.getRedirectUrl(0)
+            coEvery { f95Api.getVersions(any()) } returns Result.Ok(F95Versions("ok", emptyMap()))
+            val result = f95Repository.getVersions(emptyList())
             assertIs<Result.Ok<*>>(result)
         }
 
     @Test
-    fun `getRedirectUrl returns Result#Error on error`() =
+    fun `getVersions returns Result#Error on error`() =
         runTest {
-            coEvery { f95Api.getRedirectUrl(0) } returns Result.Error(RuntimeException())
-            val result = f95Repository.getRedirectUrl(0)
+            coEvery { f95Api.getVersions(any()) } returns Result.Error(RuntimeException())
+            val result = f95Repository.getVersions(emptyList())
             assertIs<Result.Error<*>>(result)
         }
 }

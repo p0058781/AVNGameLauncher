@@ -1,13 +1,16 @@
 package org.skynetsoftware.avnlauncher.data.f95
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.get
-import io.ktor.client.request.prepareGet
+import io.ktor.serialization.kotlinx.json.json
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
+import org.skynetsoftware.avnlauncher.data.f95.model.F95Versions
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
 
@@ -23,7 +26,7 @@ fun Int.createF95ThreadUrl() = "${F95_ZONE_BASE_URL}/threads/$this"
 internal interface F95Api {
     suspend fun getGame(gameThreadId: Int): Result<F95Game>
 
-    suspend fun getRedirectUrl(gameThreadId: Int): Result<String>
+    suspend fun getVersions(gameThreadIds: List<Int>): Result<F95Versions>
 }
 
 private class F95ApiImpl(
@@ -37,9 +40,9 @@ private class F95ApiImpl(
         install(Logging) {
             level = LogLevel.NONE
         }
-    }
-    private val noRedirectClient = httpClient.config {
-        followRedirects = false
+        install(ContentNegotiation) {
+            json()
+        }
     }
 
     override suspend fun getGame(gameThreadId: Int): Result<F95Game> {
@@ -51,11 +54,11 @@ private class F95ApiImpl(
         }
     }
 
-    override suspend fun getRedirectUrl(gameThreadId: Int): Result<String> {
+    override suspend fun getVersions(gameThreadIds: List<Int>): Result<F95Versions> {
         return try {
-            val location =
-                noRedirectClient.prepareGet(gameThreadId.createF95ThreadUrl()).execute { it.headers["Location"] }
-            Result.Ok(location!!)
+            val versions: F95Versions =
+                httpClient.get("$F95_ZONE_BASE_URL/sam/checker.php?threads=${gameThreadIds.joinToString(",")}").body()
+            Result.Ok(versions)
         } catch (t: Throwable) {
             logger.error(t)
             Result.Error(t)

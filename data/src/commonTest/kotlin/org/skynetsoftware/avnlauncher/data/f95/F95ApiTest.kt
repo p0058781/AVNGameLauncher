@@ -10,12 +10,10 @@ import org.koin.test.inject
 import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.domain.utils.Result
-import org.skynetsoftware.avnlauncher.domain.utils.valueOrNull
 import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class F95ApiTest : KoinTest {
@@ -85,13 +83,6 @@ class F95ApiTest : KoinTest {
                 result.exception.printStackTrace()
             }
             assertTrue(result is Result.Error)
-        }
-
-    @Test
-    fun `getRedirectUrl return correct url`() =
-        runBlocking {
-            val redirectUrl = f95Api.getRedirectUrl(92601)
-            assertEquals("https://f95zone.to/threads/going-rogue-ch-7-deluxe-ker.92601/", redirectUrl.valueOrNull())
         }
 
     @Test

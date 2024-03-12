@@ -90,7 +90,7 @@ fun main() {
                 LaunchedEffect(null) {
                     eventCenter.events.collect {
                         if (it is Event.UpdateCheckComplete) {
-                            val count = it.updateCheckResult.games.count { game -> game.updateAvailable }
+                            val count = it.updateCheckResult.updates.count { game -> game.updateAvailable }
                             if (count > 0) {
                                 trayState.sendNotification(
                                     Notification(

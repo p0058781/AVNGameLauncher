@@ -42,7 +42,7 @@ class MainScreenModel(
                         _toastMessage.emit(null)
                     }
                     is Event.UpdateCheckComplete -> {
-                        if (it.updateCheckResult.games.count { game -> game.updateAvailable } > 0) {
+                        if (it.updateCheckResult.updates.count { game -> game.updateAvailable } > 0) {
                             _newUpdateAvailableIndicatorVisible.emit(true)
                         }
                     }

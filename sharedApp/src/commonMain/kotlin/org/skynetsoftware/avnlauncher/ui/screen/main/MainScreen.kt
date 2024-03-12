@@ -593,8 +593,6 @@ private fun State.buildText() =
 
 @Composable
 fun UpdateCheckResult.buildToastMessage(): String {
-    val updates = this@buildToastMessage.games.filter { it.updateAvailable }
-    val exceptions = this@buildToastMessage.games.filter { it.exception != null }
     return stringResource(MR.strings.updateCheckUpdateAvailable, updates.size, exceptions.size)
 }
 

@@ -87,7 +87,6 @@ private class GamesRepositoryImpl(
                     playState = game.playState,
                     availableVersion = game.availableVersion,
                     tags = game.tags,
-                    lastRedirectUrl = game.lastRedirectUrl,
                     firstPlayed = game.firstPlayed,
                     f95ZoneThreadId = game.f95ZoneThreadId,
                     notes = game.notes,

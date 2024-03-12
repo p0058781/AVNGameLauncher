@@ -9,7 +9,7 @@ class StateHandlerTest {
     private val game = Game(
         "", "", "", 0, emptySet(), "", 0L, 0,
         0f, false, 0L, 0L, 0L, false, 0L, 0L,
-        PlayState.Playing, null, emptySet(), null, false, 0, null, false,
+        PlayState.Playing, null, emptySet(), false, 0, null, false,
     )
 
     @Test
