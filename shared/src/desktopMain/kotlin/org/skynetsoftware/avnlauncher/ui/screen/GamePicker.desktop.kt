@@ -22,8 +22,8 @@ actual fun GamePicker(
             onGamePicked(path?.path)
         }
 
-        OS.Mac -> DirectoryPicker(visible) { path ->
-            onGamePicked(path)
+        OS.Mac -> FilePicker(visible, fileExtensions = listOf("app")) { path ->
+            onGamePicked(path?.path)
         }
     }
 }
