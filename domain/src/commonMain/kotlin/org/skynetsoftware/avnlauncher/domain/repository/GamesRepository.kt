@@ -19,6 +19,11 @@ interface GamesRepository {
         rating: Int,
     )
 
+    suspend fun updateFavorite(
+        id: Int,
+        favorite: Boolean,
+    )
+
     suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>)
 
     suspend fun insertGame(game: Game)

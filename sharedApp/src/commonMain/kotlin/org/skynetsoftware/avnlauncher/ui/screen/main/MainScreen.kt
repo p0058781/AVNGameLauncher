@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -253,6 +254,9 @@ data class MainScreen(
                 updateRating = { rating, game ->
                     gamesScreenModel.updateRating(rating, game)
                 },
+                updateFavorite = { favorite, game ->
+                    gamesScreenModel.updateFavorite(favorite, game)
+                },
             )
         }
         selectedGame?.let {
@@ -312,6 +316,7 @@ private fun GamesList(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
+    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(gamesGridCellMinSizeDp()),
@@ -327,6 +332,7 @@ private fun GamesList(
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
+                updateFavorite = updateFavorite,
             )
         }
     }
@@ -342,6 +348,7 @@ private fun GameItem(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
+    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
     externalLinkUtils: ExternalLinkUtils = koinInject(),
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
@@ -480,6 +487,15 @@ private fun GameItem(
                         text = "(${game.f95Rating})",
                         modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
                         style = MaterialTheme.typography.body2,
+                    )
+                    Image(
+                        painter = painterResource(if (game.favorite) R.images.heart_filled else R.images.heart),
+                        contentDescription = null,
+                        modifier = Modifier.height(30.dp).padding(5.dp).align(Alignment.CenterVertically)
+                            .clickable {
+                                updateFavorite(!game.favorite, game)
+                            },
+                        colorFilter = ColorFilter.tint(Color.Red),
                     )
                     if (game.f95ZoneThreadId > 0) {
                         Image(

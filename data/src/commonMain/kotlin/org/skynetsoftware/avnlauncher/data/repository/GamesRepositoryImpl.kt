@@ -45,6 +45,13 @@ private class GamesRepositoryImpl(
         withContext(coroutineDispatcher) { database.gameEntityQueries.updateRating(rating, id) }
     }
 
+    override suspend fun updateFavorite(
+        id: Int,
+        favorite: Boolean,
+    ) {
+        withContext(coroutineDispatcher) { database.gameEntityQueries.updateFavorite(favorite, id) }
+    }
+
     override suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>) {
         withContext(coroutineDispatcher) {
             games.forEach {
@@ -84,6 +91,7 @@ private class GamesRepositoryImpl(
                     firstPlayed = game.firstPlayed,
                     f95ZoneThreadId = game.f95ZoneThreadId,
                     notes = game.notes,
+                    favorite = game.favorite,
                 )
             }
         }

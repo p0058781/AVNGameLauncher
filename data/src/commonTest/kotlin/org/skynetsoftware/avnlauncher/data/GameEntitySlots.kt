@@ -28,4 +28,5 @@ class GameEntitySlots {
     val customImageUrl: CapturingSlot<String?> = slot()
     val firstPlayed: CapturingSlot<Long> = slot()
     val notes: CapturingSlot<String?> = slot()
+    val favorite: CapturingSlot<Boolean> = slot()
 }

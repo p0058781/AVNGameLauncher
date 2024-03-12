@@ -17,7 +17,7 @@ class FilterTest {
     @Test
     fun `entries returns all values`() {
         val entries = Filter.entries
-        assertEquals(7, entries.size)
+        assertEquals(8, entries.size)
         assertContains(entries, Filter.All)
         assertContains(entries, Filter.Playing)
         assertContains(entries, Filter.Completed)
@@ -25,6 +25,7 @@ class FilterTest {
         assertContains(entries, Filter.GamesWithUpdate)
         assertContains(entries, Filter.HiddenGames)
         assertContains(entries, Filter.UnplayedGames)
+        assertContains(entries, Filter.Favorites)
     }
 
     @Test
@@ -78,7 +79,7 @@ class FilterTest {
         return Game(
             "", "", "", 0, emptySet(), "", playTime, 0, 0f,
             updateAvailable, 0L, 0L, 0L, hidden, 0L, 0L,
-            playState, null, emptySet(), null, false, 0L, null,
+            playState, null, emptySet(), null, false, 0L, null, false,
         )
     }
 }
