@@ -32,6 +32,7 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
+                //TODO use gradle catalog
                 implementation("io.realm.kotlin:library-base:1.11.1")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
@@ -50,6 +51,16 @@ kotlin {
 
                 implementation("dev.icerock.moko:mvvm-compose:0.16.1")
                 implementation("dev.icerock.moko:mvvm-flow-compose:0.16.1")
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                //implementation(compose.desktop.uiTestJUnit4)
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+                implementation("io.insert-koin:koin-test:3.5.0")
+                implementation("app.cash.turbine:turbine:0.12.1")
             }
         }
         val androidMain by getting {

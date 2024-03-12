@@ -42,13 +42,15 @@ import org.skynetsoftware.avnlauncher.ui.theme.CardColor
 import org.skynetsoftware.avnlauncher.ui.theme.CardHoverColor
 import org.skynetsoftware.avnlauncher.ui.theme.materialColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
+import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
+private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
+
 @Composable
 fun MainScreen() {
-
     val updateChecker = koinInject<UpdateChecker>()
     var selectedGame by remember { mutableStateOf<Game?>(null) }
     var importGameDialogVisible by remember { mutableStateOf(false) }
@@ -60,6 +62,7 @@ fun MainScreen() {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
+//TODO toolbar with options
             Column {
                 Actions(
                     showToast = {
@@ -431,7 +434,7 @@ private fun GameItem(
                     InfoItem(R.strings.infoLabelPlayTime, formatPlayTime(game.playTime))
                     InfoItem(R.strings.infoLabelVersion, game.version)
                     InfoItem(R.strings.infoLabelAvailableVersion, game.availableVersion ?: R.strings.noValue)
-                    InfoItem(R.strings.infoLabelReleaseDate, game.releaseDate ?: R.strings.noValue)
+                    InfoItem(R.strings.infoLabelReleaseDate, if(game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate))
                 }
                 RatingBar(
                     rating = game.rating,

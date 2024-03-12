@@ -33,7 +33,7 @@ private fun imageLoader(configManager: ConfigManager, avnLauncherLogger: Logger)
 
                 is Config.Some -> {
                     diskCacheConfig {
-                        directory(cacheDir.value)
+                        directory(cacheDir.value.resolve("images"))
                         maxSizeBytes(512L * 1024 * 1024) // 512MB
                     }
                 }

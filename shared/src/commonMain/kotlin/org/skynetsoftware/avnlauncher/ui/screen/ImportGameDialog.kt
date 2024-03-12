@@ -6,11 +6,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogWindow
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.data.GameImport
+import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.theme.Foreground
 import org.skynetsoftware.avnlauncher.ui.theme.Gray
+import org.skynetsoftware.avnlauncher.utils.format
 
 @Composable
 fun ImportGameDialog(
@@ -21,12 +22,9 @@ fun ImportGameDialog(
     var threadId by remember { mutableStateOf<String?>(null) }
     var importing by remember { mutableStateOf(false) }
 
-    //TODO hardcoded strings
-    //TODO use Dialog
-    DialogWindow(
-        title = "Import Game",
-        onCloseRequest = onCloseRequest,
-        resizable = false,
+    Dialog(
+        title = R.strings.importGameDialogTitle,
+        onDismiss = onCloseRequest,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -49,7 +47,7 @@ fun ImportGameDialog(
                         onValueChange = {
                             threadId = it
                         },
-                        label = { Text("F95 Thread ID") }
+                        label = { Text(R.strings.importGameDialogThreadIdHint) }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
@@ -58,10 +56,10 @@ fun ImportGameDialog(
                         onClick = {
                             threadId?.let {
                                 importing = true
-                                gameImport.importGame(it.toInt()) {
+                                gameImport.importGame(it.toInt()) { title ->
                                     importing = false
                                     onCloseRequest()
-                                    showToast("Game Imported: '$it'")
+                                    showToast(R.strings.importGameDialogSuccessToast.format(title))
                                 }
                             }
                         },
@@ -69,7 +67,7 @@ fun ImportGameDialog(
                         colors = ButtonDefaults.buttonColors(backgroundColor = Gray, contentColor = Foreground),
                     ) {
                         Text(
-                            text = "Import",
+                            text = R.strings.importGameDialogButtonImport,
                         )
                     }
                 }

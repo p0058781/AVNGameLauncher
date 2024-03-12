@@ -21,9 +21,18 @@ object R {
         const val editGameInputLabelExecutablePath = "Executable Path"
         const val editGameToastGameUpdated = "Game Updated"
         const val editGameButtonSave = "Save"
+        const val nHours = "%d hours"
+        const val nMinutes = "%d minutes"
+        const val nSeconds = "%d seconds"
+        const val importGameDialogTitle = "Import Game"
+        const val importGameDialogThreadIdHint = "F95 Thread ID"
+        const val importGameDialogSuccessToast = "Game Imported: '%s'"
+        const val importGameDialogButtonImport = "Import"
     }
 
     object images {
+        const val star_full = "star_full.png"
+        const val star_empty = "star_empty.png"
         const val playing = "playing.png"
         const val refresh = "refresh.png"
         const val import = "import.png"

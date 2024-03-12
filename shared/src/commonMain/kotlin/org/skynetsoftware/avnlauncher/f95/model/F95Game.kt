@@ -5,8 +5,8 @@ data class F95Game(
     val title: String,
     val imageUrl: String,
     val version: String,
-    val rating: Int,
-    val firstReleaseDate: String,
-    val releaseDate: String,
+    val rating: Float,
+    val firstReleaseDate: Long,
+    val releaseDate: Long,
     val tags: Set<String>,
 )

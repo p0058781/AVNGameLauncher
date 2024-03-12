@@ -13,6 +13,7 @@ import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.model.toGame
+import org.skynetsoftware.avnlauncher.data.model.toRealmGame
 
 val gamesRepositoryKoinModule = module {
     single<GamesRepository> { GamesRepositoryImpl(get()) }
@@ -36,7 +37,7 @@ interface GamesRepository {
 
     suspend fun updateUpdateAvailable(updateAvailable: Boolean, game: Game)
 
-    suspend fun updateReleaseDate(releaseDate: String?, game: Game)
+    suspend fun updateReleaseDate(releaseDate: Long, game: Game)
 
     suspend fun updateAvailableVersion(availableVersion: String?, game: Game)
 
@@ -54,13 +55,7 @@ interface GamesRepository {
 
     suspend fun updateImageUrl(imageUrl: String, game: Game)
 
-    suspend fun insertGame(
-        title: String,
-        imageUrl: String,
-        threadId: Int,
-        executablePath: String?,
-        version: String
-    )
+    suspend fun insertGame(game: Game)
 
     //repo
     fun setSortOrder(sortOrder: SortOrder)
@@ -154,25 +149,14 @@ private class GamesRepositoryImpl(
         findRealmGame(game)?.imageUrl = imageUrl
     }
 
-    override suspend fun updateReleaseDate(releaseDate: String?, game: Game) = realm.write {
+    override suspend fun updateReleaseDate(releaseDate: Long, game: Game) = realm.write {
         findRealmGame(game)?.releaseDate = releaseDate
     }
 
     override suspend fun insertGame(
-        title: String,
-        imageUrl: String,
-        threadId: Int,
-        executablePath: String?,
-        version: String
+        game: Game
     ) = realm.write {
-        val game = RealmGame().apply {
-            this.title = title
-            this.imageUrl = imageUrl
-            this.f95ZoneThreadId = threadId
-            this.executablePath = executablePath
-            this.version = version
-        }
-        copyToRealm(game)
+        copyToRealm(game.toRealmGame())
         Unit
     }
 

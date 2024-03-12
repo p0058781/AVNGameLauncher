@@ -1,25 +1,28 @@
 package org.skynetsoftware.avnlauncher.data.model
 
+import io.realm.kotlin.ext.realmSetOf
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
-import org.skynetsoftware.avnlauncher.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.f95.model.F95Game
 
 data class Game(
     val title: String,
     val imageUrl: String,
-    val f95ZoneThreadId: Int,
+    val f95ZoneThreadId: Int,//TODO allow multiple versions
     val executablePath: String?,
     val version: String,
     val playTime: Long,
     val rating: Int,
+    val f95Rating: Float,
     val updateAvailable: Boolean,
     val added: Long,
     val lastPlayed: Long,
     val lastUpdateCheck: Long,
     val hidden: Boolean,
-    val releaseDate: String?,
+    val releaseDate: Long,
+    val firstReleaseDate: Long,
     val playState: PlayState,
     val availableVersion: String?,
+    val tags: Set<String>,
 )
 
 fun Game.toRealmGame() = RealmGame().apply {
@@ -30,14 +33,17 @@ fun Game.toRealmGame() = RealmGame().apply {
     version = this@toRealmGame.version
     playTime = this@toRealmGame.playTime
     rating = this@toRealmGame.rating
+    f95Rating = this@toRealmGame.f95Rating
     updateAvailable = this@toRealmGame.updateAvailable
     added = this@toRealmGame.added
     lastPlayed = this@toRealmGame.lastPlayed
     lastUpdateCheck = this@toRealmGame.lastUpdateCheck
     hidden = this@toRealmGame.hidden
     releaseDate = this@toRealmGame.releaseDate
+    firstReleaseDate = this@toRealmGame.firstReleaseDate
     playState = this@toRealmGame.playState.name
     availableVersion = this@toRealmGame.availableVersion
+    tags = realmSetOf(*this@toRealmGame.tags.toTypedArray())
 }
 
 fun RealmGame.toGame() = Game(
@@ -48,14 +54,17 @@ fun RealmGame.toGame() = Game(
     version = version,
     playTime = playTime,
     rating = rating,
+    f95Rating = f95Rating,
     updateAvailable = updateAvailable,
     added = added,
     lastPlayed = lastPlayed,
     lastUpdateCheck = lastUpdateCheck,
     hidden = hidden,
     releaseDate = releaseDate,
+    firstReleaseDate = firstReleaseDate,
     playState = PlayState.fromString(playState),
-    availableVersion = availableVersion
+    availableVersion = availableVersion,
+    tags = setOf(*tags.toTypedArray())
 )
 
 fun F95Game.toRealmGame() = RealmGame().apply {
@@ -63,6 +72,29 @@ fun F95Game.toRealmGame() = RealmGame().apply {
     imageUrl = this@toRealmGame.imageUrl
     f95ZoneThreadId = this@toRealmGame.threadId
     version = this@toRealmGame.version
-    rating = this@toRealmGame.rating
+    f95Rating = this@toRealmGame.rating
     releaseDate = this@toRealmGame.releaseDate
+    firstReleaseDate = this@toRealmGame.firstReleaseDate
+    tags = realmSetOf(*this@toRealmGame.tags.toTypedArray())
 }
+
+fun F95Game.toGame() = Game(
+    title = title,
+    imageUrl = imageUrl,
+    f95ZoneThreadId = -1,
+    executablePath = null,
+    version = version,
+    playTime = 0L,
+    rating = 0,
+    f95Rating = rating,
+    updateAvailable = false,
+    added = 0L,
+    lastPlayed = 0L,
+    lastUpdateCheck = 0L,
+    hidden = false,
+    releaseDate = releaseDate,
+    firstReleaseDate = firstReleaseDate,
+    playState = PlayState.None,
+    availableVersion = null,
+    tags = tags
+)
