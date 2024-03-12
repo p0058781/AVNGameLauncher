@@ -100,7 +100,7 @@ fun SettingsDialog(
                 Spacer(modifier = Modifier.height(10.dp))
             }
             if (gamesDirShown) {
-                GamesDirPicker(showFilePicker) {
+                GamesDirPicker(showFilePicker, gamesDir) {
                     showFilePicker = false
                     it?.let {
                         settingsViewModel.setGamesDir(it)

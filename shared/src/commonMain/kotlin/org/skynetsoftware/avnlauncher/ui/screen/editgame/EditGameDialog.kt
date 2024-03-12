@@ -127,7 +127,7 @@ fun EditGameDialog(
                     )
                 }
             }
-            GamePicker(showFilePicker) {
+            GamePicker(showFilePicker, executablePath) {
                 showFilePicker = false
                 it?.let {
                     executablePath = it

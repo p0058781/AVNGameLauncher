@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 @Composable
 actual fun GamePicker(
     visible: Boolean,
+    currentPath: String?,
     onGamePicked: (game: String?) -> Unit,
 ) {
     TODO("not implemented")
@@ -13,6 +14,7 @@ actual fun GamePicker(
 @Composable
 actual fun GamesDirPicker(
     visible: Boolean,
+    currentDir: String?,
     onDirPicked: (dir: String?) -> Unit,
 ) {
     TODO("not implemented")
