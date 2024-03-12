@@ -26,6 +26,7 @@
     <string name="importGameDialogSuccessToast">Game Imported: \'%s\'</string>
     <string name="importGameDialogErrorToast">Error Importing Game: \'%s\'</string>
     <string name="importGameDialogButtonImport">Import</string>
+    <string name="importGameDialogGameExists">Game Exists</string>
     <string name="totalPlayTime">Total play time: %s, %.1fh/day</string>
     <string name="statePlaying">Playing \'%s\'</string>
     <string name="stateCheckingForUpdates">Checking for Updates</string>

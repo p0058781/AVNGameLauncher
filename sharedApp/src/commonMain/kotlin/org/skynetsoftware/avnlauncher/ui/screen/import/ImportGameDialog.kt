@@ -3,7 +3,6 @@ package org.skynetsoftware.avnlauncher.ui.screen.import
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,7 +23,9 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.MR
+import org.skynetsoftware.avnlauncher.data.GameExistsException
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
+import org.skynetsoftware.avnlauncher.ui.screen.applyPlatformSpecificHeight
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameScreenModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
@@ -44,7 +45,7 @@ fun ImportGameDialog(
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier,
+            modifier = Modifier.applyPlatformSpecificHeight(),
         ) {
             val stateCopy = state
             when (stateCopy) {
@@ -87,20 +88,24 @@ fun ImportGameDialog(
                 ImportGameScreenModel.State.Importing -> {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         CircularProgressIndicator()
                     }
                 }
 
                 is ImportGameScreenModel.State.Error -> {
+                    val message = when (stateCopy.error) {
+                        is GameExistsException -> stringResource(MR.strings.importGameDialogGameExists)
+                        else -> stateCopy.error.message.orEmpty()
+                    }
                     mainScreenModel.showToast(
                         message = stringResource(
                             MR.strings.importGameDialogErrorToast,
-                            stateCopy.error.message.orEmpty(),
+                            message,
                         ),
                     )
-                    onCloseRequest()
+                    importGameScreenModel.resetState()
                 }
             }
         }

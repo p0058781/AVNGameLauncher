@@ -34,6 +34,7 @@ import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.component.CheckBoxWithText
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamesDirPicker
+import org.skynetsoftware.avnlauncher.ui.screen.applyPlatformSpecificHeight
 import org.skynetsoftware.avnlauncher.ui.viewmodel.SettingsScreenModel
 
 @Suppress("LongMethod")
@@ -52,7 +53,7 @@ fun SettingsDialog(
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
+            modifier = Modifier.applyPlatformSpecificHeight().verticalScroll(rememberScrollState()),
         ) {
             var showFilePicker by remember { mutableStateOf(false) }
             Column(
