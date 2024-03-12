@@ -13,6 +13,7 @@ import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.toSyncGame
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.logging.Logger
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
@@ -24,7 +25,7 @@ val syncServiceModule = module {
         if (configManager.remoteClientMode) {
             SyncServiceNoOp()
         } else {
-            SyncServiceImpl(get(), get(), get(), get(), get())
+            SyncServiceImpl(get(), get(), get(), get(), get(), get())
         }
     }
 }
@@ -49,12 +50,14 @@ private class SyncServiceImpl(
     private val updateChecker: UpdateChecker,
     private val settingsManager: SettingsManager,
     private val eventCenter: EventCenter,
+    private val logger: Logger,
 ) : SyncService {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private var syncJob: Job? = null
 
     override fun start() {
+        logger.info("starting sync service")
         syncJob?.cancel()
         syncJob = scope.launch {
             while (true) {
@@ -78,14 +81,17 @@ private class SyncServiceImpl(
     }
 
     override fun stop() {
+        logger.info("stopping sync")
         syncJob?.cancel()
     }
 
     private suspend fun sync() {
+        logger.info("sync in progress")
         eventCenter.emit(Event.SyncStarted)
         updateChecker.startUpdateCheck(scope, true)
         val allGames = gamesRepository.all().map { it.toSyncGame() }
         syncApi.set(allGames)
         eventCenter.emit(Event.SyncCompleted)
+        logger.info("sync done")
     }
 }

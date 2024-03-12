@@ -13,6 +13,7 @@ import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
 import org.skynetsoftware.avnlauncher.logging.logUncaughtExceptions
 import org.skynetsoftware.avnlauncher.logging.loggerKoinModule
+import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.settings.settingsKoinModule
 import org.skynetsoftware.avnlauncher.state.eventCenterModule
 import org.skynetsoftware.avnlauncher.state.stateHandlerModule
@@ -48,7 +49,9 @@ object AVNLauncherApp {
         logUncaughtExceptions(koinApplication.koin.get())
 
         val syncService = koinApplication.koin.get<SyncService>()
-        syncService.start()
-        // TODO autostart from settings
+        val settingsManager = koinApplication.koin.get<SettingsManager>()
+        if (settingsManager.syncEnabled.value) {
+            syncService.start()
+        }
     }
 }

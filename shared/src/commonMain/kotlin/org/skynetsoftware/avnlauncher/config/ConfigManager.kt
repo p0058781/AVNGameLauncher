@@ -1,13 +1,21 @@
 package org.skynetsoftware.avnlauncher.config
 
 import org.koin.core.module.Module
+import org.skynetsoftware.avnlauncher.data.repository.Filter
+import org.skynetsoftware.avnlauncher.data.repository.SortDirection
+import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 
 expect val configKoinModule: Module
 
-interface ConfigManagerShared {
-    val dataDir: String
-    val cacheDir: String
-    val remoteClientMode: Boolean
+abstract class ConfigManagerShared {
+    abstract val dataDir: String
+    abstract val cacheDir: String
+    abstract val remoteClientMode: Boolean
+    open val selectedFilterDefault: Filter = Filter.All
+    open val selectedSortOrderDefault: SortOrder = SortOrder.LastPlayed
+    open val selectedSortOrderDirectionDefault: SortDirection = SortDirection.Descending
+    open val fastUpdateCheckDefault: Boolean = false
+    abstract val syncEnabled: Boolean
 }
 
-expect interface ConfigManager : ConfigManagerShared
+expect abstract class ConfigManager : ConfigManagerShared
