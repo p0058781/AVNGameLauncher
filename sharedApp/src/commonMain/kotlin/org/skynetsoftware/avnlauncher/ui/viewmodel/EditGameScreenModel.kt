@@ -2,13 +2,21 @@ package org.skynetsoftware.avnlauncher.ui.viewmodel
 
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 
-class EditGameScreenModel(private val gamesRepository: GamesRepository, private val game: Game) : ScreenModel {
+class EditGameScreenModel(
+    private val gamesRepository: GamesRepository,
+    private val game: Game,
+    private val executableFinder: ExecutableFinder,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) : ScreenModel {
     val title = MutableStateFlow(game.title)
     val imageUrl = MutableStateFlow(game.customImageUrl ?: game.imageUrl)
     val checkForUpdates = MutableStateFlow(game.checkForUpdates)
@@ -18,6 +26,9 @@ class EditGameScreenModel(private val gamesRepository: GamesRepository, private 
 
     private val _executablePaths = MutableStateFlow(game.executablePaths.addSingleEmptyValueIfEmptySet())
     val executablePaths: StateFlow<List<String>> get() = _executablePaths
+
+    private val _findingExecutablePathsInProgress = MutableStateFlow(false)
+    val findingExecutablePathsInProgress: StateFlow<Boolean> get() = _findingExecutablePathsInProgress
 
     fun save() =
         screenModelScope.launch {
@@ -62,6 +73,16 @@ class EditGameScreenModel(private val gamesRepository: GamesRepository, private 
             val executablePaths = executablePaths.value.toMutableList()
             executablePaths.add("")
             _executablePaths.emit(executablePaths)
+        }
+
+    fun findExecutablePaths() =
+        screenModelScope.launch(ioDispatcher) {
+            _findingExecutablePathsInProgress.emit(true)
+            val currentExecutables = executablePaths.value.toMutableSet()
+            val foundExecutables = executableFinder.findExecutables(game.title)
+            currentExecutables.addAll(foundExecutables)
+            _executablePaths.emit(currentExecutables.toList())
+            _findingExecutablePathsInProgress.emit(false)
         }
 }
 
