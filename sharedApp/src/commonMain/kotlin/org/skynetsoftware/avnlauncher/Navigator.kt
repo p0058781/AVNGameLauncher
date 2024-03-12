@@ -21,11 +21,15 @@ val LocalDraggableArea: ProvidableCompositionLocal<DraggableArea?> = staticCompo
 fun Navigator(
     exitApplication: () -> Unit,
     draggableArea: DraggableArea,
+    setMaximized: () -> Unit,
+    setFloating: () -> Unit,
 ) {
     CompositionLocalProvider(LocalDraggableArea provides draggableArea) {
         Navigator(
             MainScreen(
                 exitApplication = exitApplication,
+                setMaximized = setMaximized,
+                setFloating = setFloating,
             ),
         ) {
             MaterialTheme(

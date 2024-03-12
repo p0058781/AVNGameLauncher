@@ -30,10 +30,12 @@ actual fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit) {
 actual fun ToolbarActions(
     modifier: Modifier,
     sfwMode: Boolean,
+    maximized: Boolean,
     startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onSfwModeClicked: () -> Unit,
+    onToggleMaximizedClicked: () -> Unit,
     exitApplication: () -> Unit,
 ) {
     Row(
@@ -51,6 +53,9 @@ actual fun ToolbarActions(
         }
         IconAction(R.images.settings) {
             onSettingsClicked()
+        }
+        IconAction(if (maximized) R.images.minimize else R.images.maximize) {
+            onToggleMaximizedClicked()
         }
         IconAction(R.images.close) {
             exitApplication()

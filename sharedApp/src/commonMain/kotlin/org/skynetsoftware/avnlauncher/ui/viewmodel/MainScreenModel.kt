@@ -29,6 +29,9 @@ class MainScreenModel(
     private val _newUpdateAvailableIndicatorVisible = MutableStateFlow(false)
     val newUpdateAvailableIndicatorVisible: StateFlow<Boolean> get() = _newUpdateAvailableIndicatorVisible
 
+    private val _windowMaximized = MutableStateFlow(false)
+    val windowMaximized: StateFlow<Boolean> get() = _windowMaximized
+
     init {
         screenModelScope.launch {
             eventCenter.events.collect {
@@ -61,6 +64,19 @@ class MainScreenModel(
         screenModelScope.launch {
             settingsRepository.setSfwModeEnabled(!sfwMode.value)
         }
+
+    fun toggleMaximized(
+        setMaximized: () -> Unit,
+        setFloating: () -> Unit,
+    ) = screenModelScope.launch {
+        val newValue = !windowMaximized.value
+        _windowMaximized.emit(newValue)
+        if (newValue) {
+            setMaximized()
+        } else {
+            setFloating()
+        }
+    }
 
     fun startUpdateCheck() {
         screenModelScope.launch {
