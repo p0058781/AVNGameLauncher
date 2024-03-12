@@ -53,7 +53,10 @@ fun main(args: Array<String>) {
     val cacheDir by parser.option(ArgType.String, shortName = "c", fullName = "cache-dir", description = "Cache dir")
     parser.parse(args)
 
-    AVNLauncherApp.onCreate(createConfig(dataDir, cacheDir))
+    val config = createConfig(dataDir, cacheDir)
+    System.setProperty("java.util.prefs.userRoot", config.dataDir)
+
+    AVNLauncherApp.onCreate(config)
     application {
         val windowState = rememberWindowState(
             position = WindowPosition.Aligned(Alignment.Center),
