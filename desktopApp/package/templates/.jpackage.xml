@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<jpackage-state version="{jdVersion}" platform="{platform}">
+  <app-version>{version}</app-version>
+  <main-launcher>AVN Game Launcher</main-launcher>
+  <main-class>MainKt</main-class>
+  <signed>false</signed>
+  <app-store>false</app-store>
+</jpackage-state>

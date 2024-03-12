@@ -38,7 +38,9 @@ kotlin {
                 implementation(libs.voyager.screenmodel)
                 implementation(libs.voyager.koin)
 
-                api(libs.moko.resources)
+                api(libs.moko.resources.asProvider().get().let { "${it.module}:${it.versionConstraint.requiredVersion}" }) {
+                    exclude(group = "com.ibm.icu", module = "icu4j")
+                }
                 api(libs.moko.resources.compose)
             }
         }

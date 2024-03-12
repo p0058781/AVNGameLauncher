@@ -1,0 +1,40 @@
+name: PR Pipeline
+on:
+  push:
+    tags:
+      - release/**
+
+jobs:
+  build:
+    env: 
+      RUNNER_TOOL_CACHE: /toolcache
+    name: Build & Test
+
+    runs-on: linux
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3-beta
+      - name: Build & Test
+        run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease releaseJar packageLinuxX64 packageWinX64 packageMacOSX64 assembleRelease
+      - name: Upload kover report
+        uses: actions/upload-artifact@v3
+        with:
+          name: kover-report.zip
+          path: "**/build/reports/kover/*"
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apks.zip
+          path: androidApp/build/outputs/apk/release/*.apk
+      - name: Upload Desktop JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: desktop-jars.zip
+          path: desktopApp/build/libs/desktopApp-release-*.jar
+      - name: Upload desktop native package
+        uses: actions/upload-artifact@v3
+        with:
+          name: desktop-native-packages.zip
+          path: desktopApp/build/package/**/release-*.zip
