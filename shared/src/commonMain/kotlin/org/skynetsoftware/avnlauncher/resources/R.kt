@@ -31,6 +31,7 @@ object R {
         const val importGameDialogTitle = "Import Game"
         const val importGameDialogThreadIdHint = "F95 Thread ID"
         const val importGameDialogSuccessToast = "Game Imported: '%s'"
+        const val importGameDialogErrorToast = "Error Importing Game: '%s'"
         const val importGameDialogButtonImport = "Import"
         const val totalPlayTime = "Total play time: %s, %.1fh/day"
         const val statePlaying = "Playing '%s'"

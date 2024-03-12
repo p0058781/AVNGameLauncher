@@ -49,6 +49,7 @@ import com.seiko.imageloader.rememberImagePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.repository.Filter
@@ -196,7 +197,7 @@ fun MainScreen(
         }
         selectedGame?.let {
             EditGameDialog(
-                _selectedGame = it,
+                editGameViewModel = koinInject(parameters = { parametersOf(it) }),
                 onCloseRequest = {
                     selectedGame = null
                 },

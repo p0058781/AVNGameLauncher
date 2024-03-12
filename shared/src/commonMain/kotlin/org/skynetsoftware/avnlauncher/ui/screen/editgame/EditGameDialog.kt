@@ -31,8 +31,6 @@ import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
-import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
@@ -43,8 +41,7 @@ import org.skynetsoftware.avnlauncher.utils.format
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun EditGameDialog(
-    _selectedGame: Game,
-    editGameViewModel: EditGameViewModel = koinInject(parameters = { parametersOf(_selectedGame) }),
+    editGameViewModel: EditGameViewModel,
     mainViewModel: MainViewModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
