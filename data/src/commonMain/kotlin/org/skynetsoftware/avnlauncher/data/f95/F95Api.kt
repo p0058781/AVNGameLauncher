@@ -38,7 +38,7 @@ private class F95ApiImpl(
             requestTimeoutMillis = REQUEST_TIMEOUT
         }
         install(Logging) {
-            level = LogLevel.INFO
+            level = LogLevel.NONE
         }
     }
     private val noRedirectClient = httpClient.config {
