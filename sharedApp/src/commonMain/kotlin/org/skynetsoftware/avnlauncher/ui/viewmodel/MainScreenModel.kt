@@ -27,13 +27,24 @@ class MainScreenModel(
     private val _toastMessage = MutableStateFlow<Event.ToastMessage<*>?>(null)
     val toastMessage: StateFlow<Event.ToastMessage<*>?> get() = _toastMessage
 
+    private val _newUpdateAvailableIndicatorVisible = MutableStateFlow(false)
+    val newUpdateAvailableIndicatorVisible: StateFlow<Boolean> get() = _newUpdateAvailableIndicatorVisible
+
     init {
         screenModelScope.launch {
             eventCenter.events.collect {
-                if (it is Event.ToastMessage<*>) {
-                    _toastMessage.emit(it)
-                    delay(it.duration)
-                    _toastMessage.emit(null)
+                when (it) {
+                    is Event.ToastMessage<*> -> {
+                        _toastMessage.emit(it)
+                        delay(it.duration)
+                        _toastMessage.emit(null)
+                    }
+                    is Event.UpdateCheckComplete -> {
+                        if (it.updateCheckResult.games.count { game -> game.updateAvailable } > 0) {
+                            _newUpdateAvailableIndicatorVisible.emit(true)
+                        }
+                    }
+                    else -> {}
                 }
             }
         }
@@ -58,4 +69,9 @@ class MainScreenModel(
             eventCenter.emit(Event.ToastMessage(updateCheckResult))
         }
     }
+
+    fun resetNewUpdateAvailableIndicatorVisible() =
+        screenModelScope.launch {
+            _newUpdateAvailableIndicatorVisible.emit(false)
+        }
 }

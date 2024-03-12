@@ -8,7 +8,6 @@ import org.skynetsoftware.avnlauncher.MR
 fun PlayState.label(): String =
     stringResource(
         when (this) {
-            PlayState.None -> MR.strings.playStateLabelNone
             PlayState.Playing -> MR.strings.playStateLabelPlaying
             PlayState.WaitingForUpdate -> MR.strings.playStateLabelWaitingForUpdate
             PlayState.Completed -> MR.strings.playStateLabelCompleted

@@ -1,4 +1,4 @@
-package org.skynetsoftware.avnlauncher.ui.screen
+package org.skynetsoftware.avnlauncher.ui.screen.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -42,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,12 +65,15 @@ import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalDraggableArea
 import org.skynetsoftware.avnlauncher.MR
+import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.label
+import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.Toast
+import org.skynetsoftware.avnlauncher.ui.screen.PickExecutableDialog
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsDialog
@@ -78,11 +84,13 @@ import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
+import java.net.URI
 import kotlin.random.Random
 
 private const val GAME_IMAGE_ASPECT_RATIO = 3.5f
 
 private val releaseDateFormat = SimpleDateFormat("MMM dd, yyyy")
+private val playedDateTimeFormat = SimpleDateFormat("MMM dd, yyyy HH:mm")
 
 data class MainScreen(
     val exitApplication: () -> Unit,
@@ -105,6 +113,9 @@ data class MainScreen(
 
         val totalPlayTime by remember { gamesScreenModel.totalPlayTime }.collectAsState()
         val averagePlayTime by remember { gamesScreenModel.averagePlayTime }.collectAsState()
+        val newUpdateAvailableIndicatorVisible by remember {
+            mainScreenModel.newUpdateAvailableIndicatorVisible
+        }.collectAsState()
         var searchQuery by remember { gamesScreenModel.searchQuery }
             .collectAsMutableState(context = Dispatchers.Main.immediate)
         val globalState by remember { mainScreenModel.state }.collectAsState()
@@ -205,9 +216,13 @@ data class MainScreen(
                 currentFilter = currentFilter,
                 currentSortOrder = currentSortOrder,
                 currentSortDirection = currentSortDirection,
+                updateAvailableIndicatorVisible = newUpdateAvailableIndicatorVisible,
                 modifier = Modifier.align(Alignment.End).padding(10.dp),
                 setFilter = {
                     gamesScreenModel.setFilter(it)
+                    if (it == org.skynetsoftware.avnlauncher.domain.model.Filter.GamesWithUpdate) {
+                        mainScreenModel.resetNewUpdateAvailableIndicatorVisible()
+                    }
                 },
                 setSortOrder = {
                     gamesScreenModel.setSortOrder(it)
@@ -320,6 +335,7 @@ private fun GameItem(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
+    externalLinkUtils: ExternalLinkUtils = koinInject(),
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
 
@@ -385,42 +401,92 @@ private fun GameItem(
                     modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth(),
                 ) {
                     InfoItem(stringResource(MR.strings.infoLabelPlayTime), formatPlayTime(game.playTime))
-                    InfoItem(stringResource(MR.strings.infoLabelVersion), game.version)
                     InfoItem(
-                        stringResource(MR.strings.infoLabelAvailableVersion),
-                        game.availableVersion ?: stringResource(MR.strings.noValue),
+                        stringResource(MR.strings.infoLabelFirstPlayed),
+                        playedDateTimeFormat.format(game.firstPlayed),
                     )
+                    InfoItem(
+                        stringResource(MR.strings.infoLabelLastPlayed),
+                        if (game.lastPlayed > 0L) {
+                            playedDateTimeFormat.format(game.lastPlayed)
+                        } else {
+                            stringResource(MR.strings.noValue)
+                        },
+                    )
+
+                    val versionValue = buildString {
+                        append(game.version)
+                        if (game.availableVersion.isNullOrBlank().not()) {
+                            append(" (")
+                            append(game.availableVersion)
+                            append(")")
+                        }
+                    }
+                    InfoItem(stringResource(MR.strings.infoLabelVersion), versionValue)
+
+                    val releaseDateValue = buildString {
+                        append(
+                            if (game.releaseDate <= 0L) {
+                                stringResource(MR.strings.noValue)
+                            } else {
+                                releaseDateFormat.format(
+                                    game.releaseDate,
+                                )
+                            },
+                        )
+                        if (game.firstReleaseDate > 0L) {
+                            append(" (")
+                            append(releaseDateFormat.format(game.firstReleaseDate))
+                            append(")")
+                        }
+                    }
                     InfoItem(
                         stringResource(MR.strings.infoLabelReleaseDate),
-                        if (game.releaseDate <= 0L) {
-                            stringResource(MR.strings.noValue)
-                        } else {
-                            releaseDateFormat.format(
-                                game.releaseDate,
-                            )
-                        },
+                        releaseDateValue,
                     )
-                    InfoItem(
-                        stringResource(MR.strings.infoLabelFirstReleaseDate),
-                        if (game.firstReleaseDate <= 0L) {
-                            stringResource(
-                                MR.strings.noValue,
-                            )
-                        } else {
-                            releaseDateFormat.format(game.firstReleaseDate)
-                        },
-                    )
+
+                    game.notes?.let {
+                        Spacer(
+                            modifier = Modifier.height(10.dp),
+                        )
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.body2,
+                            fontStyle = FontStyle.Italic,
+                        )
+                    }
                 }
                 Row(
                     modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
                 ) {
                     RatingBar(
                         rating = game.rating,
-                        modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
+                        modifier = Modifier.align(Alignment.CenterVertically),
                         onClick = { rating ->
                             updateRating(rating, game)
                         },
                     )
+                    Spacer(
+                        modifier = Modifier.width(10.dp),
+                    )
+                    Text(
+                        text = "(${game.f95Rating})",
+                        modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
+                        style = MaterialTheme.typography.body2,
+                    )
+                    if (game.f95ZoneThreadId > 0) {
+                        Image(
+                            painter = painterResource(R.images.link),
+                            contentDescription = null,
+                            modifier = Modifier.height(30.dp).padding(5.dp).align(Alignment.CenterVertically)
+                                .clickable {
+                                    externalLinkUtils.openInBrowser(
+                                        URI.create(game.f95ZoneThreadId.createF95ThreadUrl()),
+                                    )
+                                },
+                            colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
+                        )
+                    }
                     if (game.updateAvailable) {
                         Image(
                             painter = painterResource(R.images.update),

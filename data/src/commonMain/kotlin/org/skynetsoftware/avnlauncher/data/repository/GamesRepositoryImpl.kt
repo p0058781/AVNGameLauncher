@@ -84,6 +84,7 @@ private class GamesRepositoryImpl(
                     lastRedirectUrl = game.lastRedirectUrl,
                     firstPlayed = game.firstPlayed,
                     f95ZoneThreadId = game.f95ZoneThreadId,
+                    notes = game.notes,
                 )
             }
         }
@@ -97,6 +98,7 @@ private class GamesRepositoryImpl(
         checkForUpdates: Boolean,
         playState: PlayState,
         hidden: Boolean,
+        notes: String?,
     ) {
         withContext(coroutineDispatcher) {
             database.gameEntityQueries.updateGame2(
@@ -106,6 +108,7 @@ private class GamesRepositoryImpl(
                 checkForUpdates,
                 playState,
                 hidden,
+                notes,
                 id,
             )
         }

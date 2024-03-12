@@ -128,8 +128,9 @@ private class UpdateCheckerImpl(
             if (updatesResult.none { it.updateAvailable }) {
                 logger.info("No Updates Available")
             }
-            eventCenter.emit(Event.UpdateCheckComplete)
-            UpdateCheckResult(updatesResult)
+            val result = UpdateCheckResult(updatesResult)
+            eventCenter.emit(Event.UpdateCheckComplete(result))
+            result
         }
     }
 
@@ -187,4 +188,5 @@ private fun Game.mergeWith(f95Game: Game) =
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
         firstPlayed = firstPlayed,
+        notes = notes,
     )

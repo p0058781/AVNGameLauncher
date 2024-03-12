@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.updatechecker.UpdateCheckResult
 
 val eventCenterModule = module {
     single<EventCenter> { EventCenterImpl() }
@@ -36,7 +37,7 @@ sealed class Event {
     // UpdateChecker
     object UpdateCheckStarted : Event()
 
-    object UpdateCheckComplete : Event()
+    class UpdateCheckComplete(val updateCheckResult: UpdateCheckResult) : Event()
 
     // GameLauncher
     class PlayingStarted(val game: Game) : Event()

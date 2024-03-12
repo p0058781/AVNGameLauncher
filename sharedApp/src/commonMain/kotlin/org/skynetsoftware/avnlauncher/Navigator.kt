@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.ui.screen.MainScreen
+import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreen
 import org.skynetsoftware.avnlauncher.ui.theme.darkColors
 import org.skynetsoftware.avnlauncher.ui.theme.lightColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel

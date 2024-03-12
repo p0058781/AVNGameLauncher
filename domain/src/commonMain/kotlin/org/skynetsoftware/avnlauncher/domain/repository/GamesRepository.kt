@@ -34,6 +34,7 @@ interface GamesRepository {
         checkForUpdates: Boolean,
         playState: PlayState,
         hidden: Boolean,
+        notes: String?,
     )
 
     suspend fun updateGame(

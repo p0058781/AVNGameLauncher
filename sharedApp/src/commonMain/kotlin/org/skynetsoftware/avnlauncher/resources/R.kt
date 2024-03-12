@@ -16,10 +16,13 @@ object R {
         const val visible = "visible.png"
         const val gone = "gone.png"
         const val edit = "edit.png"
+        const val info = "info.png"
         const val close = "close.png"
         const val appIcon = "icon.png"
         const val settings = "settings.png"
         const val add = "add.png"
         const val back = "back.png"
+        const val f95Logo = "f95_logo.png"
+        const val link = "link.png"
     }
 }

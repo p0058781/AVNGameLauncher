@@ -30,7 +30,7 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
                 when (event) {
                     Event.PlayingEnded -> activeStates.removeAll { state -> state is State.Playing }
                     is Event.PlayingStarted -> activeStates.add(State.Playing(event.game))
-                    Event.UpdateCheckComplete -> activeStates.remove(State.UpdateCheckRunning)
+                    is Event.UpdateCheckComplete -> activeStates.remove(State.UpdateCheckRunning)
                     Event.UpdateCheckStarted -> activeStates.add(State.UpdateCheckRunning)
                     is Event.ToastMessage<*> -> {
                         // not handled

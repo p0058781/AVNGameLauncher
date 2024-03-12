@@ -1,10 +1,8 @@
-package org.skynetsoftware.avnlauncher.ui.screen
+package org.skynetsoftware.avnlauncher.ui.screen.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.resources.compose.stringResource
@@ -15,19 +13,17 @@ import org.skynetsoftware.avnlauncher.ui.component.TextAction
 
 @Composable
 actual fun RowScope.ToolbarTitle(content: @Composable RowScope.() -> Unit) {
-    // do nothing, don't display it
+    content()
 }
 
 @Composable
 actual fun RowScope.ToolbarSearch(content: @Composable RowScope.() -> Unit) {
-    // do nothing, don't display it
+    content()
 }
 
 @Composable
 actual fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit) {
-    Spacer(
-        modifier = Modifier.weight(1f).fillMaxWidth(),
-    )
+    content()
 }
 
 @Composable
@@ -55,6 +51,9 @@ actual fun ToolbarActions(
         }
         IconAction(R.images.settings) {
             onSettingsClicked()
+        }
+        IconAction(R.images.close) {
+            exitApplication()
         }
     }
 }
