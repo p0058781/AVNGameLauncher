@@ -108,7 +108,9 @@ fun SettingsDialog(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 if (minimizeToTrayOnCloseShown) {
-                    val minimizeToTrayOnClose by remember { (settingsScreenModel.minimizeToTrayOnClose as Option.Some).value }.collectAsState()
+                    val minimizeToTrayOnClose by remember {
+                        (settingsScreenModel.minimizeToTrayOnClose as Option.Some).value
+                    }.collectAsState()
                     CheckBoxWithText(
                         text = stringResource(MR.strings.settingsDialogMinimizeToTrayOnClose),
                         checked = minimizeToTrayOnClose,

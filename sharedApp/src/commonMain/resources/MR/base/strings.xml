@@ -72,4 +72,6 @@
     <string name="trayExit">Tray Exit</string>
     <string name="systemNotificationTitleUpdateAvailable">Updates Available</string>
     <string name="systemNotificationDescriptionUpdateAvailable">There is updated available for %d games</string>
+    <string name="systemNotificationUpdatesChannelTitle">Game Updates</string>
+    <string name="systemNotificationUpdatesChannelDescription">Notifications for new Game Versions</string>
 </resources>

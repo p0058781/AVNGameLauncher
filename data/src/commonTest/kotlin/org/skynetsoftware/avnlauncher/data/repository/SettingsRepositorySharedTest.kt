@@ -48,6 +48,7 @@ class SettingsRepositorySharedTest : KoinTest {
         every { configManager.selectedSortOrderDirectionDefault } returns SortDirection.Descending
         every { configManager.sfwModeEnabledDefault } returns false
         every { configManager.periodicUpdateChecksDefault } returns true
+        every { configManager.minimizeToTrayOnCloseDefault } returns false
     }
 
     @AfterTest

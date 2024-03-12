@@ -39,6 +39,7 @@ log4j = "2.22.1"
 dependencygraphgenerator = "0.8.0"
 mockk = "1.13.9"
 buildkonfig = "0.15.1"
+work = "2.9.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -102,6 +103,7 @@ sqdelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", v
 log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+androidx-work-runtimektx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 
 [bundles]
 

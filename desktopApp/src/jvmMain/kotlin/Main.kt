@@ -1,43 +1,43 @@
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Notification
+import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberTrayState
 import androidx.compose.ui.window.rememberWindowState
 import dev.icerock.moko.resources.compose.stringResource
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
+import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.AVNLauncherApp
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.resources.R
-import java.awt.Dimension
-import java.awt.Toolkit
-import java.lang.reflect.Field
-import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Option
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Notification
-import androidx.compose.ui.window.Tray
-import androidx.compose.ui.window.rememberTrayState
-import java.util.*
+import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
+import java.awt.Dimension
+import java.awt.Toolkit
+import java.lang.reflect.Field
+import java.util.Locale
 
 private const val DEFAULT_WINDOW_WIDTH_PERCENT = 0.7f
 private const val DEFAULT_WINDOW_HEIGHT_PERCENT = 0.72f
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "LongMethod")
 fun main() {
     try {
         val xToolkit = Toolkit.getDefaultToolkit()
@@ -56,9 +56,12 @@ fun main() {
             size = getDefaultWindowSize(),
         )
 
+        val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
-        //on desktop this is always Option.Some
-        val minimizeToTrayOnClose by remember { (settingsRepository.minimizeToTrayOnClose as Option.Some).value }.collectAsState()
+        // on desktop this is always Option.Some
+        val minimizeToTrayOnClose by remember {
+            (settingsRepository.minimizeToTrayOnClose as Option.Some).value
+        }.collectAsState()
         var minimized by remember { mutableStateOf(false) }
         var open by remember { mutableStateOf(true) }
 
@@ -71,21 +74,34 @@ fun main() {
         }
 
         if (open) {
+            LaunchedEffect(null) {
+                settingsRepository.periodicUpdateChecksEnabled.collect { periodicUpdateChecksEnabled ->
+                    if (periodicUpdateChecksEnabled) {
+                        updateChecker.startPeriodicUpdateChecks()
+                    } else {
+                        updateChecker.stopPeriodicUpdateChecks()
+                    }
+                }
+            }
             if (minimizeToTrayOnClose) {
                 val trayState = rememberTrayState()
-                val updateChecker = koinInject<UpdateChecker>()
                 val eventCenter = koinInject<EventCenter>()
 
                 LaunchedEffect(null) {
                     eventCenter.events.collect {
-                        if(it is Event.UpdateCheckComplete) {
+                        if (it is Event.UpdateCheckComplete) {
                             val count = it.updateCheckResult.games.count { game -> game.updateAvailable }
-                            if(count > 0) {
-                                trayState.sendNotification(Notification(
-                                    title = MR.strings.systemNotificationTitleUpdateAvailable.localized(),
-                                    message = MR.strings.systemNotificationDescriptionUpdateAvailable.localized(Locale.getDefault(), count),
-                                    type = Notification.Type.None
-                                ))
+                            if (count > 0) {
+                                trayState.sendNotification(
+                                    Notification(
+                                        title = MR.strings.systemNotificationTitleUpdateAvailable.localized(),
+                                        message = MR.strings.systemNotificationDescriptionUpdateAvailable.localized(
+                                            Locale.getDefault(),
+                                            count,
+                                        ),
+                                        type = Notification.Type.None,
+                                    ),
+                                )
                             }
                         }
                     }
@@ -98,22 +114,22 @@ fun main() {
                             stringResource(MR.strings.trayShowHideWindow),
                             onClick = {
                                 minimized = !minimized
-                            }
+                            },
                         )
                         Item(
                             stringResource(MR.strings.trayCheckForUpdates),
                             onClick = {
                                 updateChecker.checkForUpdates(true)
-                            }
+                            },
                         )
                         Item(
                             stringResource(MR.strings.trayExit),
                             onClick = {
                                 open = false
                                 exitApplication()
-                            }
+                            },
                         )
-                    }
+                    },
                 )
             }
 

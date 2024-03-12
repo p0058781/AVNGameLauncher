@@ -10,7 +10,9 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":sharedApp"))
+                implementation(project(":logger"))
                 implementation(libs.koin.android)
+                implementation(libs.androidx.work.runtimektx)
             }
         }
     }

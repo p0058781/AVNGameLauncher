@@ -35,10 +35,9 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings, con
                 SettingsRepository::minimizeToTrayOnClose.name,
                 configManager.minimizeToTrayOnCloseDefault,
             )
-        }
+        },
     )
     override val minimizeToTrayOnClose: Option<out StateFlow<Boolean>> get() = _minimizeToTrayOnClose
-
 
     override suspend fun setGamesDir(gamesDir: String) {
         _gamesDir.value.emit(gamesDir)
