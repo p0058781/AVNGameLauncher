@@ -1,11 +1,11 @@
-package org.skynetsoftware.avnlauncher.data.config
+package org.skynetsoftware.avnlauncher.config
 
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 
-internal expect fun Module.configKoinModule()
+internal expect fun Module.configKoinModuleInternal()
 
 abstract class ConfigManagerShared {
     abstract val dataDir: String

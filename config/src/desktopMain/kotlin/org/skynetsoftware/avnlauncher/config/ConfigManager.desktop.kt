@@ -1,4 +1,4 @@
-package org.skynetsoftware.avnlauncher.data.config
+package org.skynetsoftware.avnlauncher.config
 
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.domain.utils.OS
@@ -7,7 +7,7 @@ import java.io.File
 
 private const val APPLICATION_NAME = "avnlauncher"
 
-internal actual fun Module.configKoinModule() {
+internal actual fun Module.configKoinModuleInternal() {
     single<ConfigManager> { ConfigManagerImpl() }
 }
 

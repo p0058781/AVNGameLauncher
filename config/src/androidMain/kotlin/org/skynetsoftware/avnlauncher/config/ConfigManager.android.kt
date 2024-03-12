@@ -1,9 +1,9 @@
-package org.skynetsoftware.avnlauncher.data.config
+package org.skynetsoftware.avnlauncher.config
 
 import android.content.Context
 import org.koin.core.module.Module
 
-internal actual fun Module.configKoinModule() {
+internal actual fun Module.configKoinModuleInternal() {
     single<ConfigManager> { ConfigManagerImpl(get()) }
 }
 

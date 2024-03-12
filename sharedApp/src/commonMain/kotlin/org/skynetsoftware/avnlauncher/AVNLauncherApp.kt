@@ -6,6 +6,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
+import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.data.gameImportKoinModule
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
@@ -28,6 +29,7 @@ object AVNLauncherApp {
             initKoin()
             modules(
                 imageLoaderKoinModule(),
+                configKoinModule,
                 dataKoinModule,
                 loggerKoinModule,
                 gameImportKoinModule,

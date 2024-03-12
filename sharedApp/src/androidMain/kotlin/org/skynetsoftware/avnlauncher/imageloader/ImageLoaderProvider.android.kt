@@ -7,7 +7,7 @@ import com.seiko.imageloader.component.setupDefaultComponents
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.data.config.ConfigManager
+import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.logger.Logger
 
 actual fun imageLoaderKoinModule(coroutineDispatcher: CoroutineDispatcher) =
@@ -17,7 +17,7 @@ actual fun imageLoaderKoinModule(coroutineDispatcher: CoroutineDispatcher) =
 
 private fun imageLoader(
     context: Context,
-    configManager: ConfigManager,
+    configManager: org.skynetsoftware.avnlauncher.config.ConfigManager,
     avnLauncherLogger: Logger,
     coroutineDispatcher: CoroutineDispatcher,
 ) = ImageLoader(requestCoroutineContext = coroutineDispatcher) {

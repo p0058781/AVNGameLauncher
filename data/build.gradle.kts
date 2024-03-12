@@ -18,6 +18,7 @@ kotlin {
             dependencies {
                 implementation(project(":domain"))
                 implementation(project(":logger"))
+                implementation(project(":config"))
                 implementation(libs.sqdelight.coroutines)
                 implementation(libs.sqdelight.primitiveadapters)
 

@@ -6,6 +6,7 @@ include(":desktopApp")
 include(":domain")
 include(":data")
 include(":logger")
+include(":config")
 include(":syncApp")
 
 pluginManagement {

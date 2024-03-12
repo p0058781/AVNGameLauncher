@@ -19,11 +19,32 @@ interface Logger {
 
     fun error(throwable: Throwable)
 
-    enum class Severity {
+    enum class Level {
         Verbose,
         Debug,
         Info,
         Warning,
         Error,
     }
+}
+
+internal fun Logger.getLoggerName(): String {
+    // iterate stacktrace until we find first occurrence of LoggerImpl
+    // then find first next element that is not LoggerImpl
+    val stacktrace = Thread.currentThread().stackTrace
+    var stacktraceElement: StackTraceElement? = null
+    var foundLogger = false
+    for (element in stacktrace) {
+        if (foundLogger) {
+            if (element.className != this::class.qualifiedName) {
+                stacktraceElement = element
+                break
+            }
+        } else {
+            if (element.className == this::class.qualifiedName) {
+                foundLogger = true
+            }
+        }
+    }
+    return stacktraceElement?.className ?: "Logger"
 }
