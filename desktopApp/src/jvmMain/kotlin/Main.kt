@@ -31,7 +31,6 @@ fun main() {
     application {
         Window(
             onCloseRequest = ::exitApplication,
-            // TODO maybe rename app to something that includes f95 since it is only f95
             title = stringResource(MR.strings.appName),
             icon = painterResource(R.images.appIcon),
             state = WindowState(

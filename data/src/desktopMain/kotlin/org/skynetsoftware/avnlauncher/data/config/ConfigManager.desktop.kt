@@ -26,7 +26,6 @@ private class ConfigManagerImpl : ConfigManager() {
 
     override val cacheDir: String = cacheDirFile.absolutePath
     override val dataDir: String = dataDirFile.absolutePath
-    override val syncEnabledDefault: Boolean = true
     override val sfwModeEnabledDefault: Boolean = false
 
     init {
