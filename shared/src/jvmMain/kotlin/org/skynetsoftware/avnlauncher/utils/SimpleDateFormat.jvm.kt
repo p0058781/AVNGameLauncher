@@ -9,7 +9,7 @@ actual class SimpleDateFormat actual constructor(pattern: String) {
         return platformSimpleDateFormat.format(date)
     }
 
-    actual fun parse(date: String): Long {
-        return platformSimpleDateFormat.parse(date).time
+    actual fun parse(date: String): Long? {
+        return platformSimpleDateFormat.parse(date)?.time
     }
 }

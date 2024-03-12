@@ -46,8 +46,6 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
-
-                implementation(libs.systemthemedetector)
             }
         }
         val commonTest by getting {
@@ -72,6 +70,7 @@ kotlin {
                 api(libs.appcompat)
                 api(libs.core.ktx)
                 implementation(libs.koin.android)
+                implementation(libs.accompanist.drawablepainter)
             }
         }
         val desktopMain by getting {
@@ -80,6 +79,8 @@ kotlin {
                 implementation(compose.desktop.common)
 
                 implementation(libs.mpfilepicker)
+
+                implementation(libs.systemthemedetector)
             }
         }
     }
@@ -89,7 +90,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.myapplication.common"
+    namespace = "org.skynetsoftware.avnlauncher.common"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -104,6 +105,18 @@ android {
     }
     kotlin {
         jvmToolchain(17)
+    }
+    flavorDimensions += "mode"
+    productFlavors {
+        create("remoteClient") {
+            dimension = "mode"
+        }
+        create("full") {
+            dimension = "mode"
+        }
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 

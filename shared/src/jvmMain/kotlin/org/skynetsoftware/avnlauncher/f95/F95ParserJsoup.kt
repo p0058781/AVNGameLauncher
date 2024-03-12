@@ -39,7 +39,7 @@ private class F95ParserJsoup : F95Parser {
                     bbWrapper.first()?.html() ?: throw IllegalArgumentException("bbWraper html not found"),
                 )?.groups?.get(1)?.value
                     ?: throw IllegalArgumentException("can't get release data"),
-            )
+            ) ?: throw IllegalArgumentException("can't parse releaseDate")
 
             val ratingRaw =
                 document.select("div.p-title-pageAction:nth-child(1) > span:nth-child(1) > span:nth-child(1)").first()

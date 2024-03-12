@@ -8,16 +8,16 @@ import org.skynetsoftware.avnlauncher.utils.os
 
 @Composable
 actual fun GamePicker(
-    visible: Boolean,
-    currentPath: String?,
+    show: Boolean,
+    currentExecutable: String?,
     onGamePicked: (game: String?) -> Unit,
 ) {
     when (os) {
-        OS.Linux -> FilePicker(visible, currentPath, fileExtensions = listOf("sh")) { path ->
+        OS.Linux -> FilePicker(show, currentExecutable, fileExtensions = listOf("sh")) { path ->
             onGamePicked(path?.path)
         }
 
-        OS.Windows -> FilePicker(visible, currentPath, fileExtensions = listOf("exe")) { path ->
+        OS.Windows -> FilePicker(show, currentExecutable, fileExtensions = listOf("exe")) { path ->
             onGamePicked(path?.path)
         }
 

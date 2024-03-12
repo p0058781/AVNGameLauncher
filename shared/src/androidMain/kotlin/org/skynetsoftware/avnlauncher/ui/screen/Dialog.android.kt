@@ -1,5 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.screen
 
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 
 @Composable
@@ -8,10 +10,14 @@ actual fun Dialog(
     onDismiss: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Dialog(
-        title = title,
-        onDismiss = onDismiss,
-    ) {
-        content()
-    }
+    AlertDialog(
+        title = {
+            Text(text = title)
+        },
+        text = {
+            content()
+        },
+        onDismissRequest = onDismiss,
+        buttons = {},
+    )
 }

@@ -52,6 +52,7 @@ object R {
         const val toolbarActionSfw = "SFW"
         const val toolbarActionNsfw = "NSFW"
         const val searchLabel = "Search"
+        const val gamePickerPickGame = "Pick Game"
     }
 
     object images {

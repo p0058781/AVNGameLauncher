@@ -78,6 +78,7 @@ import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
+import org.skynetsoftware.avnlauncher.utils.isDarkTheme
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -104,10 +105,8 @@ fun MainScreen(
     val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
     var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
 
-    val isDarkTheme by remember { mainViewModel.isDarkTheme }.collectAsState()
-
     MaterialTheme(
-        colors = if (isDarkTheme) lightColors else darkColors,
+        colors = if (isDarkTheme()) lightColors else darkColors,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -129,6 +128,7 @@ fun MainScreen(
                         Spacer(
                             modifier = Modifier.width(10.dp),
                         )
+                        // TODO search cant fit on android
                         Box(
                             modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
                         ) {

@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 
 @Composable
 expect fun GamePicker(
-    visible: Boolean,
-    currentPath: String?,
-    onGamePicked: (game: String?) -> Unit,
+    show: Boolean,
+    currentExecutable: String?,
+    onGamePicked: (executable: String?) -> Unit,
 )
 
 @Composable
