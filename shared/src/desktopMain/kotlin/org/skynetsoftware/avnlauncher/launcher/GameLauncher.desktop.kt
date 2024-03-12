@@ -87,7 +87,9 @@ private class GameLauncherDesktop(
                 )
             } catch (t: Throwable) {
                 logger.error(t)
-                // TODO show in ui
+                t.message?.let {
+                    eventCenter.emit(Event.ToastMessage(it))
+                }
             } finally {
                 eventCenter.emit(Event.PlayingEnded)
                 running = false
