@@ -1,10 +1,7 @@
-package org.skynetsoftware.avnlauncher.data
+package org.skynetsoftware.avnlauncher.updatechecker
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -26,21 +23,10 @@ val updateCheckerKoinModule = module {
 }
 
 interface UpdateChecker {
-    data class UpdateResult(
-        val game: Game,
-        val updateAvailable: Boolean,
-        val exception: Throwable?,
-    )
-
-    fun startUpdateCheck(
-        forceUpdateCheck: Boolean = false,
-        onComplete: (updateResults: List<UpdateResult>) -> Unit,
-    )
-
     suspend fun startUpdateCheck(
         scope: CoroutineScope,
         forceUpdateCheck: Boolean = false,
-    ): List<UpdateResult>
+    ): UpdateCheckResult
 }
 
 private class UpdateCheckerImpl(
@@ -50,24 +36,12 @@ private class UpdateCheckerImpl(
     private val settingsRepository: SettingsRepository,
     private val eventCenter: EventCenter,
 ) : UpdateChecker {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
     private var updateCheckRunning = false
-
-    override fun startUpdateCheck(
-        forceUpdateCheck: Boolean,
-        onComplete: (updateResults: List<UpdateChecker.UpdateResult>) -> Unit,
-    ) {
-        scope.launch {
-            val result = startUpdateCheck(this, forceUpdateCheck)
-            onComplete(result)
-        }
-    }
 
     override suspend fun startUpdateCheck(
         scope: CoroutineScope,
         forceUpdateCheck: Boolean,
-    ): List<UpdateChecker.UpdateResult> {
+    ): UpdateCheckResult {
         return runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
             val now = Clock.System.now().toEpochMilliseconds()
@@ -92,7 +66,7 @@ private class UpdateCheckerImpl(
                             }
                             slowResult
                         } else {
-                            UpdateChecker.UpdateResult(game, false, null)
+                            UpdateCheckGame(game, false, null)
                         }
                     } else {
                         doSlowUpdateCheck(game)
@@ -109,15 +83,15 @@ private class UpdateCheckerImpl(
                 logger.info("No Updates Available")
             }
             eventCenter.emit(Event.UpdateCheckComplete)
-            updatesResult
+            UpdateCheckResult(updatesResult)
         }
     }
 
-    private suspend fun doSlowUpdateCheck(game: Game): UpdateChecker.UpdateResult {
+    private suspend fun doSlowUpdateCheck(game: Game): UpdateCheckGame {
         val currentVersion = game.version
         logger.info("doing slow update check for: ${game.title}")
         return when (val f95Game = f95Repository.getGame(game.f95ZoneThreadId)) {
-            is Result.Error -> UpdateChecker.UpdateResult(game, false, f95Game.exception)
+            is Result.Error -> UpdateCheckGame(game, false, f95Game.exception)
             is Result.Ok -> {
                 var newGame = game.mergeWith(f95Game.value)
 
@@ -127,14 +101,14 @@ private class UpdateCheckerImpl(
                     logger.info("${game.title}: Update Available $newVersion")
                 }
 
-                return UpdateChecker.UpdateResult(newGame, newVersion != currentVersion, null)
+                return UpdateCheckGame(newGame, newVersion != currentVersion, null)
             }
         }
     }
 
-    private suspend fun runIfNotAlreadyRunning(run: suspend () -> List<UpdateChecker.UpdateResult>): List<UpdateChecker.UpdateResult> {
+    private suspend fun runIfNotAlreadyRunning(run: suspend () -> UpdateCheckResult): UpdateCheckResult {
         if (updateCheckRunning) {
-            return emptyList()
+            return UpdateCheckResult(emptyList())
         }
         updateCheckRunning = true
         val result = run()

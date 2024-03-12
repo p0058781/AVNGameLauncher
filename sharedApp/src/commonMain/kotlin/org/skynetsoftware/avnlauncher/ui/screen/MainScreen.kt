@@ -65,7 +65,6 @@ import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalDraggableArea
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
@@ -80,6 +79,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsDialog
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesScreenModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
+import org.skynetsoftware.avnlauncher.updatechecker.UpdateCheckResult
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
@@ -105,17 +105,12 @@ data class MainScreen(
         val toastMessage by remember { mainScreenModel.toastMessage }.collectAsState()
         var showExecutablePathPicker by gamesScreenModel.showExecutablePathPicker.collectAsMutableState()
 
-        val updateResult by gamesScreenModel.updateCheckComplete.collectAsState(null)
         val totalPlayTime by remember { gamesScreenModel.totalPlayTime }.collectAsState()
         val averagePlayTime by remember { gamesScreenModel.averagePlayTime }.collectAsState()
         var searchQuery by remember { gamesScreenModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
         val globalState by remember { mainScreenModel.state }.collectAsState()
         var importGameDialogVisible by remember { mutableStateOf(false) }
         var settingsDialogVisible by remember { mutableStateOf(false) }
-
-        updateResult?.let {
-            mainScreenModel.showToast(it.buildToastMessage())
-        }
 
         val draggableArea = LocalDraggableArea.current
 
@@ -191,7 +186,7 @@ data class MainScreen(
                     ToolbarActions(
                         sfwMode = sfwMode,
                         startUpdateCheck = {
-                            gamesScreenModel.startUpdateCheck()
+                            mainScreenModel.startUpdateCheck()
                         },
                         onImportGameClicked = {
                             importGameDialogVisible = true
@@ -275,6 +270,7 @@ data class MainScreen(
             val message = when (it.message) {
                 is String -> it.message
                 is StringResource -> stringResource(it.message, *it.args)
+                is UpdateCheckResult -> it.message.buildToastMessage()
                 else -> null
             } ?: return@let
             Toast(
@@ -648,9 +644,9 @@ private fun State.buildText() =
     }
 
 @Composable
-fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
+fun UpdateCheckResult.buildToastMessage(): String {
     return buildString {
-        val updates = this@buildToastMessage.filter { it.updateAvailable }
+        val updates = this@buildToastMessage.games.filter { it.updateAvailable }
         if (updates.isNotEmpty()) {
             appendLine(
                 stringResource(MR.strings.toastUpdateAvailable),
@@ -661,7 +657,7 @@ fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
         } else {
             appendLine(stringResource(MR.strings.toastNoUpdatesAvailable))
         }
-        val exceptions = this@buildToastMessage.filter { it.exception != null }
+        val exceptions = this@buildToastMessage.games.filter { it.exception != null }
         if (exceptions.isNotEmpty()) {
             appendLine(stringResource(MR.strings.toastException))
             exceptions.forEach {
