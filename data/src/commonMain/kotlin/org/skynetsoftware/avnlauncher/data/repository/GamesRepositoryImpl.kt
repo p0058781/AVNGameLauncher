@@ -3,7 +3,6 @@ package org.skynetsoftware.avnlauncher.data.repository
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -15,16 +14,16 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 
-internal fun Module.gamesRepositoryKoinModule() {
+internal fun Module.gamesRepositoryKoinModule(coroutineDispatcher: CoroutineDispatcher) {
     single<GamesRepository> {
-        GamesRepositoryImpl(get())
+        GamesRepositoryImpl(get(), coroutineDispatcher)
     }
 }
 
 @Suppress("TooManyFunctions")
 private class GamesRepositoryImpl(
     private val database: Database,
-    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val coroutineDispatcher: CoroutineDispatcher,
 ) : GamesRepository {
     override val games: Flow<List<Game>> =
         database.gameEntityQueries.all().asFlow().mapToList(coroutineDispatcher).map {

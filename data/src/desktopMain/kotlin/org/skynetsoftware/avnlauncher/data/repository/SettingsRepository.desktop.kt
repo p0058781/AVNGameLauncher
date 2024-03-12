@@ -10,7 +10,8 @@ import org.skynetsoftware.avnlauncher.domain.utils.MutableStateFlow
 import org.skynetsoftware.avnlauncher.domain.utils.Option
 
 internal actual fun Module.settingsKoinModule() {
-    single<SettingsRepository> { SettingsRepositoryImpl(Settings(), get()) }
+    single { Settings() }
+    single<SettingsRepository> { SettingsRepositoryImpl(get(), get()) }
 }
 
 internal actual class SettingsRepositoryImpl(private val settings: Settings, configManager: ConfigManager) :

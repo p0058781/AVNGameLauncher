@@ -36,7 +36,7 @@ sealed class Filter(val label: String) {
 
     companion object {
         val entries: List<Filter> by lazy {
-            listOf(All, GamesWithUpdate, HiddenGames, UnplayedGames, Playing, Completed, WaitingForUpdate)
+            listOf(Playing, GamesWithUpdate, WaitingForUpdate, Completed, All, HiddenGames, UnplayedGames)
         }
     }
 }

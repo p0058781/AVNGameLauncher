@@ -37,6 +37,7 @@ detekt = "1.23.3"
 sqldelight = "2.0.1"
 log4j = "2.22.1"
 dependencygraphgenerator = "0.8.0"
+mockk = "1.13.9"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -99,6 +100,7 @@ sqdelight-sqlitedriver = { module = "app.cash.sqldelight:sqlite-driver", version
 sqdelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [bundles]
 

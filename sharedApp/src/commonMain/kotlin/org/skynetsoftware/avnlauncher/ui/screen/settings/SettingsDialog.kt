@@ -44,7 +44,6 @@ fun SettingsDialog(
     settingsScreenModel: SettingsScreenModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
-    val fastUpdateCheck by remember { settingsScreenModel.fastUpdateCheck }.collectAsState()
     val periodicUpdateChecks by remember { settingsScreenModel.periodicUpdateChecksEnabled }.collectAsState()
     val gamesDirShown = settingsScreenModel.gamesDir is Option.Some
 
@@ -88,15 +87,6 @@ fun SettingsDialog(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                CheckBoxWithText(
-                    text = stringResource(MR.strings.settingsDialogFastUpdateCheck),
-                    checked = fastUpdateCheck,
-                    onCheckedChange = {
-                        settingsScreenModel.setFastUpdateCheck(it)
-                    },
-                    description = stringResource(MR.strings.settingsDialogFastUpdateCheckDescription),
-                )
                 Spacer(modifier = Modifier.height(10.dp))
                 CheckBoxWithText(
                     text = stringResource(MR.strings.settingsDialogPeriodicUpdateChecks),

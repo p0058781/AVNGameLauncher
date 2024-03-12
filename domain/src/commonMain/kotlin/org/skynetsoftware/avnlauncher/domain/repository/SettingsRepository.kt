@@ -10,7 +10,6 @@ interface SettingsRepository {
     val selectedFilter: StateFlow<Filter>
     val selectedSortOrder: StateFlow<SortOrder>
     val selectedSortDirection: StateFlow<SortDirection>
-    val fastUpdateCheck: StateFlow<Boolean>
     val gamesDir: Option<out StateFlow<String?>>
     val lastSyncTime: StateFlow<Long>
     val sfwModeEnabled: StateFlow<Boolean>
@@ -21,8 +20,6 @@ interface SettingsRepository {
     suspend fun setSelectedSortOrder(sortOrder: SortOrder)
 
     suspend fun setSelectedSortDirection(sortDirection: SortDirection)
-
-    suspend fun setFastUpdateCheck(fastUpdateCheck: Boolean)
 
     suspend fun setGamesDir(gamesDir: String)
 

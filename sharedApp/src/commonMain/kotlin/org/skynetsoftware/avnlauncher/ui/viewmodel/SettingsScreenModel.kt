@@ -6,14 +6,8 @@ import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 
 class SettingsScreenModel(private val settingsRepository: SettingsRepository) : ScreenModel {
-    val fastUpdateCheck = settingsRepository.fastUpdateCheck
     val periodicUpdateChecksEnabled = settingsRepository.periodicUpdateChecksEnabled
     val gamesDir = settingsRepository.gamesDir
-
-    fun setFastUpdateCheck(fastUpdateCheck: Boolean) =
-        screenModelScope.launch {
-            settingsRepository.setFastUpdateCheck(fastUpdateCheck)
-        }
 
     fun setPeriodicUpdateChecks(periodicUpdateChecks: Boolean) =
         screenModelScope.launch {

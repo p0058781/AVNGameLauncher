@@ -15,7 +15,6 @@ import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
-import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.domain.utils.valueOrNull
 import org.skynetsoftware.avnlauncher.logger.Logger
@@ -25,7 +24,7 @@ import kotlin.math.max
 
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
-        UpdateCheckerImpl(get(), get(), get(), get(), get(), get())
+        UpdateCheckerImpl(get(), get(), get(), get(), get())
     }
 }
 
@@ -45,7 +44,6 @@ private class UpdateCheckerImpl(
     private val gamesRepository: GamesRepository,
     private val logger: Logger,
     private val f95Repository: F95Repository,
-    private val settingsRepository: SettingsRepository,
     private val eventCenter: EventCenter,
     private val configManager: ConfigManager,
     coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -91,25 +89,20 @@ private class UpdateCheckerImpl(
             val games = gamesRepository.all()
                 .filter { forceUpdateCheck || now > it.lastUpdateCheck + configManager.updateCheckInterval }
                 .filter { it.checkForUpdates }
-            val fastUpdateCheck = settingsRepository.fastUpdateCheck.value
             val updatesResult = games.map { game ->
                 scope.async {
                     val lastRedirectUrl = game.lastRedirectUrl
                     var updatedRedirectUrl: String? = null
 
-                    val result = if (fastUpdateCheck) {
-                        val newRedirectUrl = f95Repository.getRedirectUrl(game.f95ZoneThreadId).valueOrNull()
-                        if (newRedirectUrl != lastRedirectUrl) {
-                            val slowResult = doSlowUpdateCheck(game)
-                            newRedirectUrl?.let {
-                                updatedRedirectUrl = it
-                            }
-                            slowResult
-                        } else {
-                            UpdateCheckGame(game, false, null)
+                    val newRedirectUrl = f95Repository.getRedirectUrl(game.f95ZoneThreadId).valueOrNull()
+                    val result = if (newRedirectUrl != lastRedirectUrl) {
+                        val slowResult = doSlowUpdateCheck(game)
+                        newRedirectUrl?.let {
+                            updatedRedirectUrl = it
                         }
+                        slowResult
                     } else {
-                        doSlowUpdateCheck(game)
+                        UpdateCheckGame(game, false, null)
                     }
                     val newGame = result.game.copy(
                         lastUpdateCheck = now,
