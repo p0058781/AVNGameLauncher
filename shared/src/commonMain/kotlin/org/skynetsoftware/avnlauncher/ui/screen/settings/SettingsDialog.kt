@@ -33,19 +33,19 @@ import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.component.CheckBoxWithText
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamesDirPicker
-import org.skynetsoftware.avnlauncher.ui.viewmodel.SettingsViewModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.SettingsScreenModel
 import org.skynetsoftware.avnlauncher.utils.Option
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SettingsDialog(
-    settingsViewModel: SettingsViewModel = koinInject(),
+    settingsScreenModel: SettingsScreenModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
-    val syncEnabled by remember { settingsViewModel.syncEnabled }.collectAsState()
-    val fastUpdateCheck by remember { settingsViewModel.fastUpdateCheck }.collectAsState()
-    val forceDarkTheme by remember { settingsViewModel.forceDarkTheme }.collectAsState()
-    val gamesDirShown = settingsViewModel.gamesDir is Option.Some
+    val syncEnabled by remember { settingsScreenModel.syncEnabled }.collectAsState()
+    val fastUpdateCheck by remember { settingsScreenModel.fastUpdateCheck }.collectAsState()
+    val forceDarkTheme by remember { settingsScreenModel.forceDarkTheme }.collectAsState()
+    val gamesDirShown = settingsScreenModel.gamesDir is Option.Some
 
     Dialog(
         title = stringResource(MR.strings.settings),
@@ -60,7 +60,7 @@ fun SettingsDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (gamesDirShown) {
-                    val gamesDir by remember { (settingsViewModel.gamesDir as Option.Some).value }.collectAsState()
+                    val gamesDir by remember { (settingsScreenModel.gamesDir as Option.Some).value }.collectAsState()
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = gamesDir ?: "",
@@ -83,7 +83,7 @@ fun SettingsDialog(
                     GamesDirPicker(showFilePicker, gamesDir) {
                         showFilePicker = false
                         it?.let {
-                            settingsViewModel.setGamesDir(it)
+                            settingsScreenModel.setGamesDir(it)
                         }
                     }
                 }
@@ -91,7 +91,7 @@ fun SettingsDialog(
                     text = stringResource(MR.strings.settingsDialogSyncEnabled),
                     checked = syncEnabled,
                     onCheckedChange = {
-                        settingsViewModel.setSyncEnabled(it)
+                        settingsScreenModel.setSyncEnabled(it)
                     },
                     description = stringResource(MR.strings.settingsDialogSyncEnabledDescription),
                 )
@@ -100,7 +100,7 @@ fun SettingsDialog(
                     text = stringResource(MR.strings.settingsDialogFastUpdateCheck),
                     checked = fastUpdateCheck,
                     onCheckedChange = {
-                        settingsViewModel.setFastUpdateCheck(it)
+                        settingsScreenModel.setFastUpdateCheck(it)
                     },
                     description = stringResource(MR.strings.settingsDialogFastUpdateCheckDescription),
                 )
@@ -109,7 +109,7 @@ fun SettingsDialog(
                     text = stringResource(MR.strings.settingsDialogForceDarkTheme),
                     checked = forceDarkTheme,
                     onCheckedChange = {
-                        settingsViewModel.setForceDarkTheme(it)
+                        settingsScreenModel.setForceDarkTheme(it)
                     },
                     description = stringResource(MR.strings.settingsDialogForceDarkThemeDescription),
                 )

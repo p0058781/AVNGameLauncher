@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -49,11 +47,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.getNavigatorScreenModel
+import cafe.adriel.voyager.koin.getScreenModel
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.seiko.imageloader.LocalImageLoader
 import com.seiko.imageloader.model.ImageRequest
 import com.seiko.imageloader.model.blur
 import com.seiko.imageloader.rememberImagePainter
-import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +63,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
+import org.skynetsoftware.avnlauncher.LocalDraggableArea
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.Game
@@ -75,189 +78,189 @@ import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsDialog
-import org.skynetsoftware.avnlauncher.ui.theme.darkColors
-import org.skynetsoftware.avnlauncher.ui.theme.lightColors
-import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
-import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesScreenModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
+import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
+data class MainScreen(
+    val exitApplication: () -> Unit,
+) : Screen {
 // TODO scaling is not working on desktop
 // TODO write tests
-@Composable
-fun MainScreen(
-    mainViewModel: MainViewModel = koinInject(),
-    gamesViewModel: GamesViewModel = koinInject(),
-    exitApplication: () -> Unit,
-    draggableArea: @Composable (content: @Composable () -> Unit) -> Unit,
-) {
-    val games by remember { gamesViewModel.games }.collectAsState()
-    val totalPlayTime by remember { gamesViewModel.totalPlayTime }.collectAsState()
-    val averagePlayTime by remember { gamesViewModel.averagePlayTime }.collectAsState()
-    val currentFilter by remember { gamesViewModel.filter }.collectAsState()
-    val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
-    val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
-    val globalState by remember { mainViewModel.state }.collectAsState()
-    val sfwMode by remember { mainViewModel.sfwMode }.collectAsState()
 
-    var selectedGame by remember { mutableStateOf<Game?>(null) }
-    var importGameDialogVisible by remember { mutableStateOf(false) }
-    var settingsDialogVisible by remember { mutableStateOf(false) }
-    val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
-    var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
-    var showExecutablePathPicker by gamesViewModel.showExecutablePathPicker.collectAsMutableState()
-    val forceDarkTheme by mainViewModel.forceDarkTheme.collectAsState()
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        val mainScreenModel: MainScreenModel = navigator.getNavigatorScreenModel()
+        val gamesScreenModel: GamesScreenModel = getScreenModel()
+        val games by remember { gamesScreenModel.games }.collectAsState()
+        val currentFilter by remember { gamesScreenModel.filter }.collectAsState()
+        val currentSortOrder by remember { gamesScreenModel.sortOrder }.collectAsState()
+        val currentSortDirection by remember { gamesScreenModel.sortDirection }.collectAsState()
+        val sfwMode by remember { mainScreenModel.sfwMode }.collectAsState()
 
-    val updateResult by gamesViewModel.updateCheckComplete.collectAsState(null)
+        var selectedGame by remember { mutableStateOf<Game?>(null) }
+        val toastMessage by remember { mainScreenModel.toastMessage }.collectAsState()
+        var showExecutablePathPicker by gamesScreenModel.showExecutablePathPicker.collectAsMutableState()
 
-    updateResult?.let {
-        mainViewModel.showToast(it.buildToastMessage())
-    }
+        val updateResult by gamesScreenModel.updateCheckComplete.collectAsState(null)
+        val totalPlayTime by remember { gamesScreenModel.totalPlayTime }.collectAsState()
+        val averagePlayTime by remember { gamesScreenModel.averagePlayTime }.collectAsState()
+        var searchQuery by remember { gamesScreenModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
+        val globalState by remember { mainScreenModel.state }.collectAsState()
+        var importGameDialogVisible by remember { mutableStateOf(false) }
+        var settingsDialogVisible by remember { mutableStateOf(false) }
 
-    MaterialTheme(
-        colors = if (isSystemInDarkTheme() || forceDarkTheme) darkColors else lightColors,
-    ) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            // TODO pull to refresh for remote client
-            Column {
-                draggableArea {
-                    TopAppBar {
-                        ToolbarTitle {
-                            Column(
-                                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                            ) {
-                                Text(
-                                    text = stringResource(MR.strings.appName),
-                                    style = MaterialTheme.typography.h6,
-                                    color = MaterialTheme.colors.onPrimary,
-                                )
-                                Text(stringResource(MR.strings.totalPlayTime, formatPlayTime(totalPlayTime), averagePlayTime))
-                            }
+        updateResult?.let {
+            mainScreenModel.showToast(it.buildToastMessage())
+        }
+
+        val draggableArea = LocalDraggableArea.current
+
+        Column {
+            draggableArea?.invoke {
+                TopAppBar {
+                    ToolbarTitle {
+                        Column(
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                        ) {
+                            Text(
+                                text = stringResource(MR.strings.appName),
+                                style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.onPrimary,
+                            )
+                            Text(
+                                stringResource(
+                                    MR.strings.totalPlayTime,
+                                    formatPlayTime(totalPlayTime),
+                                    averagePlayTime,
+                                ),
+                            )
                         }
-                        ToolbarSearch {
-                            Box(
-                                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
-                            ) {
-                                // TODO this is cut-off on windows
-                                OutlinedTextField(
-                                    modifier = Modifier.padding(0.dp).fillMaxHeight(),
-                                    value = searchQuery,
-                                    onValueChange = {
-                                        searchQuery = it
-                                    },
-                                    placeholder = {
-                                        Text(
-                                            text = stringResource(MR.strings.searchLabel),
-                                            style = MaterialTheme.typography.body2,
-                                            // TODO color is wrong in light theme
-                                        )
-                                    },
-                                    textStyle = TextStyle(
-                                        color = MaterialTheme.colors.onPrimary,
-                                    ),
-                                    singleLine = true,
-                                    trailingIcon = {
-                                        if (searchQuery.isNotBlank()) {
-                                            Icon(
-                                                imageVector = Icons.Default.Clear,
-                                                contentDescription = "clear text",
-                                                modifier = Modifier.clickable {
-                                                    searchQuery = ""
-                                                },
-                                            )
-                                        }
-                                    },
-                                )
-                            }
-                        }
-                        ToolbarState {
-                            if (globalState != State.Idle) {
-                                Text(
-                                    modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
-                                    textAlign = TextAlign.End,
-                                    text = globalState.buildText(),
-                                    style = MaterialTheme.typography.subtitle2,
-                                )
-                            } else {
-                                Spacer(
-                                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                                )
-                            }
-                        }
-                        ToolbarActions(
-                            remoteClientMode = mainViewModel.remoteClientMode,
-                            sfwMode = sfwMode,
-                            startUpdateCheck = {
-                                gamesViewModel.startUpdateCheck()
-                            },
-                            onImportGameClicked = {
-                                importGameDialogVisible = true
-                            },
-                            onSettingsClicked = {
-                                settingsDialogVisible = true
-                            },
-                            onSfwModeClicked = {
-                                mainViewModel.toggleSfwMode()
-                            },
-                            exitApplication = exitApplication,
-                        )
                     }
+                    ToolbarSearch {
+                        Box(
+                            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+                        ) {
+                            // TODO this is cut-off on windows
+                            OutlinedTextField(
+                                modifier = Modifier.padding(0.dp).fillMaxHeight(),
+                                value = searchQuery,
+                                onValueChange = {
+                                    searchQuery = it
+                                },
+                                placeholder = {
+                                    Text(
+                                        text = stringResource(MR.strings.searchLabel),
+                                        style = MaterialTheme.typography.body2,
+                                        // TODO color is wrong in light theme
+                                    )
+                                },
+                                textStyle = TextStyle(
+                                    color = MaterialTheme.colors.onPrimary,
+                                ),
+                                singleLine = true,
+                                trailingIcon = {
+                                    if (searchQuery.isNotBlank()) {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = "clear text",
+                                            modifier = Modifier.clickable {
+                                                searchQuery = ""
+                                            },
+                                        )
+                                    }
+                                },
+                            )
+                        }
+                    }
+                    ToolbarState {
+                        if (globalState != State.Idle) {
+                            Text(
+                                modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
+                                textAlign = TextAlign.End,
+                                text = globalState.buildText(),
+                                style = MaterialTheme.typography.subtitle2,
+                            )
+                        } else {
+                            Spacer(
+                                modifier = Modifier.weight(1f).fillMaxWidth(),
+                            )
+                        }
+                    }
+                    ToolbarActions(
+                        remoteClientMode = mainScreenModel.remoteClientMode,
+                        sfwMode = sfwMode,
+                        startUpdateCheck = {
+                            gamesScreenModel.startUpdateCheck()
+                        },
+                        onImportGameClicked = {
+                            importGameDialogVisible = true
+                        },
+                        onSettingsClicked = {
+                            settingsDialogVisible = true
+                        },
+                        onSfwModeClicked = {
+                            mainScreenModel.toggleSfwMode()
+                        },
+                        exitApplication = exitApplication,
+                    )
                 }
-                SortFilter(
-                    games = games,
-                    currentFilter = currentFilter,
-                    currentSortOrder = currentSortOrder,
-                    currentSortDirection = currentSortDirection,
-                    modifier = Modifier.align(Alignment.End).padding(10.dp),
-                    setFilter = {
-                        gamesViewModel.setFilter(it)
-                    },
-                    setSortOrder = {
-                        gamesViewModel.setSortOrder(it)
-                    },
-                    setSortDirection = {
-                        gamesViewModel.setSortDirection(it)
-                    },
-                )
-                GamesList(
-                    games = games,
-                    remoteClientMode = mainViewModel.remoteClientMode,
-                    sfwMode = sfwMode,
-                    editGame = {
-                        selectedGame = it
-                    },
-                    launchGame = {
-                        gamesViewModel.launchGame(it)
-                    },
-                    togglePlaying = {
-                        gamesViewModel.togglePlaying(it)
-                    },
-                    toggleCompleted = {
-                        gamesViewModel.toggleCompleted(it)
-                    },
-                    toggleWaitingForUpdate = {
-                        gamesViewModel.toggleWaitingForUpdate(it)
-                    },
-                    toggleHidden = {
-                        gamesViewModel.toggleHidden(it)
-                    },
-                    resetUpdateAvailable = { availableVersion, game ->
-                        gamesViewModel.resetUpdateAvailable(availableVersion, game)
-                    },
-                    updateRating = { rating, game ->
-                        gamesViewModel.updateRating(rating, game)
-                    },
-                )
             }
+            SortFilter(
+                games = games,
+                currentFilter = currentFilter,
+                currentSortOrder = currentSortOrder,
+                currentSortDirection = currentSortDirection,
+                modifier = Modifier.align(Alignment.End).padding(10.dp),
+                setFilter = {
+                    gamesScreenModel.setFilter(it)
+                },
+                setSortOrder = {
+                    gamesScreenModel.setSortOrder(it)
+                },
+                setSortDirection = {
+                    gamesScreenModel.setSortDirection(it)
+                },
+            ) // TODO pull to refresh for remote client
+            GamesList(
+                games = games,
+                remoteClientMode = mainScreenModel.remoteClientMode,
+                sfwMode = sfwMode,
+                editGame = {
+                    selectedGame = it
+                },
+                launchGame = {
+                    gamesScreenModel.launchGame(it)
+                },
+                togglePlaying = {
+                    gamesScreenModel.togglePlaying(it)
+                },
+                toggleCompleted = {
+                    gamesScreenModel.toggleCompleted(it)
+                },
+                toggleWaitingForUpdate = {
+                    gamesScreenModel.toggleWaitingForUpdate(it)
+                },
+                toggleHidden = {
+                    gamesScreenModel.toggleHidden(it)
+                },
+                resetUpdateAvailable = { availableVersion, game ->
+                    gamesScreenModel.resetUpdateAvailable(availableVersion, game)
+                },
+                updateRating = { rating, game ->
+                    gamesScreenModel.updateRating(rating, game)
+                },
+            )
         }
         selectedGame?.let {
             EditGameDialog(
-                editGameViewModel = koinInject(parameters = { parametersOf(it) }),
+                editGameScreenModel = koinInject(parameters = { parametersOf(it) }),
                 onCloseRequest = {
                     selectedGame = null
                 },
@@ -271,8 +274,18 @@ fun MainScreen(
                 },
                 onExecutablePicked = { executablePath ->
                     showExecutablePathPicker = null
-                    gamesViewModel.launchGame(game, executablePath)
+                    gamesScreenModel.launchGame(game, executablePath)
                 },
+            )
+        }
+        toastMessage?.let {
+            val message = when (it.message) {
+                is String -> it.message
+                is StringResource -> stringResource(it.message, *it.args)
+                else -> null
+            } ?: return@let
+            Toast(
+                text = message,
             )
         }
         if (importGameDialogVisible) {
@@ -287,16 +300,6 @@ fun MainScreen(
                 onCloseRequest = {
                     settingsDialogVisible = false
                 },
-            )
-        }
-        toastMessage?.let {
-            val message = when (it.message) {
-                is String -> it.message
-                is StringResource -> stringResource(it.message, *it.args)
-                else -> null
-            } ?: return@let
-            Toast(
-                text = message,
             )
         }
     }
@@ -603,7 +606,13 @@ private fun GameItem(
                     )
                     InfoItem(
                         stringResource(MR.strings.infoLabelReleaseDate),
-                        if (game.releaseDate <= 0L) stringResource(MR.strings.noValue) else releaseDateFormat.format(game.releaseDate),
+                        if (game.releaseDate <= 0L) {
+                            stringResource(MR.strings.noValue)
+                        } else {
+                            releaseDateFormat.format(
+                                game.releaseDate,
+                            )
+                        },
                     )
                     InfoItem(
                         stringResource(MR.strings.infoLabelFirstReleaseDate),

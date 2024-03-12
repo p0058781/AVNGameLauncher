@@ -40,13 +40,14 @@ kotlin {
 
                 implementation(libs.multiplatform.settings.no.arg)
 
-                implementation(libs.mvvm.compose)
-                implementation(libs.mvvm.flow.compose)
-
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
+
+                implementation(libs.voyager.navigator)
+                implementation(libs.voyager.screenmodel)
+                implementation(libs.voyager.koin)
 
                 api(libs.moko.resources)
                 api(libs.moko.resources.compose)

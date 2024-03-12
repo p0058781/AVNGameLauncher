@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
 import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -37,21 +36,22 @@ import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
-import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameViewModel
-import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameScreenModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
+import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 
 // TODO personal notes input
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun EditGameDialog(
-    editGameViewModel: EditGameViewModel,
-    mainViewModel: MainViewModel = koinInject(),
+    editGameScreenModel: EditGameScreenModel,
+    mainScreenModel: MainScreenModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
-    var title by remember { editGameViewModel.title }.collectAsMutableState()
-    var imageUrl by remember { editGameViewModel.imageUrl }.collectAsMutableState()
-    val executablePaths by remember { editGameViewModel.executablePaths }.collectAsState()
-    var checkForUpdates by remember { editGameViewModel.checkForUpdates }.collectAsMutableState()
+    var title by remember { editGameScreenModel.title }.collectAsMutableState()
+    var imageUrl by remember { editGameScreenModel.imageUrl }.collectAsMutableState()
+    val executablePaths by remember { editGameScreenModel.executablePaths }.collectAsState()
+    var checkForUpdates by remember { editGameScreenModel.checkForUpdates }.collectAsMutableState()
 
     Dialog(
         title = stringResource(MR.strings.editGameDialogTitle, title),
@@ -112,7 +112,7 @@ fun EditGameDialog(
                         if (index == executablePaths.size - 1) { // last one
                             Image(
                                 modifier = Modifier.align(Alignment.CenterVertically).size(24.dp).clickable {
-                                    editGameViewModel.addExecutablePath()
+                                    editGameScreenModel.addExecutablePath()
                                 },
                                 painter = painterResource(R.images.add),
                                 contentDescription = null,
@@ -121,7 +121,7 @@ fun EditGameDialog(
                         } else {
                             Image(
                                 modifier = Modifier.align(Alignment.CenterVertically).size(24.dp).clickable {
-                                    editGameViewModel.deleteExecutablePath(index)
+                                    editGameScreenModel.deleteExecutablePath(index)
                                 },
                                 painter = painterResource(R.images.close),
                                 contentDescription = null,
@@ -149,9 +149,9 @@ fun EditGameDialog(
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        editGameViewModel.save()
+                        editGameScreenModel.save()
                         onCloseRequest()
-                        mainViewModel.showToast(MR.strings.editGameToastGameUpdated)
+                        mainScreenModel.showToast(MR.strings.editGameToastGameUpdated)
                     },
                     shape = MaterialTheme.shapes.medium,
                 ) {
@@ -167,7 +167,7 @@ fun EditGameDialog(
                 }
                 GamePicker(showFilePicker >= 0, currentPath) {
                     it?.let {
-                        editGameViewModel.setExecutablePath(showFilePicker, it)
+                        editGameScreenModel.setExecutablePath(showFilePicker, it)
                     }
                     showFilePicker = -1
                 }

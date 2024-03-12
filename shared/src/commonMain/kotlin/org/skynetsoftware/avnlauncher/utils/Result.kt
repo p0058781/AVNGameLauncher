@@ -5,3 +5,10 @@ sealed class Result<T> {
 
     class Error<T>(val exception: Throwable) : Result<T>()
 }
+
+fun <T> Result<T>.valueOrNull(): T? {
+    return when (this) {
+        is Result.Error -> null
+        is Result.Ok -> value
+    }
+}

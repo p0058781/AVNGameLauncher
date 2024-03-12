@@ -21,22 +21,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
 import dev.icerock.moko.resources.compose.stringResource
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
-import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameViewModel
-import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameScreenModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.MainScreenModel
+import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 
 @Composable
 fun ImportGameDialog(
-    importGameViewModel: ImportGameViewModel = koinInject(),
-    mainViewModel: MainViewModel = koinInject(),
+    importGameScreenModel: ImportGameScreenModel = koinInject(),
+    mainScreenModel: MainScreenModel = koinInject(),
     onCloseRequest: () -> Unit = {},
 ) {
-    var threadId by remember { importGameViewModel.threadId }.collectAsMutableState()
-    val state by remember { importGameViewModel.state }.collectAsState()
+    var threadId by remember { importGameScreenModel.threadId }.collectAsMutableState()
+    val state by remember { importGameScreenModel.state }.collectAsState()
 
     Dialog(
         title = stringResource(MR.strings.importGameDialogTitle),
@@ -47,7 +47,7 @@ fun ImportGameDialog(
         ) {
             val stateCopy = state
             when (stateCopy) {
-                ImportGameViewModel.State.Idle -> {
+                ImportGameScreenModel.State.Idle -> {
                     Column(
                         modifier = Modifier.padding(10.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,7 +65,7 @@ fun ImportGameDialog(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = threadId.isNullOrBlank().not(),
                             onClick = {
-                                importGameViewModel.import()
+                                importGameScreenModel.import()
                             },
                             shape = MaterialTheme.shapes.medium,
                         ) {
@@ -76,12 +76,12 @@ fun ImportGameDialog(
                     }
                 }
 
-                is ImportGameViewModel.State.Imported -> {
-                    mainViewModel.showToast(stringResource(MR.strings.importGameDialogSuccessToast, stateCopy.game.title))
+                is ImportGameScreenModel.State.Imported -> {
+                    mainScreenModel.showToast(stringResource(MR.strings.importGameDialogSuccessToast, stateCopy.game.title))
                     onCloseRequest()
                 }
 
-                ImportGameViewModel.State.Importing -> {
+                ImportGameScreenModel.State.Importing -> {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize(),
@@ -90,8 +90,8 @@ fun ImportGameDialog(
                     }
                 }
 
-                is ImportGameViewModel.State.Error -> {
-                    mainViewModel.showToast(stringResource(MR.strings.importGameDialogErrorToast, stateCopy.error.message ?: ""))
+                is ImportGameScreenModel.State.Error -> {
+                    mainScreenModel.showToast(stringResource(MR.strings.importGameDialogErrorToast, stateCopy.error.message ?: ""))
                     onCloseRequest()
                 }
             }

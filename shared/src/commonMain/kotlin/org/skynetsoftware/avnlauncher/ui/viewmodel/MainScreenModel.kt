@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import cafe.adriel.voyager.core.model.ScreenModel
+import cafe.adriel.voyager.core.model.screenModelScope
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,12 +14,12 @@ import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.state.StateHandler
 
-class MainViewModel(
+class MainScreenModel(
     private val eventCenter: EventCenter,
     stateHandler: StateHandler,
     configManager: ConfigManager,
     private val settingsManager: SettingsManager,
-) : ViewModel() {
+) : ScreenModel {
     val state: StateFlow<State> = stateHandler.state
     val remoteClientMode = configManager.remoteClientMode
     val sfwMode = settingsManager.sfwModeEnabled
@@ -28,7 +29,7 @@ class MainViewModel(
     val toastMessage: StateFlow<Event.ToastMessage<*>?> get() = _toastMessage
 
     init {
-        viewModelScope.launch {
+        screenModelScope.launch {
             eventCenter.events.collect {
                 if (it is Event.ToastMessage<*>) {
                     _toastMessage.emit(it)
@@ -48,7 +49,7 @@ class MainViewModel(
     }
 
     fun toggleSfwMode() =
-        viewModelScope.launch {
+        screenModelScope.launch {
             settingsManager.setSfwModeEnabled(!sfwMode.value)
         }
 }

@@ -1,5 +1,11 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
-import org.koin.core.module.Module
+import org.koin.dsl.module
 
-expect val viewModelsKoinModule: Module
+val viewModelsKoinModule = module {
+    factory<GamesScreenModel> { GamesScreenModel(get(), get(), get(), get(), get(), get()) }
+    factory<EditGameScreenModel> { EditGameScreenModel(get(), get()) }
+    factory<MainScreenModel> { MainScreenModel(get(), get(), get(), get()) }
+    factory<SettingsScreenModel> { SettingsScreenModel(get()) }
+    factory<ImportGameScreenModel> { ImportGameScreenModel(get()) }
+}

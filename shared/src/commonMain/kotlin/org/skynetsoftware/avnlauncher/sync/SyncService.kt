@@ -19,6 +19,7 @@ import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import kotlin.math.max
 
+// TODO sync needs to be moved to different module
 val syncServiceModule = module {
     single<SyncService> {
         val configManager = get<ConfigManager>()
