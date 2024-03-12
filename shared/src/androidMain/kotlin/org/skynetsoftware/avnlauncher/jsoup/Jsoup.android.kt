@@ -5,6 +5,7 @@ import org.skynetsoftware.avnlauncher.jsoup.select.Connection
 
 actual object Jsoup {
     actual fun connect(url: String): Connection {
+        //TODO this probably doesnt work on android
         return Jsoup.connect(url)
     }
 }

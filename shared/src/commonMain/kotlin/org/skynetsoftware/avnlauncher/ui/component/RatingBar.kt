@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun RatingBar(
@@ -20,6 +20,7 @@ fun RatingBar(
         modifier
     ) {
         for (i in 0 until 5) {
+            //TODO hardcoded image files
             Image(
                 painter = painterResource(if (i < rating) "star_full.png" else "star_empty.png"),
                 modifier = Modifier.size(20.dp).clickable {

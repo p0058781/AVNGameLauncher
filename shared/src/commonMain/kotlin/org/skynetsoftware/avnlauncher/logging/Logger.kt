@@ -42,6 +42,7 @@ private class LoggerImpl(private val realm: Realm) : Logger {
 
     private fun log(severity: Severity, message: String) {
         val time = Clock.System.now()
+        //TODO show formatted time instead
         println("$severity[${time.toEpochMilliseconds()}]: $message")
         coroutineScope.launch {
             realm.write {

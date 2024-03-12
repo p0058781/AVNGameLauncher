@@ -41,9 +41,9 @@ private class F95ApiImpl : F95Api {
             val releaseDate = releaseDateRegex.find(bbWrapper)?.groups?.get(1)?.value
                 ?: throw IllegalArgumentException("can't get release data")
 
-            val rating = TODO()
-            val firstReleaseDate = TODO()
-            val tags = TODO()
+            val rating = TODO("parse rating")
+            val firstReleaseDate = TODO("parse first release date")
+            val tags = TODO("parse tags")
             val game = F95Game(gameThreadId, title, imageUrl, version, rating, firstReleaseDate, releaseDate, tags)
             return Result.success(game)
         } catch (t: Throwable) {
@@ -52,7 +52,7 @@ private class F95ApiImpl : F95Api {
     }
 
     override suspend fun getGame(gameThreadUrl: String): Result<F95Game> {
-        TODO()
+        TODO("parse threadId from url and call getGame(threadId)")
     }
 
 }

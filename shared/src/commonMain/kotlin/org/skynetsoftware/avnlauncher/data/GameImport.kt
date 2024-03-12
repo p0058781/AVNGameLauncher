@@ -22,6 +22,7 @@ private class GameImportImpl(configManager: ConfigManager, private val gamesRepo
     //private val gamesDir = configManager.gamesDir
 
     override fun importGame(threadId: Int, onGameImported: (title: String) -> Unit) = coroutineScope.launch {
+        //TODO use F95Api class
         val document = Jsoup.connect(threadId.createF95ThreadUrl()).get()
         val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
             ?: throw IllegalArgumentException("cant get title")
@@ -33,6 +34,7 @@ private class GameImportImpl(configManager: ConfigManager, private val gamesRepo
             matchResult?.groups?.get(1)?.value?.trim() ?: throw IllegalArgumentException("invalid title detected")
         val version = matchResult.groups[2]?.value?.trim() ?: throw IllegalArgumentException("invalid version detected")
 
+        //TODO search executable/android app
         /*val executable = gamesDir.listFiles()
             ?.filter { it.isDirectory }
             ?.firstOrNull { it.name.lowercase().contains(title.replace(" ", "").lowercase()) }?.let {

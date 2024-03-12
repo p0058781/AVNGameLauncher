@@ -21,6 +21,8 @@ fun ImportGameDialog(
     var threadId by remember { mutableStateOf<String?>(null) }
     var importing by remember { mutableStateOf(false) }
 
+    //TODO hardcoded strings
+    //TODO use Dialog
     DialogWindow(
         title = "Import Game",
         onCloseRequest = onCloseRequest,

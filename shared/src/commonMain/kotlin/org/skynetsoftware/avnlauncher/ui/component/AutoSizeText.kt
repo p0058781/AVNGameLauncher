@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.text.TextStyle
 
+//TODO resize works only in down direction, needs to work in both
 @Composable
 fun AutoSizeText(
     text: String,
