@@ -2,14 +2,12 @@ package org.skynetsoftware.avnlauncher.sync
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.toSyncGame
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
@@ -22,12 +20,7 @@ import kotlin.math.max
 // TODO sync needs to be moved to different module
 val syncServiceModule = module {
     single<SyncService> {
-        val configManager = get<ConfigManager>()
-        if (configManager.remoteClientMode) {
-            SyncServiceNoOp()
-        } else {
-            SyncServiceImpl(get(), get(), get(), get(), get(), get())
-        }
+        SyncServiceImpl(get(), get(), get(), get(), get(), get())
     }
 }
 
@@ -35,12 +28,6 @@ interface SyncService {
     fun start()
 
     fun stop()
-}
-
-private class SyncServiceNoOp : SyncService {
-    override fun start() {}
-
-    override fun stop() {}
 }
 
 private const val MAX_SYNC_INTERVAL = 3_600_000L

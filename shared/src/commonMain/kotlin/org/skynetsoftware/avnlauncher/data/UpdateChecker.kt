@@ -7,7 +7,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.mergeWith
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
@@ -25,12 +24,7 @@ private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
 
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
-        val configManager = get<ConfigManager>()
-        if (configManager.remoteClientMode) {
-            UpdateCheckerNoOp()
-        } else {
-            UpdateCheckerImpl(get(), get(), get(), get(), get())
-        }
+        UpdateCheckerImpl(get(), get(), get(), get(), get())
     }
 }
 
@@ -50,21 +44,6 @@ interface UpdateChecker {
         scope: CoroutineScope,
         forceUpdateCheck: Boolean = false,
     ): List<UpdateResult>
-}
-
-private class UpdateCheckerNoOp : UpdateChecker {
-    override fun startUpdateCheck(
-        forceUpdateCheck: Boolean,
-        onComplete: (updateResults: List<UpdateChecker.UpdateResult>) -> Unit,
-    ) {
-    }
-
-    override suspend fun startUpdateCheck(
-        scope: CoroutineScope,
-        forceUpdateCheck: Boolean,
-    ): List<UpdateChecker.UpdateResult> {
-        return emptyList()
-    }
 }
 
 private class UpdateCheckerImpl(
