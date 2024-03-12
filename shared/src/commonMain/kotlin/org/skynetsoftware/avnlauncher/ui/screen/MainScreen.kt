@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalResourceApi::class)
-
 package org.skynetsoftware.avnlauncher.ui.screen
 
 import androidx.compose.foundation.Image
@@ -26,34 +24,35 @@ import com.seiko.imageloader.rememberAsyncImagePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.data.repository.Filter
-import org.skynetsoftware.avnlauncher.data.repository.SortDirection
-import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
+import org.skynetsoftware.avnlauncher.data.repository.Filter
+import org.skynetsoftware.avnlauncher.data.repository.SortDirection
+import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
 import org.skynetsoftware.avnlauncher.resources.R
-import org.skynetsoftware.avnlauncher.ui.component.AutoSizeText
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
+import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
+import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGamesDialog
 import org.skynetsoftware.avnlauncher.ui.theme.CardColor
 import org.skynetsoftware.avnlauncher.ui.theme.CardHoverColor
 import org.skynetsoftware.avnlauncher.ui.theme.materialColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
-import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
 @Composable
-fun MainScreen() {
+fun MainScreen(exitApplication: () -> Unit) {
     val updateChecker = koinInject<UpdateChecker>()
     var selectedGame by remember { mutableStateOf<Game?>(null) }
     var importGameDialogVisible by remember { mutableStateOf(false) }
+    var importGamesDialogVisible by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
 
     MaterialTheme(
@@ -63,16 +62,25 @@ fun MainScreen() {
             modifier = Modifier.fillMaxSize(),
         ) {
 //TODO toolbar with options
+            //TODO search
             Column {
-                Actions(
-                    showToast = {
-                        toastMessage = it
-                    },
-                    onImportGameClicked = {
-                        importGameDialogVisible = true
-                    }
+                TopAppBar {
+                    Actions(
+                        showToast = {
+                            toastMessage = it
+                        },
+                        onImportGameClicked = {
+                            importGameDialogVisible = true
+                        },
+                        onImportGamesClicked = {
+                            importGamesDialogVisible = true
+                        },
+                        exitApplication = exitApplication
+                    )
+                }
+                SortFilter(
+                    modifier = Modifier.align(Alignment.End).padding(10.dp)
                 )
-                SortFilter()
                 GamesList(
                     editGame = {
                         selectedGame = it
@@ -86,15 +94,25 @@ fun MainScreen() {
                 onCloseRequest = {
                     selectedGame = null
                 },
+                showToast = { message ->
+                    toastMessage = message
+                }
+            )
+        }
+        if (importGameDialogVisible) {
+            ImportGameDialog(
+                onCloseRequest = {
+                    importGameDialogVisible = false
+                },
                 showToast = {
                     toastMessage = it
                 }
             )
         }
-        if(importGameDialogVisible) {
-            ImportGameDialog(
+        if (importGamesDialogVisible) {
+            ImportGamesDialog(
                 onCloseRequest = {
-                    importGameDialogVisible = false
+                    importGamesDialogVisible = false
                 },
                 showToast = {
                     toastMessage = it
@@ -147,7 +165,9 @@ private fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
 private fun Actions(
     updateChecker: UpdateChecker = koinInject(),
     showToast: (text: String) -> Unit,
-    onImportGameClicked: () -> Unit
+    onImportGameClicked: () -> Unit,
+    onImportGamesClicked: () -> Unit,
+    exitApplication: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -156,17 +176,25 @@ private fun Actions(
         Action(R.images.import) {
             onImportGameClicked()
         }
+        //TODO remove import games
+        Action(R.images.import) {
+            onImportGamesClicked()
+        }
         Action(R.images.refresh) {
             updateChecker.startUpdateCheck(true) { updateResult ->
                 showToast(updateResult.buildToastMessage())
             }
         }
+        Action(R.images.close) {
+            exitApplication()
+        }
     }
 
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Action(
+private fun Action(
     icon: String,
     action: () -> Unit
 ) {
@@ -184,124 +212,101 @@ fun Action(
     }
 }
 
-//TODO this needs to be moved to the side instead of top on desktop and hidden by default on android
 @Composable
-private fun SortFilter() {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        FilterItems(
-            modifier = Modifier.weight(1f).fillMaxWidth()
-        )
-        SortOrderItems(
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-        )
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterialApi::class)
-private fun FilterItems(
-    modifier: Modifier = Modifier,
-    gamesViewModel: GamesViewModel = koinInject()
+private fun SortFilter(
+    gamesViewModel: GamesViewModel = koinInject(),
+    modifier: Modifier = Modifier
 ) {
     val games by remember { gamesViewModel.games }.collectAsState()
-    Column(
-        modifier = modifier.padding(start = 10.dp, end = 10.dp)
-    ) {
-        val currentFilter by remember { gamesViewModel.filter }.collectAsState()
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                modifier = Modifier.align(Alignment.CenterVertically).weight(1f).fillMaxWidth(),
-                text = R.strings.filterTitle.format(games.size),
-                style = MaterialTheme.typography.h5,
-            )
-        }
-        LazyVerticalGrid(
-            modifier = Modifier.padding(top = 10.dp),
-            columns = GridCells.Adaptive(150.dp)
-        ) {
+    val currentFilter by remember { gamesViewModel.filter }.collectAsState()
+    val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
+    val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
 
-            items(Filter.entries.size) {
-                val filter = Filter.entries[it]
-                val isChipSelected = currentFilter == filter
-                Chip(
+    var showFilterDropdown by remember { mutableStateOf(false) }
+    var showSortOrderDropdown by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+    ) {
+        Row {
+            Row(
+                modifier = Modifier.clickable {
+                    showFilterDropdown = true
+                }
+            ) {
+                Text(R.strings.filterLabel)
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(buildString {
+                    append(currentFilter.label)
+                    append("(")
+                    append(games.size)
+                    append(")")
+                })
+            }
+            Spacer(modifier = Modifier.width(5.dp))
+            Text("|")
+            Spacer(modifier = Modifier.width(5.dp))
+            Row(
+                modifier = Modifier.clickable {
+                    showSortOrderDropdown = true
+                }
+            ) {
+                Text(R.strings.sortLabel)
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    buildString {
+                        append(currentSortOrder.label)
+                        append("(")
+                        append(currentSortDirection.label)
+                        append(")")
+                    }
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = showFilterDropdown,
+            onDismissRequest = {
+                showFilterDropdown = false
+            }
+
+        ) {
+            Filter.entries.forEach {
+                DropdownMenuItem(
                     onClick = {
-                        if (!isChipSelected) {
-                            gamesViewModel.setFilter(filter)
-                        }
+                        showFilterDropdown = false
+                        gamesViewModel.setFilter(it)
                     },
-                    modifier = Modifier.padding(end = 10.dp),
-                    border = ChipDefaults.outlinedBorder,
-                    colors = if (isChipSelected) ChipDefaults.chipColors() else ChipDefaults.outlinedChipColors(),
                 ) {
-                    AutoSizeText(
-                        text = filter.label,
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.padding(start = 5.dp, end = 5.dp, top = 5.dp, bottom = 5.dp),
-                    )
+                    Text(it.label)
                 }
             }
         }
-    }
-}
+        DropdownMenu(
+            expanded = showSortOrderDropdown,
+            onDismissRequest = {
+                showSortOrderDropdown = false
+            }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun SortOrderItems(
-    modifier: Modifier = Modifier,
-    gamesViewModel: GamesViewModel = koinInject(),
-) {
-    Column(
-        modifier = modifier.padding(start = 10.dp, end = 10.dp)
-    ) {
-        val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
-        val currentDirection by remember { gamesViewModel.sortDirection }.collectAsState()
-        Box(
-            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = R.strings.sortOrderTitle,
-                style = MaterialTheme.typography.h5,
-            )
-        }
-        LazyVerticalGrid(
-            modifier = Modifier.padding(top = 10.dp),
-            columns = GridCells.Adaptive(150.dp)
-        ) {
-
-            items(SortOrder.entries.size) {
-                val sortOrder = SortOrder.entries[it]
-                val isChipSelected = currentSortOrder == sortOrder
-                Chip(
+            SortOrder.entries.forEach {
+                DropdownMenuItem(
                     onClick = {
-                        if (isChipSelected) {
-                            when (currentDirection) {
+                        showSortOrderDropdown = false
+                        if(currentSortOrder != it) {
+                            gamesViewModel.setSortOrder(it)
+                        } else {
+                            when(currentSortDirection) {
                                 SortDirection.Ascending -> gamesViewModel.setSortDirection(SortDirection.Descending)
                                 SortDirection.Descending -> gamesViewModel.setSortDirection(SortDirection.Ascending)
                             }
-                        } else {
-                            gamesViewModel.setSortOrder(sortOrder)
                         }
                     },
-                    modifier = Modifier.padding(end = 10.dp),
-                    border = ChipDefaults.outlinedBorder,
-                    colors = if (isChipSelected) ChipDefaults.chipColors() else ChipDefaults.outlinedChipColors(),
                 ) {
-                    AutoSizeText(
-                        text = "${sortOrder.label}${if (isChipSelected) currentDirection.label else ""}",
-                        modifier = Modifier.padding(start = 5.dp, end = 5.dp, top = 5.dp, bottom = 5.dp),
-                        style = MaterialTheme.typography.h6,
-                    )
+                    Text(it.label)
                 }
             }
         }
     }
-
-
 }
 
 @Composable
@@ -325,6 +330,7 @@ private fun GamesList(
 
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun GameItem(
     game: Game,
@@ -434,7 +440,10 @@ private fun GameItem(
                     InfoItem(R.strings.infoLabelPlayTime, formatPlayTime(game.playTime))
                     InfoItem(R.strings.infoLabelVersion, game.version)
                     InfoItem(R.strings.infoLabelAvailableVersion, game.availableVersion ?: R.strings.noValue)
-                    InfoItem(R.strings.infoLabelReleaseDate, if(game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate))
+                    InfoItem(
+                        R.strings.infoLabelReleaseDate,
+                        if (game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate)
+                    )
                 }
                 RatingBar(
                     rating = game.rating,

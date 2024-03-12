@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.launcher
 
-import org.koin.core.module.Module
+import org.koin.dsl.module
 
-actual val gameLauncherKoinModule: Module
-    get() = TODO("Not yet implemented")
+actual val gameLauncherKoinModule = module {
+    //TODO not implemented
+}

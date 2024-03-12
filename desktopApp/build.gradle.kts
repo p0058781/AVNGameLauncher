@@ -3,11 +3,28 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    id("com.github.johnrengelman.shadow")
 }
 
 kotlin {
-    jvm()
+    jvm {
+        withJava()
+        compilations {
+            val main = getByName("main")
+            tasks {
+                register<Jar>("fatJar") {
+                    group = "application"
+                    dependsOn(build)
+                    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                    manifest {
+                        attributes["Main-Class"] = "MainKt"
+                        attributes["Add-Opens"] = "java.desktop/sun.awt.X11"
+                    }
+                    from(configurations.getByName("runtimeClasspath").map { if (it.isDirectory) it else zipTree(it) }, main.output.classesDirs)
+                    archiveBaseName.set("${project.name}-fat")
+                }
+            }
+        }
+    }
     sourceSets {
         val jvmMain by getting  {
             dependencies {
@@ -29,17 +46,6 @@ compose.desktop {
             jvmArgs(
                 "-Dapple.awt.application.appearance=system"
             )
-            //TODO [high] change app name
         }
-    }
-}
-
-tasks.withType<Jar> {
-    manifest {
-        attributes(
-            mapOf(
-                "Main-Class" to "org.skynetsoftware.avnlauncher.MainKt"
-            )
-        )
     }
 }

@@ -24,7 +24,7 @@ fun RatingBar(
     ) {
         for (i in 0 until 5) {
             Image(
-                painter = painterResource(if (i < rating) R.images.star_full else R.images.star_empty),
+                painter = painterResource(if (i < rating) R.images.starFull else R.images.starEmpty),
                 modifier = Modifier.size(20.dp).clickable {
                     onClick(i + 1)
                 },

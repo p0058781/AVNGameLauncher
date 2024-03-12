@@ -6,8 +6,8 @@ import com.seiko.imageloader.component.setupDefaultComponents
 import com.seiko.imageloader.util.DebugLogger
 import com.seiko.imageloader.util.LogPriority
 import kotlinx.coroutines.Dispatchers
+import okio.Path.Companion.toPath
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.logging.Logger
 
@@ -25,18 +25,10 @@ private fun imageLoader(configManager: ConfigManager, avnLauncherLogger: Logger)
         interceptor {
             memoryCacheConfig {
                 maxSizePercent(0.25)
-            };
-            when (val cacheDir = configManager.cacheDir) {
-                is Config.None -> {
-                    //TODO log warning
-                }
-
-                is Config.Some -> {
-                    diskCacheConfig {
-                        directory(cacheDir.value.resolve("images"))
-                        maxSizeBytes(512L * 1024 * 1024) // 512MB
-                    }
-                }
+            }
+            diskCacheConfig {
+                directory(configManager.cacheDir.toPath().resolve("images"))
+                maxSizeBytes(512L * 1024 * 1024) // 512MB
             }
         }
     }

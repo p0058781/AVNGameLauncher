@@ -10,10 +10,11 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":shared"))
-                implementation("io.insert-koin:koin-android:3.5.0")
+                implementation(libs.koin.android)
             }
         }
     }
+    jvmToolchain(17)
 }
 
 android {
@@ -37,3 +38,4 @@ android {
         jvmToolchain(17)
     }
 }
+

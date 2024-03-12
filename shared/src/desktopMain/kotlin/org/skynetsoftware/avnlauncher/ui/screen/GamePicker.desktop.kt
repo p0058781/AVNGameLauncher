@@ -10,31 +10,23 @@ import org.skynetsoftware.avnlauncher.utils.os
 @Composable
 actual fun GamePicker(visible: Boolean, onGamePicked: (game: String?) -> Unit) {
     when (os) {
-        OS.Linux -> ExecutableFilePicker(visible, "sh") { path ->
-            onGamePicked(path)
+        OS.Linux -> FilePicker(visible, fileExtensions = listOf("sh")) { path ->
+            onGamePicked(path?.path)
         }
 
-        OS.Windows -> ExecutableFilePicker(visible, "exe") { path ->
-            onGamePicked(path)
+        OS.Windows -> FilePicker(visible, fileExtensions = listOf("exe")) { path ->
+            onGamePicked(path?.path)
         }
 
-        OS.Mac -> MacAppDirectoryPicker(visible) { path ->
+        OS.Mac -> DirectoryPicker(visible) { path ->
             onGamePicked(path)
         }
     }
 }
 
-
 @Composable
-private fun ExecutableFilePicker(showFilePicker: Boolean, extension: String, onFilePicked: (path: String?) -> Unit) {
-    FilePicker(showFilePicker, fileExtensions = listOf(extension)) { path ->
+actual fun ImportGamesPicker(visible: Boolean, onFilePicked: (file: String?) -> Unit) {
+    FilePicker(visible, fileExtensions = listOf("json")) { path ->
         onFilePicked(path?.path)
-    }
-}
-
-@Composable
-private fun MacAppDirectoryPicker(showFilePicker: Boolean, onFilePicked: (path: String?) -> Unit) {
-    DirectoryPicker(showFilePicker) { path ->
-        onFilePicked(path)
     }
 }

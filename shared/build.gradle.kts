@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization")
     id("com.android.library")
     id("org.jetbrains.compose")
     id("io.realm.kotlin")
@@ -24,6 +25,7 @@ kotlin {
     }
 
     sourceSets {
+
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
@@ -32,42 +34,49 @@ kotlin {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
 
-                //TODO use gradle catalog
-                implementation("io.realm.kotlin:library-base:1.11.1")
+                implementation(libs.realm.librarybase)
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
-                implementation("com.squareup.okio:okio:3.6.0")
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.datetime)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.okio)
 
-                implementation("io.insert-koin:koin-core:3.5.0")
-                implementation("io.insert-koin:koin-compose:1.1.0")
+                implementation(libs.koin.core)
+                implementation(libs.koin.compose)
 
-                implementation("io.github.qdsfdhvh:image-loader:1.2.10")
-                implementation("org.slf4j:slf4j-simple:2.0.9")
+                implementation(libs.image.loader)
+                implementation(libs.slf4j.simple)
 
-                implementation("org.jsoup:jsoup:1.16.1")
+                implementation(libs.multiplatform.settings.no.arg)
 
-                implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.0")
+                implementation(libs.mvvm.compose)
+                implementation(libs.mvvm.flow.compose)
 
-                implementation("dev.icerock.moko:mvvm-compose:0.16.1")
-                implementation("dev.icerock.moko:mvvm-flow-compose:0.16.1")
+                implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.logging)
             }
         }
         val commonTest by getting {
             dependencies {
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-                //implementation(compose.desktop.uiTestJUnit4)
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-                implementation("io.insert-koin:koin-test:3.5.0")
-                implementation("app.cash.turbine:turbine:0.12.1")
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.koin.test)
+                implementation(libs.turbine)
+            }
+        }
+        val jvmMain = create("jvmMain") {
+            dependsOn(commonMain)
+            dependencies {
+                implementation(libs.jsoup)
+                implementation(libs.ktor.client.okhttp)
             }
         }
         val androidMain by getting {
+            dependsOn(jvmMain)
             dependencies {
-                api("androidx.activity:activity-compose:1.7.2")
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.1")
+                api(libs.activity.compose)
+                api(libs.appcompat)
+                api(libs.core.ktx)
             }
         }
         val iosX64Main by getting
@@ -78,12 +87,16 @@ kotlin {
             iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
         }
         val desktopMain by getting {
+            dependsOn(jvmMain)
             dependencies {
                 implementation(compose.desktop.common)
 
-                implementation("com.darkrockstudios:mpfilepicker:2.1.0")
+                implementation(libs.mpfilepicker)
             }
         }
     }
@@ -110,4 +123,5 @@ android {
         jvmToolchain(17)
     }
 }
+
 
