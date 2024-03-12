@@ -143,6 +143,7 @@ fun MainScreen(
                             Box(
                                 modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
                             ) {
+                                // TODO this is cut-off on windows
                                 OutlinedTextField(
                                     modifier = Modifier.padding(0.dp).fillMaxHeight(),
                                     value = searchQuery,
@@ -153,12 +154,11 @@ fun MainScreen(
                                         Text(
                                             text = stringResource(MR.strings.searchLabel),
                                             style = MaterialTheme.typography.body2,
-                                            //TODO color is wrong in light theme
+                                            // TODO color is wrong in light theme
                                         )
                                     },
                                     textStyle = TextStyle(
                                         color = MaterialTheme.colors.onPrimary,
-
                                     ),
                                     singleLine = true,
                                     trailingIcon = {
@@ -387,7 +387,7 @@ private fun SortFilter(
                 }
             }
         }
-        //TODO dropdown should be aligned below sort, rignt now it is below filter
+        // TODO dropdown should be aligned below sort, rignt now it is below filter
         DropdownMenu(
             expanded = showSortOrderDropdown,
             onDismissRequest = {

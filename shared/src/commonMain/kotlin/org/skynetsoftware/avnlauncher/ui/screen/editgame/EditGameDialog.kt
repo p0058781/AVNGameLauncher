@@ -75,6 +75,7 @@ fun EditGameDialog(
                     label = { Text(stringResource(MR.strings.editGameInputLabelTitle)) },
                 )
                 Spacer(modifier = Modifier.height(10.dp))
+                // TODO image url will be overwritten by the update checker. Separate field for custom image url
                 TextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = imageUrl,
