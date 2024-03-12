@@ -22,7 +22,6 @@ class MainScreenModel(
 ) : ScreenModel {
     val state: StateFlow<State> = stateHandler.state
     val sfwMode = settingsRepository.sfwModeEnabled
-    val forceDarkTheme = settingsRepository.forceDarkTheme
 
     private val _toastMessage = MutableStateFlow<Event.ToastMessage<*>?>(null)
     val toastMessage: StateFlow<Event.ToastMessage<*>?> get() = _toastMessage

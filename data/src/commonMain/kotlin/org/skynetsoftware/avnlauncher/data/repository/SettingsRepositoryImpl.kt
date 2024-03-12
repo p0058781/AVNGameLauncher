@@ -69,10 +69,6 @@ abstract class SettingsRepositoryShared internal constructor(
         }
     override val sfwModeEnabled: StateFlow<Boolean> get() = _sfwModeEnabled
 
-    private val _forceDarkTheme =
-        MutableStateFlow { settings.getBoolean(SettingsRepository::forceDarkTheme.name, false) }
-    override val forceDarkTheme: StateFlow<Boolean> get() = _forceDarkTheme
-
     private val _periodicUpdateChecksEnabled =
         MutableStateFlow {
             settings.getBoolean(
@@ -110,11 +106,6 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setSfwModeEnabled(sfwModeEnabled: Boolean) {
         _sfwModeEnabled.emit(sfwModeEnabled)
         settings[SettingsRepository::sfwModeEnabled.name] = sfwModeEnabled
-    }
-
-    override suspend fun setForceDarkTheme(forceDarkTheme: Boolean) {
-        _forceDarkTheme.emit(forceDarkTheme)
-        settings[SettingsRepository::forceDarkTheme.name] = forceDarkTheme
     }
 
     override suspend fun setPeriodicUpdateChecksEnabled(periodicUpdateChecksEnabled: Boolean) {

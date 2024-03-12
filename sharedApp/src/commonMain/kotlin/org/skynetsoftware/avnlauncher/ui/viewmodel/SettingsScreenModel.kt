@@ -8,7 +8,6 @@ import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 class SettingsScreenModel(private val settingsRepository: SettingsRepository) : ScreenModel {
     val fastUpdateCheck = settingsRepository.fastUpdateCheck
     val periodicUpdateChecksEnabled = settingsRepository.periodicUpdateChecksEnabled
-    val forceDarkTheme = settingsRepository.forceDarkTheme
     val gamesDir = settingsRepository.gamesDir
 
     fun setFastUpdateCheck(fastUpdateCheck: Boolean) =
@@ -19,11 +18,6 @@ class SettingsScreenModel(private val settingsRepository: SettingsRepository) : 
     fun setPeriodicUpdateChecks(periodicUpdateChecks: Boolean) =
         screenModelScope.launch {
             settingsRepository.setPeriodicUpdateChecksEnabled(periodicUpdateChecks)
-        }
-
-    fun setForceDarkTheme(forceDarkTheme: Boolean) =
-        screenModelScope.launch {
-            settingsRepository.setForceDarkTheme(forceDarkTheme)
         }
 
     fun setGamesDir(gamesDir: String) =

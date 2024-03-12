@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -71,6 +70,7 @@ import org.skynetsoftware.avnlauncher.domain.model.label
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.State
+import org.skynetsoftware.avnlauncher.ui.component.OutlinedTextFieldWithPadding
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.PickExecutableDialog
@@ -149,7 +149,7 @@ data class MainScreen(
                         Box(
                             modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
                         ) {
-                            OutlinedTextField(
+                            OutlinedTextFieldWithPadding(
                                 modifier = Modifier.padding(0.dp).fillMaxHeight(),
                                 value = searchQuery,
                                 onValueChange = {
@@ -176,6 +176,7 @@ data class MainScreen(
                                         )
                                     }
                                 },
+                                contentPadding = PaddingValues(8.dp),
                             )
                         }
                     }

@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.ui.theme
 
 import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
 private val DarkGrey = Color(24, 26, 29)
@@ -12,9 +11,5 @@ val darkColors = darkColors(
     primary = Red,
     background = DarkGrey,
     surface = LightGrey,
-    onPrimary = Color.White,
-)
-val lightColors = lightColors(
-    primary = Red,
     onPrimary = Color.White,
 )

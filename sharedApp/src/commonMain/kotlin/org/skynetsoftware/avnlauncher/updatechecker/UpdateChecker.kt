@@ -60,7 +60,8 @@ private class UpdateCheckerImpl(
         updateCheckSchedulerJob = scope.launch {
             while (isActive) {
                 val now = Clock.System.now().toEpochMilliseconds()
-                val newestLastUpdateCheck = gamesRepository.all().maxOf { it.lastUpdateCheck }
+                val newestLastUpdateCheck = gamesRepository.all()
+                    .takeIf { it.isNotEmpty() }?.maxOf { it.lastUpdateCheck } ?: now
 
                 var lastUpdateCheckElapsedTime = now - newestLastUpdateCheck
 
