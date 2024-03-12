@@ -30,7 +30,7 @@ interface GamesRepository {
         id: Int,
         title: String,
         executablePaths: Set<String>,
-        imageUrl: String,
+        customImageUrl: String,
         checkForUpdates: Boolean,
         playState: PlayState,
         hidden: Boolean,

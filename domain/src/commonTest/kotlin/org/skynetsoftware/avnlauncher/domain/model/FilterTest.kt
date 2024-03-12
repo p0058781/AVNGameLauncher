@@ -75,7 +75,7 @@ class FilterTest {
         playTime: Long,
     ): Game {
         return Game(
-            "", "", 0, emptySet(), "", playTime, 0, 0f,
+            "", "", "", 0, emptySet(), "", playTime, 0, 0f,
             updateAvailable, 0L, 0L, 0L, hidden, 0L, 0L,
             playState, null, emptySet(), null, false,
         )

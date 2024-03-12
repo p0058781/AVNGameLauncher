@@ -21,9 +21,9 @@ private object StringSetAdapter : ColumnAdapter<Set<String>, String> {
 
 internal fun Module.databaseKoinModule() {
     single<Database> {
-        val driverFactory = get<DriverFactory>()
+        val driver = get<DriverFactory>().createDriver()
         Database(
-            driver = driverFactory.createDriver(),
+            driver = driver,
             GameEntityAdapter = GameEntity.Adapter(
                 f95ZoneThreadIdAdapter = IntColumnAdapter,
                 ratingAdapter = IntColumnAdapter,

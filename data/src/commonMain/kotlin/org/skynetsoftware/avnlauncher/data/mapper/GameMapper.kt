@@ -10,6 +10,7 @@ internal fun Game.toGameEntity() =
     GameEntity(
         title = title,
         imageUrl = imageUrl,
+        customImageUrl = customImageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
         executablePaths = executablePaths,
         version = version,
@@ -34,6 +35,7 @@ internal fun GameEntity.toGame() =
     Game(
         title = title,
         imageUrl = imageUrl,
+        customImageUrl = customImageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
         executablePaths = executablePaths,
         version = version,
@@ -58,6 +60,7 @@ internal fun F95Game.toGame() =
     Game(
         title = title,
         imageUrl = imageUrl,
+        customImageUrl = null,
         f95ZoneThreadId = threadId,
         executablePaths = emptySet(),
         version = version,

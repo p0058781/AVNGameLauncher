@@ -25,7 +25,8 @@ CREATE TABLE GameEntity (
     availableVersion TEXT,
     tags TEXT AS Set<String> NOT NULL,
     lastRedirectUrl TEXT,
-    checkForUpdates INTEGER AS Boolean NOT NULL DEFAULT 1
+    checkForUpdates INTEGER AS Boolean NOT NULL DEFAULT 1,
+    customImageUrl TEXT
 );
 
 all:
@@ -47,6 +48,7 @@ updateGame:
 UPDATE GameEntity
 SET title = ?,
     imageUrl = ?,
+    customImageUrl = ?,
     executablePaths = ?,
     version = ?,
     playTime = ?,
@@ -70,7 +72,7 @@ updateGame2:
 UPDATE GameEntity
 SET title = ?,
     executablePaths = ?,
-    imageUrl = ?,
+    customImageUrl = ?,
     checkForUpdates = ?,
     playState = ?,
     hidden = ?
