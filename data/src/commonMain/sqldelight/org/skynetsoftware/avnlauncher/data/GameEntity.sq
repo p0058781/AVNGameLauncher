@@ -1,0 +1,90 @@
+import kotlin.Boolean;
+import kotlin.Float;
+import kotlin.Int;
+import kotlin.String;
+import kotlin.collections.Set;
+import org.skynetsoftware.avnlauncher.domain.model.PlayState;
+
+CREATE TABLE GameEntity (
+    f95ZoneThreadId INTEGER AS Int PRIMARY KEY NOT NULL,
+    title TEXT NOT NULL,
+    imageUrl TEXT NOT NULL,
+    executablePaths TEXT AS Set<String> NOT NULL,
+    version TEXT NOT NULL,
+    playTime INTEGER NOT NULL,
+    rating INTEGER AS Int NOT NULL,
+    f95Rating REAL AS Float NOT NULL,
+    updateAvailable INTEGER AS Boolean NOT NULL,
+    added INTEGER NOT NULL,
+    lastPlayed INTEGER NOT NULL,
+    lastUpdateCheck INTEGER NOT NULL,
+    hidden INTEGER AS Boolean NOT NULL,
+    releaseDate INTEGER NOT NULL,
+    firstReleaseDate INTEGER NOT NULL,
+    playState TEXT AS PlayState NOT NULL DEFAULT "None",
+    availableVersion TEXT,
+    tags TEXT AS Set<String> NOT NULL,
+    lastRedirectUrl TEXT,
+    checkForUpdates INTEGER AS Boolean NOT NULL DEFAULT 1
+);
+
+all:
+SELECT * FROM GameEntity;
+
+get:
+SELECT * FROM GameEntity WHERE f95ZoneThreadId = ?;
+
+insert:
+INSERT INTO GameEntity VALUES ?;
+
+updateRating:
+UPDATE GameEntity SET rating = ? WHERE f95ZoneThreadId = ?;
+
+updateExecutablePaths:
+UPDATE GameEntity SET executablePaths = ? WHERE f95ZoneThreadId = ?;
+
+updateGame:
+UPDATE GameEntity
+SET title = ?,
+    imageUrl = ?,
+    executablePaths = ?,
+    version = ?,
+    playTime = ?,
+    rating = ?,
+    f95Rating = ?,
+    updateAvailable = ?,
+    added = ?,
+    lastPlayed = ?,
+    lastUpdateCheck = ?,
+    hidden = ?,
+    releaseDate = ?,
+    firstReleaseDate = ?,
+    playState = ?,
+    availableVersion = ?,
+    tags = ?,
+    lastRedirectUrl = ?,
+    checkForUpdates = ?
+WHERE f95ZoneThreadId = ?;
+
+updateGame2:
+UPDATE GameEntity
+SET title = ?,
+    executablePaths = ?,
+    imageUrl = ?,
+    checkForUpdates = ?,
+    playState = ?,
+    hidden = ?
+WHERE f95ZoneThreadId = ?;
+
+updateVersion:
+UPDATE GameEntity
+SET updateAvailable = ?,
+    version = ?,
+    availableVersion = ?
+WHERE f95ZoneThreadId = ?;
+
+updatePlayTime:
+UPDATE GameEntity
+SET playTime = ?,
+    lastPlayed = ?
+WHERE f95ZoneThreadId = ?;

@@ -4,7 +4,7 @@ plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.android.library")
-    id("io.realm.kotlin")
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -18,7 +18,8 @@ kotlin {
             dependencies {
                 implementation(project(":domain"))
                 implementation(project(":logger"))
-                implementation(libs.realm.librarybase)
+                implementation(libs.sqdelight.coroutines)
+                implementation(libs.sqdelight.primitiveadapters)
 
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
@@ -53,12 +54,13 @@ kotlin {
         val androidMain by getting {
             dependsOn(jvmMain)
             dependencies {
-
+                implementation(libs.sqdelight.androiddriver)
             }
         }
         val desktopMain by getting {
             dependsOn(jvmMain)
             dependencies {
+                implementation(libs.sqdelight.sqlitedriver)
             }
         }
     }
@@ -86,5 +88,13 @@ android {
     }
     buildFeatures {
         buildConfig = true
+    }
+}
+
+sqldelight {
+    databases {
+        create("Database") {
+            packageName.set("org.skynetsoftware.avnlauncher.data")
+        }
     }
 }

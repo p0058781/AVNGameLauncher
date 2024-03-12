@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.9.10"
+kotlin = "1.9.21"
 activity-compose = "1.8.0"
 appcompat = "1.6.1"
 core-ktx = "1.10.1"
@@ -11,7 +11,6 @@ kotlinx-coroutines-core = "1.7.3"
 kotlinx-serialization-json = "1.6.0"
 kotlinx-datetime = "0.4.1"
 ktor = "2.3.7"
-realm = "1.13.0"
 mpfilepicker = "2.1.0"
 multiplatform-settings-no-arg = "1.1.0"
 mvvm = "0.16.1"
@@ -24,17 +23,18 @@ logback = "1.4.11"
 clikt = "4.2.1"
 system-theme-detector = "3.6"
 agp = "8.2.1"
-jetbrains-compose = "1.5.10"
+jetbrains-compose = "1.5.11"
 ktlint-plugin = "12.0.3"
 accompanist = "0.28.0"
 moko = "0.23.0"
 voyager = "1.0.0"
 webview-compose-multiplatform = "1.8.0"
-mosaic = "0.9.1"
+mosaic = "0.10.0"
 jline = "3.25.0"
 kover = "0.7.5"
 commons-compress = "1.25.0"
 detekt = "1.23.3"
+sqldelight = "2.0.1"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -70,7 +70,6 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 jetbrains-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 jetbrains-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 h2database = { module = "com.h2database:h2", version.ref = "h2" }
-realm-librarybase = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings-no-arg" }
 mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
@@ -91,6 +90,11 @@ voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voy
 webview-compose-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "webview-compose-multiplatform" }
 jline = { module = "org.jline:jline", version.ref = "jline" }
 apache-commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
+sqdelight-primitiveadapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
+sqdelight-androiddriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqdelight-nativedriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqdelight-sqlitedriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqdelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 
 [bundles]
 
@@ -98,7 +102,6 @@ apache-commons-compress = { module = "org.apache.commons:commons-compress", vers
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
-realm-kotlin = { id = "io.realm.kotlin", version.ref = "realm" }
 ktor-plugin = { id = "io.ktor.plugin", version.ref = "ktor" }
 ktlint-plugin = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-plugin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -109,3 +112,4 @@ moko-resource-generator = { id = "dev.icerock.mobile.multiplatform-resources", v
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

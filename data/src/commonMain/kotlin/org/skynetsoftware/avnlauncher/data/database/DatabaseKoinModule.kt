@@ -1,38 +1,37 @@
 package org.skynetsoftware.avnlauncher.data.database
 
-import io.realm.kotlin.Realm
-import io.realm.kotlin.RealmConfiguration
-import io.realm.kotlin.dynamic.DynamicMutableRealmObject
-import io.realm.kotlin.dynamic.DynamicRealmObject
-import io.realm.kotlin.dynamic.getNullableValue
-import io.realm.kotlin.dynamic.getValueSet
-import io.realm.kotlin.migration.AutomaticSchemaMigration
+import app.cash.sqldelight.ColumnAdapter
+import app.cash.sqldelight.EnumColumnAdapter
+import app.cash.sqldelight.adapter.primitive.FloatColumnAdapter
+import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import org.koin.core.module.Module
-import org.skynetsoftware.avnlauncher.data.config.ConfigManager
-import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
+import org.skynetsoftware.avnlauncher.data.Database
+import org.skynetsoftware.avnlauncher.data.GameEntity
 
-private const val SCHEMA_VERSION = 5L
+private object StringSetAdapter : ColumnAdapter<Set<String>, String> {
+    override fun decode(databaseValue: String) =
+        if (databaseValue.isEmpty()) {
+            setOf()
+        } else {
+            databaseValue.split(",").toSet()
+        }
 
-internal fun Module.databaseKoinModule() {
-    single<Realm> {
-        val configManager = get<ConfigManager>()
-        val configuration = RealmConfiguration.Builder(
-            schema = setOf(RealmGame::class),
-        ).directory(configManager.dataDir).schemaVersion(SCHEMA_VERSION).migration(MyMigration()).build()
-        Realm.open(configuration)
-    }
+    override fun encode(value: Set<String>) = value.joinToString(separator = ",")
 }
 
-private class MyMigration : AutomaticSchemaMigration {
-    override fun migrate(migrationContext: AutomaticSchemaMigration.MigrationContext) {
-        migrationContext.enumerate(RealmGame::class.simpleName!!) {
-                oldObject: DynamicRealmObject, newObject: DynamicMutableRealmObject? ->
-            newObject?.run {
-                val executablePath: String? = oldObject.getNullableValue("executablePath")
-                executablePath?.let {
-                    getValueSet<String>("executablePaths").add(executablePath)
-                }
-            }
-        }
+internal fun Module.databaseKoinModule() {
+    single<Database> {
+        val driverFactory = get<DriverFactory>()
+        Database(
+            driver = driverFactory.createDriver(),
+            GameEntityAdapter = GameEntity.Adapter(
+                f95ZoneThreadIdAdapter = IntColumnAdapter,
+                ratingAdapter = IntColumnAdapter,
+                f95RatingAdapter = FloatColumnAdapter,
+                tagsAdapter = StringSetAdapter,
+                executablePathsAdapter = StringSetAdapter,
+                playStateAdapter = EnumColumnAdapter(),
+            ),
+        )
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<jpackage-state version="{jdVersion}" platform="{platform}">
+<jpackage-state version="{jdkVersion}" platform="{platform}">
   <app-version>{version}</app-version>
   <main-launcher>AVN Game Launcher</main-launcher>
   <main-class>MainKt</main-class>
