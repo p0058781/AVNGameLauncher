@@ -1,8 +1,12 @@
 rootProject.name = "AVN Launcher V3"
 
 include(":androidApp")
-include(":shared")
+include(":sharedApp")
 include(":desktopApp")
+include(":domain")
+include(":data")
+include(":logger")
+include(":syncApp")
 
 pluginManagement {
     repositories {
