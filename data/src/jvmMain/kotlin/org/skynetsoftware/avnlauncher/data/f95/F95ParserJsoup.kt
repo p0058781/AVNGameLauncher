@@ -2,6 +2,7 @@ package org.skynetsoftware.avnlauncher.data.f95
 
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import org.jsoup.Jsoup
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
@@ -22,6 +23,9 @@ private class F95ParserJsoup : F95Parser {
         httpResponse: HttpResponse,
         gameThreadId: Int,
     ): Result<F95Game> {
+        if (httpResponse.status != HttpStatusCode.OK) {
+            return Result.Error(Exception("http status code: ${httpResponse.status.value}"))
+        }
         return try {
             val document = Jsoup.parse(httpResponse.bodyAsText())
             val bbWrapper = document.select(".bbWrapper")

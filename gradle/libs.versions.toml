@@ -32,6 +32,7 @@ voyager = "1.0.0"
 webview-compose-multiplatform = "1.8.0"
 mosaic = "0.9.1"
 jline = "3.25.0"
+kover = "0.7.5"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
@@ -103,3 +104,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 moko-resource-generator = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko" }
 mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
