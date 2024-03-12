@@ -119,7 +119,7 @@ interface GamesRepository {
 
     suspend fun insertGame(game: Game)
 
-    suspend fun updateGame(game: Game)
+    suspend fun updateGames(games: List<Game>)
 }
 
 private class GamesRepositoryRealm(
@@ -253,9 +253,11 @@ private class GamesRepositoryRealm(
             Unit
         }
 
-    override suspend fun updateGame(game: Game) =
+    override suspend fun updateGames(games: List<Game>) =
         realmWrite {
-            copyToRealm(game.toRealmGame(), updatePolicy = UpdatePolicy.ALL)
+            games.forEach {
+                copyToRealm(it.toRealmGame(), updatePolicy = UpdatePolicy.ALL)
+            }
             Unit
         }
 
@@ -396,7 +398,7 @@ private class GamesRepositorySyncApi(
         notSupportedError()
     }
 
-    override suspend fun updateGame(game: Game) {
+    override suspend fun updateGames(games: List<Game>) {
         notSupportedError()
     }
 

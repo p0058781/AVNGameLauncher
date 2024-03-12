@@ -15,6 +15,9 @@ actual val imageLoaderKoinModule = module {
 
 private fun imageLoader(configManager: ConfigManager) =
     ImageLoader(requestCoroutineContext = Dispatchers.IO) {
+        options {
+            playAnimate = false
+        }
         // logger = DebugLogger(LogPriority.WARN)
         // TODO use avnLauncherLogger
         components {
