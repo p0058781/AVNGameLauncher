@@ -16,6 +16,22 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3-beta
+      - name: KTLint Check
+        run: ./gradlew --console=plain ktLintCheck
+      - name: Detekt Metadata JVM Main
+        run: ./gradlew --console=plain detektMetadataJvmMain
+      - name: Detekt JVM Main
+        run: ./gradlew --console=plain detektJvmMain
+      - name: Detekt Metadata Main
+        run: ./gradlew --console=plain detektMetadataMain
+      - name: Detekt Metadata Common Main
+        run: ./gradlew --console=plain detektMetadataCommonMain
+      - name: Detekt Android Release
+        run: ./gradlew --console=plain detektAndroidRelease
+      - name: Detekt Android Debug
+        run: ./gradlew --console=plain detektAndroidDebug
+      - name: Detekt Desktop Main
+        run: ./gradlew --console=plain detektDesktopMain
       - name: Build & Test
         run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease releaseJar packageLinuxX64 packageWinX64 packageMacOSX64 assembleRelease
       - name: Upload kover report

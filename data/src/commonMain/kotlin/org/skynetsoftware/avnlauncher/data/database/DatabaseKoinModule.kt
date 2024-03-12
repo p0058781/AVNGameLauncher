@@ -11,19 +11,22 @@ import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
 
+private const val SCHEMA_VERSION = 5L
+
 internal fun Module.databaseKoinModule() {
     single<Realm> {
         val configManager = get<ConfigManager>()
         val configuration = RealmConfiguration.Builder(
             schema = setOf(RealmGame::class),
-        ).directory(configManager.dataDir).schemaVersion(5).migration(MyMigration()).build()
+        ).directory(configManager.dataDir).schemaVersion(SCHEMA_VERSION).migration(MyMigration()).build()
         Realm.open(configuration)
     }
 }
 
 private class MyMigration : AutomaticSchemaMigration {
     override fun migrate(migrationContext: AutomaticSchemaMigration.MigrationContext) {
-        migrationContext.enumerate(RealmGame::class.simpleName!!) { oldObject: DynamicRealmObject, newObject: DynamicMutableRealmObject? ->
+        migrationContext.enumerate(RealmGame::class.simpleName!!) {
+                oldObject: DynamicRealmObject, newObject: DynamicMutableRealmObject? ->
             newObject?.run {
                 val executablePath: String? = oldObject.getNullableValue("executablePath")
                 executablePath?.let {

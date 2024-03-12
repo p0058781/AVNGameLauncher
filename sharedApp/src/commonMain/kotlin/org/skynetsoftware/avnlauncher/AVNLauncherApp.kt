@@ -19,7 +19,7 @@ object AVNLauncherApp {
         val koinApplication = startKoin {
             initKoin()
             modules(
-                imageLoaderKoinModule,
+                imageLoaderKoinModule(),
                 dataKoinModule,
                 loggerKoinModule,
                 gameImportKoinModule,

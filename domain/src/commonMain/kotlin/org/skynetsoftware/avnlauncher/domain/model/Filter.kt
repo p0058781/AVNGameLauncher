@@ -1,6 +1,9 @@
 package org.skynetsoftware.avnlauncher.domain.model
 
+private const val ONE_HOUR_MILLIS = 3600_000L
+
 sealed class Filter(val label: String) {
+    @Suppress("MemberNameEqualsClassName")
     abstract fun filter(input: List<Game>): List<Game>
 
     object All : Filter("All") {
@@ -16,7 +19,7 @@ sealed class Filter(val label: String) {
     }
 
     object UnplayedGames : Filter("Unplayed Games") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.playTime < 3600_000L }
+        override fun filter(input: List<Game>) = All.filter(input).filter { it.playTime < ONE_HOUR_MILLIS }
     }
 
     object Playing : Filter("Playing") {

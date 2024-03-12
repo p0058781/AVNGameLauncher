@@ -23,6 +23,10 @@ import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 
+private const val HOURS_IN_DAY = 24f
+private const val ONE_DAY_MS = 86400000f
+
+@Suppress("TooManyFunctions")
 class GamesScreenModel(
     private val gamesRepository: GamesRepository,
     private val settingsRepository: SettingsRepository,
@@ -39,11 +43,15 @@ class GamesScreenModel(
     val sortDirection: StateFlow<SortDirection> = settingsRepository.selectedSortDirection
     val games: StateFlow<List<Game>> =
         combine(repoGames, filter, sortOrder, sortDirection, searchQuery) { values ->
-            @Suppress("UNCHECKED_CAST")
+            @Suppress("UNCHECKED_CAST", "MagicNumber")
             val games = values[0] as List<Game>
             val filter = values[1] as Filter
             val sortOrder = values[2] as SortOrder
+
+            @Suppress("MagicNumber")
             val sortDirection = values[3] as SortDirection
+
+            @Suppress("MagicNumber")
             val searchQuery = values[4] as String
             sortOrder.sort(
                 filter.filter(games).filter { game ->
@@ -63,9 +71,9 @@ class GamesScreenModel(
 
     val averagePlayTime: StateFlow<Float> = combine(firstPlayedTime, totalPlayTime) { firstPlayedTime, totalPlayTime ->
         val now = Clock.System.now().toEpochMilliseconds()
-        val totalTimeDays = (now - firstPlayedTime) / 86400000f
-        val totalPlayTimeDays = totalPlayTime / 86400000f
-        val dailyPlayTimeHours = (totalPlayTimeDays / totalTimeDays) * 24f
+        val totalTimeDays = (now - firstPlayedTime) / ONE_DAY_MS
+        val totalPlayTimeDays = totalPlayTime / ONE_DAY_MS
+        val dailyPlayTimeHours = (totalPlayTimeDays / totalTimeDays) * HOURS_IN_DAY
         dailyPlayTimeHours
     }.stateIn(screenModelScope, SharingStarted.Lazily, 0f)
 

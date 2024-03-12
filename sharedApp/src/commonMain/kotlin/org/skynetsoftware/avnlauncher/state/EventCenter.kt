@@ -43,11 +43,6 @@ sealed class Event {
 
     object PlayingEnded : Event()
 
-    // SyncService
-    object SyncStarted : Event()
-
-    object SyncCompleted : Event()
-
     // Toast
     class ToastMessage<T>(val message: T, vararg val args: Any, val duration: Long = 3000L) : Event()
 }

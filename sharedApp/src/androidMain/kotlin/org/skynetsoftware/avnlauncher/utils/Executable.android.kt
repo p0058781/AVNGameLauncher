@@ -27,22 +27,28 @@ private class ExecutableFinderAndroid(
                     logger.warning("No executable found for '${game.title}'")
                 }
             } else {
-                val mutableExecutablePaths = executablePaths.toMutableSet()
-                mutableExecutablePaths.forEach {
-                    val executablePathFile = File(it)
-                    if (!executablePathFile.exists()) {
-                        mutableExecutablePaths.remove(it)
-                    }
-                }
-                if (mutableExecutablePaths.size != executablePaths.size) {
-                    gamesToUpdate.add(game.f95ZoneThreadId to mutableExecutablePaths)
+                val updatedExecutablePaths = removeNotFoundExecutablePaths(executablePaths)
+                if (updatedExecutablePaths.size != executablePaths.size) {
+                    gamesToUpdate.add(game.f95ZoneThreadId to updatedExecutablePaths)
                 }
             }
         }
         return gamesToUpdate
     }
 
+    private fun removeNotFoundExecutablePaths(executablePaths: Set<String>): Set<String> {
+        val mutableExecutablePaths = executablePaths.toMutableSet()
+        mutableExecutablePaths.forEach {
+            val executablePathFile = File(it)
+            if (!executablePathFile.exists()) {
+                mutableExecutablePaths.remove(it)
+            }
+        }
+        return mutableExecutablePaths
+    }
+
     override fun findExecutables(title: String): Set<String> {
-        return application.packageManager.getInstalledApplications(0).filter { it.name == title }.map { it.packageName }.toSet()
+        return application.packageManager.getInstalledApplications(0)
+            .filter { it.name == title }.map { it.packageName }.toSet()
     }
 }

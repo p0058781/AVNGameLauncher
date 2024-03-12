@@ -1,6 +1,6 @@
 package org.skynetsoftware.avnlauncher.data.mapper
 
-import io.realm.kotlin.ext.realmSetOf
+import io.realm.kotlin.ext.toRealmSet
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -11,7 +11,7 @@ internal fun Game.toRealmGame() =
         title = this@toRealmGame.title
         imageUrl = this@toRealmGame.imageUrl
         f95ZoneThreadId = this@toRealmGame.f95ZoneThreadId
-        executablePaths = realmSetOf(*this@toRealmGame.executablePaths.toTypedArray())
+        executablePaths = this@toRealmGame.executablePaths.toRealmSet()
         version = this@toRealmGame.version
         playTime = this@toRealmGame.playTime
         rating = this@toRealmGame.rating
@@ -25,7 +25,7 @@ internal fun Game.toRealmGame() =
         firstReleaseDate = this@toRealmGame.firstReleaseDate
         playState = this@toRealmGame.playState.name
         availableVersion = this@toRealmGame.availableVersion
-        tags = realmSetOf(*this@toRealmGame.tags.toTypedArray())
+        tags = this@toRealmGame.tags.toRealmSet()
         lastRedirectUrl = this@toRealmGame.lastRedirectUrl
         checkForUpdates = this@toRealmGame.checkForUpdates
     }
@@ -49,7 +49,7 @@ internal fun RealmGame.toGame() =
         firstReleaseDate = firstReleaseDate,
         playState = PlayState.fromString(playState),
         availableVersion = availableVersion,
-        tags = setOf(*tags.toTypedArray()),
+        tags = tags.toSet(),
         lastRedirectUrl = lastRedirectUrl,
         checkForUpdates = checkForUpdates,
     )
@@ -63,7 +63,7 @@ internal fun F95Game.toRealmGame() =
         f95Rating = this@toRealmGame.rating
         releaseDate = this@toRealmGame.releaseDate
         firstReleaseDate = this@toRealmGame.firstReleaseDate
-        tags = realmSetOf(*this@toRealmGame.tags.toTypedArray())
+        tags = this@toRealmGame.tags.toRealmSet()
     }
 
 internal fun F95Game.toGame() =

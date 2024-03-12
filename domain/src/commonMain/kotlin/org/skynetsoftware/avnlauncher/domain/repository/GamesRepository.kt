@@ -11,45 +11,6 @@ interface GamesRepository {
     suspend fun all(): List<Game>
 
     // write
-    suspend fun updatePlayTime(
-        id: Int,
-        playTime: Long,
-    )
-
-    suspend fun updateLastPlayed(
-        id: Int,
-        lastPlayed: Long,
-    )
-
-    suspend fun updateLastUpdateCheck(
-        id: Int,
-        lastUpdateCheck: Long,
-    )
-
-    suspend fun updateUpdateAvailable(
-        id: Int,
-        updateAvailable: Boolean,
-    )
-
-    suspend fun updateReleaseDate(
-        id: Int,
-        releaseDate: Long,
-    )
-
-    suspend fun updateFirstReleaseDate(
-        id: Int,
-        firstReleaseDate: Long,
-    )
-
-    suspend fun updateAvailableVersion(
-        id: Int,
-        availableVersion: String?,
-    )
-
-    suspend fun updateVersion(
-        id: Int,
-        version: String,
-    )
 
     suspend fun updateRating(
         id: Int,
@@ -66,32 +27,7 @@ interface GamesRepository {
         playState: PlayState,
     )
 
-    suspend fun updateExecutablePaths(
-        id: Int,
-        executablePaths: Set<String>,
-    )
-
     suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>)
-
-    suspend fun updateTitle(
-        id: Int,
-        title: String,
-    )
-
-    suspend fun updateImageUrl(
-        id: Int,
-        imageUrl: String,
-    )
-
-    suspend fun updateLastRedirectUrl(
-        id: Int,
-        lastRedirectUrl: String,
-    )
-
-    suspend fun updateCheckForUpdates(
-        id: Int,
-        checkForUpdates: Boolean,
-    )
 
     suspend fun insertGame(game: Game)
 
