@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.resources.Images
 
 private const val RATING_MAX = 5
 
@@ -25,7 +25,7 @@ fun RatingBar(
     ) {
         for (i in 0 until RATING_MAX) {
             Image(
-                painter = painterResource(if (i < rating) R.images.starFull else R.images.starEmpty),
+                painter = painterResource(if (i < rating) Images.starFull else Images.starEmpty),
                 modifier = Modifier.size(20.dp).clickable {
                     onClick(i + 1)
                 },

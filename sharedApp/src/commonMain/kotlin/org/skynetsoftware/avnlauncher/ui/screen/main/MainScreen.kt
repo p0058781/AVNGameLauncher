@@ -82,7 +82,7 @@ import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.label
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.resources.Images
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.ui.component.OutlinedTextFieldWithPadding
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
@@ -360,7 +360,7 @@ private fun GamesList(
                             ),
                         ) {
                             Icon(
-                                painter = painterResource(R.images.import),
+                                painter = painterResource(Images.import),
                                 contentDescription = "",
                                 tint = Color.White,
                                 modifier = Modifier.fillMaxSize(),
@@ -459,7 +459,7 @@ private fun GameItem(
                         modifier = Modifier.weight(1f),
                     )
                     Image(
-                        painter = painterResource(R.images.edit),
+                        painter = painterResource(Images.edit),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                             editGame(game)
@@ -562,7 +562,7 @@ private fun GameItem(
                         style = MaterialTheme.typography.body2,
                     )
                     Image(
-                        painter = painterResource(if (game.favorite) R.images.heart_filled else R.images.heart),
+                        painter = painterResource(if (game.favorite) Images.heart_filled else Images.heart),
                         contentDescription = null,
                         modifier = Modifier.height(30.dp).padding(5.dp).align(Alignment.CenterVertically)
                             .clickable {
@@ -572,7 +572,7 @@ private fun GameItem(
                     )
                     if (game.f95ZoneThreadId > 0) {
                         Image(
-                            painter = painterResource(R.images.link),
+                            painter = painterResource(Images.link),
                             contentDescription = null,
                             modifier = Modifier.height(30.dp).padding(5.dp).align(Alignment.CenterVertically)
                                 .clickable {
@@ -585,7 +585,7 @@ private fun GameItem(
                     }
                     if (game.updateAvailable) {
                         Image(
-                            painter = painterResource(R.images.update),
+                            painter = painterResource(Images.update),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                                 game.availableVersion?.let {
@@ -596,7 +596,7 @@ private fun GameItem(
                     }
                     if (game.executablePaths.isEmpty()) {
                         Image(
-                            painter = painterResource(R.images.warning),
+                            painter = painterResource(Images.warning),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically),
                         )

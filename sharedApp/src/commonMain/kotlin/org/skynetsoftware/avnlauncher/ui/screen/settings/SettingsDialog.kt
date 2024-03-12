@@ -31,7 +31,7 @@ import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.BuildKonfig
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.utils.Option
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.resources.Images
 import org.skynetsoftware.avnlauncher.ui.component.CheckBoxWithText
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamesDirPicker
@@ -79,7 +79,7 @@ fun SettingsDialog(
                         label = { Text(stringResource(MR.strings.settingsDialogInputLabelGamesDir)) },
                         trailingIcon = {
                             Image(
-                                painter = painterResource(R.images.edit),
+                                painter = painterResource(Images.edit),
                                 contentDescription = null,
                                 modifier = Modifier.size(20.dp).clickable {
                                     showFilePicker = true

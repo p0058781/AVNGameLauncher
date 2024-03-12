@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dev.icerock.moko.resources.compose.stringResource
 import org.skynetsoftware.avnlauncher.MR
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.resources.Images
 import org.skynetsoftware.avnlauncher.ui.component.IconAction
 import org.skynetsoftware.avnlauncher.ui.component.TextAction
 
@@ -45,19 +45,19 @@ actual fun ToolbarActions(
         TextAction(stringResource(if (sfwMode) MR.strings.toolbarActionSfw else MR.strings.toolbarActionNsfw)) {
             onSfwModeClicked()
         }
-        IconAction(R.images.import) {
+        IconAction(Images.import) {
             onImportGameClicked()
         }
-        IconAction(R.images.refresh) {
+        IconAction(Images.refresh) {
             startUpdateCheck()
         }
-        IconAction(R.images.settings) {
+        IconAction(Images.settings) {
             onSettingsClicked()
         }
-        IconAction(if (maximized) R.images.minimize else R.images.maximize) {
+        IconAction(if (maximized) Images.minimize else Images.maximize) {
             onToggleMaximizedClicked()
         }
-        IconAction(R.images.close) {
+        IconAction(Images.close) {
             exitApplication()
         }
     }

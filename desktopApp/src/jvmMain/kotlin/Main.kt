@@ -30,7 +30,7 @@ import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
 import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.domain.utils.os
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.resources.Images
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
@@ -115,7 +115,7 @@ fun main(args: Array<String>) {
                 }
                 Tray(
                     state = trayState,
-                    icon = painterResource(R.images.appIcon),
+                    icon = painterResource(Images.appIcon),
                     menu = {
                         Item(
                             stringResource(MR.strings.trayShowHideWindow),
@@ -144,7 +144,7 @@ fun main(args: Array<String>) {
                 Window(
                     onCloseRequest = onCloseRequest,
                     title = stringResource(MR.strings.appName),
-                    icon = painterResource(R.images.appIcon),
+                    icon = painterResource(Images.appIcon),
                     state = windowState,
                     undecorated = true,
                 ) {

@@ -40,7 +40,7 @@ import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.model.label
-import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.resources.Images
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.screen.applyPlatformSpecificHeight
@@ -224,7 +224,7 @@ fun ExecutablePaths(
                 label = { Text(stringResource(MR.strings.editGameInputLabelExecutablePath)) },
                 trailingIcon = {
                     Image(
-                        painter = painterResource(R.images.edit),
+                        painter = painterResource(Images.edit),
                         contentDescription = null,
                         modifier = Modifier.size(20.dp).clickable {
                             showFilePicker = index
@@ -241,7 +241,7 @@ fun ExecutablePaths(
                     modifier = Modifier.align(Alignment.CenterVertically).size(24.dp).clickable {
                         addExecutablePath()
                     },
-                    painter = painterResource(R.images.add),
+                    painter = painterResource(Images.add),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
                 )
@@ -250,7 +250,7 @@ fun ExecutablePaths(
                     modifier = Modifier.align(Alignment.CenterVertically).size(24.dp).clickable {
                         deleteExecutablePath(index)
                     },
-                    painter = painterResource(R.images.close),
+                    painter = painterResource(Images.close),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colors.primary),
                 )
