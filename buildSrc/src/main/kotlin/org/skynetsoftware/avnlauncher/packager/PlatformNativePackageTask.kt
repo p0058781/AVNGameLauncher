@@ -202,7 +202,14 @@ abstract class PlatformNativePackageTask : DefaultTask() {
 
     private fun addDirToZip(zipArchiveOutputStream: ZipArchiveOutputStream, dir: File, target: String = "") {
         dir.walk().filter { it.isFile }.forEach {
-            val relativePath = target + it.absolutePath.replace(dir.absolutePath, "")
+            val relativePath = target + it.absolutePath.replace(dir.absolutePath, "").let {
+                if(target.isEmpty()) {
+                    it.trimStart(File.separatorChar)
+                } else {
+                  it
+                }
+            }
+            println("relativePath: $relativePath, target: $target, file: $it, dir: $dir")
             addFileToZip(zipArchiveOutputStream, it, relativePath)
         }
     }
