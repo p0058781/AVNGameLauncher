@@ -10,11 +10,13 @@ class EditGameViewModel(private val gamesRepository: GamesRepository, private va
     val title = MutableStateFlow(game.title)
     val imageUrl = MutableStateFlow(game.imageUrl)
     val executablePath = MutableStateFlow(game.executablePath ?: "")
+    val checkForUpdates = MutableStateFlow(game.checkForUpdates)
 
     fun save() = viewModelScope.launch {
         val executablePath = executablePath.value
         val title = title.value
         val imageUrl = imageUrl.value
+        val checkForUpdates = checkForUpdates.value
 
         if (executablePath != game.executablePath) {
             gamesRepository.updateExecutablePath(executablePath, game)
@@ -24,6 +26,9 @@ class EditGameViewModel(private val gamesRepository: GamesRepository, private va
         }
         if (imageUrl != game.imageUrl) {
             gamesRepository.updateImageUrl(imageUrl, game)
+        }
+        if (checkForUpdates != game.checkForUpdates) {
+            gamesRepository.updateCheckForUpdates(checkForUpdates, game)
         }
     }
 }

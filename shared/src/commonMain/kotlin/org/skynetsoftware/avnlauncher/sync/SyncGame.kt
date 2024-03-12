@@ -24,5 +24,6 @@ data class SyncGame(
     val playState: PlayState,
     val availableVersion: String?,
     val tags: Set<String>,
-    val lastRedirectUrl: String?
+    val lastRedirectUrl: String?,
+    val checkForUpdates: Boolean
 )

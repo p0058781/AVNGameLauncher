@@ -5,7 +5,9 @@ import io.realm.kotlin.Realm
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.notifications.ResultsChange
 import io.realm.kotlin.query.Sort
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.model.RealmGame
@@ -64,14 +66,16 @@ interface GamesRepository {
 
     suspend fun updateLastRedirectUrl(lastRedirectUrl: String, game: Game)
 
+    suspend fun updateCheckForUpdates(checkForUpdates: Boolean, game: Game)
+
     suspend fun insertGame(game: Game)
 
     //repo
-    fun setSortOrder(sortOrder: SortOrder)
+    suspend fun setSortOrder(sortOrder: SortOrder)
 
-    fun setSortDirection(sortDirection: SortDirection)
+    suspend fun setSortDirection(sortDirection: SortDirection)
 
-    fun setFilter(filter: Filter)
+    suspend fun setFilter(filter: Filter)
 }
 
 private class GamesRepositoryImpl(
@@ -219,6 +223,10 @@ private class GamesRepositoryImpl(
         findRealmGame(game)?.lastRedirectUrl = lastRedirectUrl
     }
 
+    override suspend fun updateCheckForUpdates(checkForUpdates: Boolean, game: Game) = realmWrite  {
+        findRealmGame(game)?.checkForUpdates = checkForUpdates
+    }
+
     override suspend fun insertGame(
         game: Game
     ) = realmWrite {
@@ -226,15 +234,15 @@ private class GamesRepositoryImpl(
         Unit
     }
 
-    override fun setSortOrder(sortOrder: SortOrder) {
+    override suspend fun setSortOrder(sortOrder: SortOrder) {
         settingsManager.setSelectedSortOrder(sortOrder)
     }
 
-    override fun setSortDirection(sortDirection: SortDirection) {
+    override suspend fun setSortDirection(sortDirection: SortDirection) {
         settingsManager.setSelectedSortDirection(sortDirection)
     }
 
-    override fun setFilter(filter: Filter) {
+    override suspend fun setFilter(filter: Filter) {
         settingsManager.setSelectedFilter(filter)
     }
 }
