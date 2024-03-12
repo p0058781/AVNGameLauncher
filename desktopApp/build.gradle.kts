@@ -40,24 +40,33 @@ kotlin {
                     )
                     exclude("icudtl.dat")
                 }
+
                 fun Jar.excludeWindowsLibs() {
                     exclude("jni/windows/*")
                     exclude("skiko-windows*.dll")
                 }
+
                 fun Jar.excludeLinuxLibs() {
                     exclude("jni/linux/*")
                     exclude("libskiko-linux*.so")
                 }
+
                 fun Jar.excludeMacOSLibs() {
                     exclude("jni/macos/*")
                     exclude("libskiko-macos*.dylib")
                 }
+
                 fun ProGuardTask.config(taskSuffix: String, fileNameSuffix: String) {
                     outputs.upToDateWhen { false }
                     dependsOn("fatJar$taskSuffix")
+                    libraryjars(
+                        mapOf("jarfilter" to "!**.jar", "filter" to "!module-info.class"),
+                        File("${System.getProperty("java.home")}/jmods/").listFiles().filter { it.isFile }.filter { it.extension == "jmod" }
+                    )
                     injars("build/libs/desktopApp-fat$fileNameSuffix-$version.jar")
                     outjars("build/libs/desktopApp-release-fat$fileNameSuffix-$version.jar")
                     configuration("proguard-rules.pro")
+                    printmapping("build/proguard/mapping.txt")
                 }
                 register<Jar>("fatJar") {
                     fatJarCommon()
