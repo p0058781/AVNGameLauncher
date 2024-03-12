@@ -37,8 +37,8 @@ private class F95ParserJsoup : F95Parser {
             val ratingRaw = document.select("div.p-title-pageAction:nth-child(1) > span:nth-child(1) > span:nth-child(1)").first()?.attr("title")
                 ?: throw IllegalArgumentException("cant get rating")
             val rating = ratingRegex.find(ratingRaw)?.groups?.get(0)?.value?.trim()?.toFloatOrNull() ?: throw IllegalArgumentException("cant parse rating")
-            val firstReleaseDate = document.select(".listInline > li:nth-child(2) > a:nth-child(3) > time:nth-child(1)").first()?.attr("data-time")?.toLongOrNull()
-                ?: throw IllegalArgumentException("cant parse firstReleaseDate")
+            val firstReleaseDate = (document.select(".listInline > li:nth-child(2) > a:nth-child(3) > time:nth-child(1)").first()?.attr("data-time")?.toLongOrNull()
+                ?: throw IllegalArgumentException("cant parse firstReleaseDate")) * 1000L
             val tagsContainer = document.select(".js-tagList a.tagItem")
             val tags = hashSetOf<String>()
             tagsContainer.forEach {

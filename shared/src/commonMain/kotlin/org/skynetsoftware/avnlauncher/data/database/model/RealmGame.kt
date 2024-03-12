@@ -8,9 +8,9 @@ import kotlinx.datetime.Clock
 
 class RealmGame : RealmObject {
     @PrimaryKey
+    var f95ZoneThreadId: Int = -1
     var title: String = ""
     var imageUrl: String = ""
-    var f95ZoneThreadId: Int = -1
     var executablePath: String? = null
     var version: String = ""
     var playTime: Long = 0L
@@ -26,4 +26,5 @@ class RealmGame : RealmObject {
     var playState: String? = null
     var availableVersion: String? = null
     var tags: RealmSet<String> = realmSetOf()
+    var lastRedirectUrl: String? = null
 }

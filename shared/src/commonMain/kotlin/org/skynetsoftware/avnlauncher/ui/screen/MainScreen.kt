@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.LocalImageLoader
 import com.seiko.imageloader.rememberAsyncImagePainter
@@ -25,6 +26,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
+import org.skynetsoftware.avnlauncher.data.buildToastMessage
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.repository.Filter
@@ -32,27 +34,42 @@ import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
 import org.skynetsoftware.avnlauncher.resources.R
+import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
-import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGamesDialog
 import org.skynetsoftware.avnlauncher.ui.theme.CardColor
 import org.skynetsoftware.avnlauncher.ui.theme.CardHoverColor
 import org.skynetsoftware.avnlauncher.ui.theme.materialColors
 import org.skynetsoftware.avnlauncher.ui.viewmodel.GamesViewModel
+import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
+import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
 @Composable
-fun MainScreen(exitApplication: () -> Unit) {
-    val updateChecker = koinInject<UpdateChecker>()
+fun MainScreen(
+    mainViewModel: MainViewModel = koinInject(),
+    gamesViewModel: GamesViewModel = koinInject(),
+    updateChecker: UpdateChecker = koinInject(),
+    gameLauncher: GameLauncher = koinInject(),
+    exitApplication: () -> Unit
+) {
+    val games by remember { gamesViewModel.games }.collectAsState()
+    val totalPlayTime by remember { gamesViewModel.totalPlayTime }.collectAsState()
+    val averagePlayTime by remember { gamesViewModel.averagePlayTime }.collectAsState()
+    val currentFilter by remember { gamesViewModel.filter }.collectAsState()
+    val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
+    val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
+    val globalState by remember { mainViewModel.state }.collectAsState()
+    val remoteClientMode by remember { mainViewModel.remoteClientMode }.collectAsState()
+
     var selectedGame by remember { mutableStateOf<Game?>(null) }
     var importGameDialogVisible by remember { mutableStateOf(false) }
-    var importGamesDialogVisible by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
 
     MaterialTheme(
@@ -61,31 +78,90 @@ fun MainScreen(exitApplication: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-//TODO toolbar with options
             //TODO search
+            //TODO settings screen
+            //TODO pull to refresh for remote client
             Column {
                 TopAppBar {
+                    Column(
+                        modifier = Modifier.padding(start = 10.dp),
+                    ) {
+                        Text(
+                            text = R.strings.appName,
+                            style = MaterialTheme.typography.h6,
+                        )
+                        Text(R.strings.totalPlayTime.format(totalPlayTime, averagePlayTime))
+                    }
+                    if(globalState != State.Idle) {
+                        Text(
+                            modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
+                            textAlign = TextAlign.End,
+                            text = globalState.buildText(),
+                            style = MaterialTheme.typography.subtitle2,
+                        )
+                    } else {
+                        Spacer(
+                            modifier = Modifier.weight(1f).fillMaxWidth()
+                        )
+                    }
                     Actions(
-                        showToast = {
-                            toastMessage = it
+                        remoteClientMode = remoteClientMode,
+                        startUpdateCheck = {
+                            updateChecker.startUpdateCheck(true) { updateResult ->
+                                toastMessage = updateResult.buildToastMessage()
+                            }
                         },
                         onImportGameClicked = {
                             importGameDialogVisible = true
-                        },
-                        onImportGamesClicked = {
-                            importGamesDialogVisible = true
                         },
                         exitApplication = exitApplication
                     )
                 }
                 SortFilter(
-                    modifier = Modifier.align(Alignment.End).padding(10.dp)
-                )
-                GamesList(
-                    editGame = {
-                        selectedGame = it
+                    games = games,
+                    currentFilter = currentFilter,
+                    currentSortOrder = currentSortOrder,
+                    currentSortDirection = currentSortDirection,
+                    modifier = Modifier.align(Alignment.End).padding(10.dp),
+                    setFilter = {
+                        gamesViewModel.setFilter(it)
+                    },
+                    setSortOrder = {
+                        gamesViewModel.setSortOrder(it)
+                    },
+                    setSortDirection = {
+                        gamesViewModel.setSortDirection(it)
                     }
                 )
+                GamesList(
+                    games = games,
+                    remoteClientMode = remoteClientMode,
+                    editGame = {
+                        selectedGame = it
+                    },
+                    launchGame = {
+                        gameLauncher.launch(it)
+                    },
+                    togglePlaying = {
+                        gamesViewModel.togglePlaying(it)
+                    },
+                    toggleCompleted = {
+                        gamesViewModel.toggleCompleted(it)
+                    },
+                    toggleWaitingForUpdate = {
+                        gamesViewModel.toggleWaitingForUpdate(it)
+                    },
+                    toggleHidden = {
+                        gamesViewModel.toggleHidden(it)
+                    },
+                    resetUpdateAvailable = { availableVersion, game ->
+                        gamesViewModel.resetUpdateAvailable(availableVersion, game)
+                    },
+                    updateRating = { rating, game ->
+                        gamesViewModel.updateRating(rating, game)
+                    },
+
+                    )
             }
         }
         selectedGame?.let {
@@ -109,16 +185,6 @@ fun MainScreen(exitApplication: () -> Unit) {
                 }
             )
         }
-        if (importGamesDialogVisible) {
-            ImportGamesDialog(
-                onCloseRequest = {
-                    importGamesDialogVisible = false
-                },
-                showToast = {
-                    toastMessage = it
-                }
-            )
-        }
         toastMessage?.let {
             Toast(
                 text = it,
@@ -129,60 +195,27 @@ fun MainScreen(exitApplication: () -> Unit) {
         }
 
     }
-    updateChecker.startUpdateCheck(
-        onComplete = { updateResult ->
-            toastMessage = updateResult.buildToastMessage()
-        }
-    )
 
-}
-
-//TODO this needs to be moved somewhere lese, it does not belong here
-private fun List<UpdateChecker.UpdateResult>.buildToastMessage(): String {
-    return buildString {
-        val updates = this@buildToastMessage.filter { it.updateAvailable }
-        if (updates.isNotEmpty()) {
-            appendLine(R.strings.toastUpdateAvailable)
-            updates.forEach {
-                appendLine(it.game.title)
-            }
-        } else {
-            appendLine(R.strings.toastNoUpdatesAvailable)
-        }
-        val exceptions = this@buildToastMessage.filter { it.exception != null }
-        if (exceptions.isNotEmpty()) {
-            appendLine(R.strings.toastException)
-            exceptions.forEach {
-                append(it.game.title)
-                append(": ")
-                append(it.exception?.message)
-            }
-        }
-    }
 }
 
 @Composable
 private fun Actions(
-    updateChecker: UpdateChecker = koinInject(),
-    showToast: (text: String) -> Unit,
+    modifier: Modifier = Modifier,
+    remoteClientMode: Boolean,
+    startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
-    onImportGamesClicked: () -> Unit,
     exitApplication: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.End
     ) {
-        Action(R.images.import) {
-            onImportGameClicked()
-        }
-        //TODO remove import games
-        Action(R.images.import) {
-            onImportGamesClicked()
-        }
-        Action(R.images.refresh) {
-            updateChecker.startUpdateCheck(true) { updateResult ->
-                showToast(updateResult.buildToastMessage())
+        if(!remoteClientMode) {
+            Action(R.images.import) {
+                onImportGameClicked()
+            }
+            Action(R.images.refresh) {
+                startUpdateCheck()
             }
         }
         Action(R.images.close) {
@@ -214,13 +247,15 @@ private fun Action(
 
 @Composable
 private fun SortFilter(
-    gamesViewModel: GamesViewModel = koinInject(),
-    modifier: Modifier = Modifier
+    games: List<Game>,
+    currentFilter: Filter,
+    currentSortOrder: SortOrder,
+    currentSortDirection: SortDirection,
+    modifier: Modifier = Modifier,
+    setFilter: (filter: Filter) -> Unit,
+    setSortOrder: (sortOrder: SortOrder) -> Unit,
+    setSortDirection: (sortDirection: SortDirection) -> Unit,
 ) {
-    val games by remember { gamesViewModel.games }.collectAsState()
-    val currentFilter by remember { gamesViewModel.filter }.collectAsState()
-    val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
-    val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
 
     var showFilterDropdown by remember { mutableStateOf(false) }
     var showSortOrderDropdown by remember { mutableStateOf(false) }
@@ -274,7 +309,7 @@ private fun SortFilter(
                 DropdownMenuItem(
                     onClick = {
                         showFilterDropdown = false
-                        gamesViewModel.setFilter(it)
+                        setFilter(it)
                     },
                 ) {
                     Text(it.label)
@@ -292,12 +327,12 @@ private fun SortFilter(
                 DropdownMenuItem(
                     onClick = {
                         showSortOrderDropdown = false
-                        if(currentSortOrder != it) {
-                            gamesViewModel.setSortOrder(it)
+                        if (currentSortOrder != it) {
+                            setSortOrder(it)
                         } else {
-                            when(currentSortDirection) {
-                                SortDirection.Ascending -> gamesViewModel.setSortDirection(SortDirection.Descending)
-                                SortDirection.Descending -> gamesViewModel.setSortDirection(SortDirection.Ascending)
+                            when (currentSortDirection) {
+                                SortDirection.Ascending -> setSortDirection(SortDirection.Descending)
+                                SortDirection.Descending -> setSortDirection(SortDirection.Ascending)
                             }
                         }
                     },
@@ -311,11 +346,17 @@ private fun SortFilter(
 
 @Composable
 private fun GamesList(
-    gamesViewModem: GamesViewModel = koinInject(),
+    games: List<Game>,
+    remoteClientMode: Boolean,
     editGame: (game: Game) -> Unit,
+    launchGame: (game: Game) -> Unit,
+    togglePlaying: (game: Game) -> Unit,
+    toggleCompleted: (game: Game) -> Unit,
+    toggleWaitingForUpdate: (game: Game) -> Unit,
+    resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
+    toggleHidden: (game: Game) -> Unit,
+    updateRating: (rating: Int, game: Game) -> Unit,
 ) {
-
-    val games by remember { gamesViewModem.games }.collectAsState()
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(gamesGridCellMinSizeDp()),
@@ -324,7 +365,18 @@ private fun GamesList(
         contentPadding = PaddingValues(10.dp)
     ) {
         items(games) { game ->
-            GameItem(game, editGame = editGame)
+            GameItem(
+                game = game,
+                remoteClientMode = remoteClientMode,
+                editGame = editGame,
+                launchGame = launchGame,
+                togglePlaying = togglePlaying,
+                toggleCompleted = toggleCompleted,
+                toggleWaitingForUpdate = toggleWaitingForUpdate,
+                resetUpdateAvailable = resetUpdateAvailable,
+                toggleHidden = toggleHidden,
+                updateRating = updateRating
+            )
         }
     }
 
@@ -334,9 +386,15 @@ private fun GamesList(
 @Composable
 private fun GameItem(
     game: Game,
-    gameLauncher: GameLauncher = koinInject(),
-    gamesViewModel: GamesViewModel = koinInject(),
-    editGame: (game: Game) -> Unit
+    remoteClientMode: Boolean,
+    editGame: (game: Game) -> Unit,
+    launchGame: (game: Game) -> Unit,
+    togglePlaying: (game: Game) -> Unit,
+    toggleCompleted: (game: Game) -> Unit,
+    toggleWaitingForUpdate: (game: Game) -> Unit,
+    resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
+    toggleHidden: (game: Game) -> Unit,
+    updateRating: (rating: Int, game: Game) -> Unit,
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
     val cardHover by cardHoverInteractionSource.collectIsHoveredAsState()
@@ -349,7 +407,9 @@ private fun GameItem(
             modifier = Modifier
                 .hoverable(cardHoverInteractionSource)
                 .clickable {
-                    gameLauncher.launch(game)
+                    if(!remoteClientMode) {
+                        launchGame(game)
+                    }
                 },
             shape = RoundedCornerShape(10.dp)
         ) {
@@ -378,7 +438,9 @@ private fun GameItem(
                         painter = painterResource(R.images.playing),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesViewModel.togglePlaying(game)
+                            if(!remoteClientMode) {
+                                togglePlaying(game)
+                            }
                         },
                         colorFilter = ColorFilter.tint(if (game.playState == PlayState.Playing) Color.Green else Color.White)
                     )
@@ -386,7 +448,9 @@ private fun GameItem(
                         painter = painterResource(R.images.completed),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesViewModel.toggleCompleted(game)
+                            if(!remoteClientMode) {
+                                toggleCompleted(game)
+                            }
                         },
                         colorFilter = ColorFilter.tint(if (game.playState == PlayState.Completed) Color.Green else Color.White)
                     )
@@ -394,7 +458,9 @@ private fun GameItem(
                         painter = painterResource(R.images.waiting),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesViewModel.toggleWaitingForUpdate(game)
+                            if(!remoteClientMode) {
+                                toggleWaitingForUpdate(game)
+                            }
                         },
                         colorFilter = ColorFilter.tint(if (game.playState == PlayState.WaitingForUpdate) Color.Green else Color.White)
                     )
@@ -403,8 +469,10 @@ private fun GameItem(
                             painter = painterResource(R.images.update),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                                game.availableVersion?.let {
-                                    gamesViewModel.resetUpdateAvailable(it, game)
+                                if(!remoteClientMode) {
+                                    game.availableVersion?.let {
+                                        resetUpdateAvailable(it, game)
+                                    }
                                 }
                             }
                         )
@@ -416,22 +484,26 @@ private fun GameItem(
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically)
                         )
                     }
-                    Image(
-                        painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            gamesViewModel.toggleHidden(game)
-                        },
-                        colorFilter = ColorFilter.tint(Color.White)
-                    )
-                    Image(
-                        painter = painterResource(R.images.edit),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            editGame(game)
-                        },
-                        colorFilter = ColorFilter.tint(Color.White)
-                    )
+                    if(!remoteClientMode) {
+                        Image(
+                            painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
+                                toggleHidden(game)
+                            },
+                            colorFilter = ColorFilter.tint(Color.White)
+                        )
+                    }
+                    if(!remoteClientMode) {
+                        Image(
+                            painter = painterResource(R.images.edit),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
+                                editGame(game)
+                            },
+                            colorFilter = ColorFilter.tint(Color.White)
+                        )
+                    }
                 }
 
                 Column(
@@ -444,12 +516,18 @@ private fun GameItem(
                         R.strings.infoLabelReleaseDate,
                         if (game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate)
                     )
+                    InfoItem(
+                        R.strings.infoLabelFirstReleaseDate,
+                        if (game.firstReleaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.firstReleaseDate)
+                    )
                 }
                 RatingBar(
                     rating = game.rating,
                     modifier = Modifier.padding(start = 10.dp, top = 10.dp),
                     onClick = { rating ->
-                        gamesViewModel.updateRating(rating, game)
+                        if(!remoteClientMode) {
+                            updateRating(rating, game)
+                        }
                     }
                 )
 
@@ -461,7 +539,10 @@ private fun GameItem(
 }
 
 @Composable
-private fun InfoItem(label: String, value: String) {
+private fun InfoItem(
+    label: String,
+    value: String
+) {
     Row {
         Text(
             text = label,
@@ -472,5 +553,14 @@ private fun InfoItem(label: String, value: String) {
             text = value,
             style = MaterialTheme.typography.subtitle1
         )
+    }
+}
+
+private fun State.buildText() = buildString {
+    when(val state = this@buildText) {
+        State.Idle -> append(R.strings.stateIdle)
+        is State.Playing -> append(R.strings.statePlaying.format(state.game.title))
+        State.Syncing -> append(R.strings.stateSyncing)
+        State.UpdateCheckRunning -> append(R.strings.stateCheckingForUpdates)
     }
 }

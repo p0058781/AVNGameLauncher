@@ -1,4 +1,12 @@
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.window.WindowDraggableArea
+import androidx.compose.material.TopAppBar
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -37,6 +45,9 @@ fun main() {
             MainView {
                 exitApplication()
             }
+            /*WindowDraggableArea {
+                Box(Modifier.fillMaxWidth().height(56.dp))
+            }*/
         }
     }
 }

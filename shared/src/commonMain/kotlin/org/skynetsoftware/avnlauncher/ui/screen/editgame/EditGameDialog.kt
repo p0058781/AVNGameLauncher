@@ -3,6 +3,8 @@ package org.skynetsoftware.avnlauncher.ui.screen.editgame
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.theme.Foreground
 import org.skynetsoftware.avnlauncher.ui.theme.Gray
+import org.skynetsoftware.avnlauncher.ui.viewmodel.EditGameViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
 @OptIn(ExperimentalResourceApi::class)
@@ -41,7 +44,7 @@ fun EditGameDialog(
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         ) {
             var showFilePicker by remember { mutableStateOf(false) }
             Column(

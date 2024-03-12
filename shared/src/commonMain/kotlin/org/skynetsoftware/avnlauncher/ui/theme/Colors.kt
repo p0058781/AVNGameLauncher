@@ -15,8 +15,10 @@ val Foreground = Color(210, 210, 210)
 val TranslucentBlack = Color(0, 0, 0, 128)
 val TranslucentWhite = Color(255, 255, 255, 20)
 val Transparent = Color.Transparent
+val Red = Color(186, 69, 69)
 
 val materialColors = darkColors(
+    primary = Red,
     surface = DarkGray
 )
 //TODO Need to not force dark theme

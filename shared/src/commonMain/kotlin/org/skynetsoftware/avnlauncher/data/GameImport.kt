@@ -1,17 +1,13 @@
 package org.skynetsoftware.avnlauncher.data
 
 import kotlinx.coroutines.*
-import kotlinx.serialization.json.Json
-import okio.Path.Companion.toPath
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.ConfigManager
-import org.skynetsoftware.avnlauncher.data.model.Game
-import org.skynetsoftware.avnlauncher.data.model.convertF95GameAndV1GameToGame
-import org.skynetsoftware.avnlauncher.data.model.legacy.V1Game
 import org.skynetsoftware.avnlauncher.data.model.toGame
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.f95.F95Api
-import org.skynetsoftware.avnlauncher.utils.readToString
+import org.skynetsoftware.avnlauncher.logging.Logger
+import org.skynetsoftware.avnlauncher.settings.SettingsManager
 
 val gameImportKoinModule = module {
     single<GameImport> { GameImportImpl(get(), get(), get()) }
@@ -20,11 +16,10 @@ val gameImportKoinModule = module {
 interface GameImport {
     fun importGame(threadId: Int, onGameImported: (title: Result<String>) -> Unit)
 
-    fun importGames(file: String, onGamesImported: (imported: Int) -> Unit)
 }
 
 private class GameImportImpl(
-    configManager: ConfigManager,
+    private val settingsManager: SettingsManager,
     private val gamesRepository: GamesRepository,
     private val f95Api: F95Api
 ) : GameImport {
@@ -33,6 +28,10 @@ private class GameImportImpl(
     //private val gamesDir = configManager.gamesDir
 
     override fun importGame(threadId: Int, onGameImported: (title: Result<String>) -> Unit) {
+        if(settingsManager.remoteClientMode.value) {
+            onGameImported(Result.failure(IllegalStateException("Can't import game in remote client mode ")))
+            return
+        }
         coroutineScope.launch {
             try {
                 val f95Game = f95Api.getGame(threadId).getOrThrow()
@@ -47,35 +46,6 @@ private class GameImportImpl(
                 onGameImported(Result.success(f95Game.title))
             } catch (t: Throwable) {
                 onGameImported(Result.failure(t))
-            }
-        }
-    }
-
-    override fun importGames(file: String, onGamesImported: (imported: Int) -> Unit) {
-        coroutineScope.launch {
-            try {
-                val importFileString = file.toPath().readToString()
-                val v1Games = Json { ignoreUnknownKeys = true }.decodeFromString<List<V1Game>>(importFileString)
-                val tasks: List<Deferred<Game>> = v1Games.map {
-                    async {
-                        try {
-                            val f95Game = f95Api.getGame(it.f95ZoneUrl).getOrThrow()
-                            convertF95GameAndV1GameToGame(f95Game, it)
-                        } catch (e: Throwable) {
-                            it.toGame()
-                        }
-                    }
-                }
-
-
-                val result = tasks.awaitAll()
-                result.forEach {
-                    gamesRepository.insertGame(it)
-                }
-                onGamesImported(result.size)
-            } catch (t: Throwable) {
-                t.printStackTrace()
-                onGamesImported(0)
             }
         }
     }

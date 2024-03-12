@@ -18,6 +18,7 @@ object R {
         const val infoLabelVersion = "Version:"
         const val infoLabelAvailableVersion = "Available Version:"
         const val infoLabelReleaseDate = "Release Date:"
+        const val infoLabelFirstReleaseDate = "First Release Date:"
         const val noValue = "-"
         const val editGameInputLabelTitle = "Title"
         const val editGameInputLabelImageUrl = "Image URL"
@@ -31,7 +32,11 @@ object R {
         const val importGameDialogThreadIdHint = "F95 Thread ID"
         const val importGameDialogSuccessToast = "Game Imported: '%s'"
         const val importGameDialogButtonImport = "Import"
-        const val importGamesDialogToast = "Import Finished. Success: %d"
+        const val totalPlayTime = "Total play time: %s, %.1fh/day"
+        const val statePlaying = "Playing '%s'"
+        const val stateCheckingForUpdates = "Checking for Updates"
+        const val stateIdle = "Idle"
+        const val stateSyncing = "Sync in progress"
     }
 
     object images {

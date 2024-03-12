@@ -11,8 +11,8 @@ val databaseKoinModule = module {
     single<Realm> {
         val configManager = get<ConfigManager>()
         val configuration = RealmConfiguration.Builder(
-            schema = setOf(RealmGame::class, RealmLog::class)
-        ).directory(configManager.dataDir).build()
+            schema = setOf(RealmGame::class, RealmLog::class),
+        ).directory(configManager.dataDir).schemaVersion(2).build()
         Realm.open(configuration)
     }
 }

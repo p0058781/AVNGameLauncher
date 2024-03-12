@@ -13,4 +13,7 @@ actual val configKoinModule = module {
 private class ConfigManagerImpl(context: Context): ConfigManager {
     override val cacheDir: String = context.cacheDir.absolutePath
     override val dataDir: String = context.dataDir.absolutePath
+    override val remoteClientModeDefault: Boolean = true
 }
+
+actual interface ConfigManager : ConfigManagerShared
