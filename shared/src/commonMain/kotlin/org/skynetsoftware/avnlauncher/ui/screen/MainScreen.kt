@@ -294,7 +294,6 @@ private fun Actions(
             IconAction(R.images.refresh) {
                 startUpdateCheck()
             }
-            // TODO settings should be shown in remoteClientMode but with only appropriate options
             IconAction(R.images.settings) {
                 onSettingsClicked()
             }

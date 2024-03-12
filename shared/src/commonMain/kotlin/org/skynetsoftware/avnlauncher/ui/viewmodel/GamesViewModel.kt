@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.buildToastMessage
 import org.skynetsoftware.avnlauncher.data.model.Game
@@ -19,23 +18,22 @@ import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
-import org.skynetsoftware.avnlauncher.logging.Logger
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
+import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 
 class GamesViewModel(
     private val gamesRepository: GamesRepository,
     private val settingsManager: SettingsManager,
-    private val configManager: ConfigManager,
     private val updateChecker: UpdateChecker,
     private val gameLauncher: GameLauncher,
     private val eventCenter: EventCenter,
-    logger: Logger,
+    private val executableFinder: ExecutableFinder,
 ) : ViewModel() {
     private val repoGames = gamesRepository.games.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val searchQuery = MutableStateFlow<String>("")
+    val searchQuery = MutableStateFlow("")
 
     val filter: StateFlow<Filter> = settingsManager.selectedFilter
     val sortOrder: StateFlow<SortOrder> = settingsManager.selectedSortOrder
@@ -49,8 +47,7 @@ class GamesViewModel(
             val sortDirection = values[3] as SortDirection
             val searchQuery = values[4] as String
             sortOrder.sort(
-                filter.filter(games).filter {
-                        game ->
+                filter.filter(games).filter { game ->
                     if (searchQuery.isBlank()) true else game.title.lowercase().contains(searchQuery)
                 },
                 sortDirection,
@@ -77,7 +74,8 @@ class GamesViewModel(
         // check paths
         viewModelScope.launch {
             gamesRepository.refresh()
-            validateExecutables(gamesRepository, settingsManager, configManager, logger)
+            val gamesToUpdate = executableFinder.validateExecutables(gamesRepository.all())
+            gamesRepository.updateExecutablePaths(gamesToUpdate)
         }
     }
 
@@ -163,10 +161,3 @@ class GamesViewModel(
         gameLauncher.launch(game)
     }
 }
-
-expect suspend fun validateExecutables(
-    gamesRepository: GamesRepository,
-    settingsManager: SettingsManager,
-    configManager: ConfigManager,
-    logger: Logger,
-)
