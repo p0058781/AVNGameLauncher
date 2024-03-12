@@ -11,7 +11,7 @@ class RealmGame : RealmObject {
     var f95ZoneThreadId: Int = -1
     var title: String = ""
     var imageUrl: String = ""
-    var executablePath: String? = null
+    var executablePaths: RealmSet<String> = realmSetOf()
     var version: String = ""
     var playTime: Long = 0L
     var rating: Int = 0

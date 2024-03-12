@@ -9,8 +9,7 @@ data class Game(
     val title: String,
     val imageUrl: String,
     val f95ZoneThreadId: Int,
-    // TODO allow multiple versions
-    val executablePath: String?,
+    val executablePaths: Set<String>,
     val version: String,
     val playTime: Long,
     val rating: Int,
@@ -34,7 +33,7 @@ fun Game.toRealmGame() =
         title = this@toRealmGame.title
         imageUrl = this@toRealmGame.imageUrl
         f95ZoneThreadId = this@toRealmGame.f95ZoneThreadId
-        executablePath = this@toRealmGame.executablePath
+        executablePaths = realmSetOf(*this@toRealmGame.executablePaths.toTypedArray())
         version = this@toRealmGame.version
         playTime = this@toRealmGame.playTime
         rating = this@toRealmGame.rating
@@ -58,7 +57,7 @@ fun RealmGame.toGame() =
         title = title,
         imageUrl = imageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
-        executablePath = executablePath,
+        executablePaths = executablePaths,
         version = version,
         playTime = playTime,
         rating = rating,
@@ -94,7 +93,7 @@ fun F95Game.toGame() =
         title = title,
         imageUrl = imageUrl,
         f95ZoneThreadId = threadId,
-        executablePath = null,
+        executablePaths = emptySet(),
         version = version,
         playTime = 0L,
         rating = 0,
@@ -118,7 +117,7 @@ fun Game.mergeWith(f95Game: F95Game) =
         title = f95Game.title,
         imageUrl = f95Game.imageUrl,
         f95ZoneThreadId = f95Game.threadId,
-        executablePath = executablePath,
+        executablePaths = executablePaths,
         version = version,
         playTime = playTime,
         rating = rating,
@@ -142,7 +141,7 @@ fun SyncGame.toGame() =
         title = title,
         imageUrl = imageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
-        executablePath = executablePath,
+        executablePaths = executablePaths,
         version = version,
         playTime = playTime,
         rating = rating,
@@ -166,7 +165,7 @@ fun Game.toSyncGame() =
         title = title,
         imageUrl = imageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
-        executablePath = executablePath,
+        executablePaths = executablePaths,
         version = version,
         playTime = playTime,
         rating = rating,

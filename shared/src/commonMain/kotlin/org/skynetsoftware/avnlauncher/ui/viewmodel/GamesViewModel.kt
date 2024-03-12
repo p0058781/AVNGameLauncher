@@ -18,10 +18,12 @@ import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
+import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
+import org.skynetsoftware.avnlauncher.utils.format
 
 class GamesViewModel(
     private val gamesRepository: GamesRepository,
@@ -70,6 +72,8 @@ class GamesViewModel(
         dailyPlayTimeHours
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0f)
 
+    val showExecutablePathPicker = MutableStateFlow<Game?>(null)
+
     init {
         // check paths
         viewModelScope.launch {
@@ -98,57 +102,55 @@ class GamesViewModel(
         availableVersion: String,
         game: Game,
     ) = viewModelScope.launch {
-        gamesRepository.updateUpdateAvailable(false, game)
-        gamesRepository.updateVersion(availableVersion, game)
-        gamesRepository.updateAvailableVersion(null, game)
+        gamesRepository.updateGame(game.f95ZoneThreadId, false, availableVersion, null)
     }
 
     fun togglePlaying(game: Game) =
         viewModelScope.launch {
             gamesRepository.updatePlayState(
+                game.f95ZoneThreadId,
                 if (game.playState == PlayState.Playing) {
                     PlayState.None
                 } else {
                     PlayState.Playing
                 },
-                game,
             )
         }
 
     fun toggleCompleted(game: Game) =
         viewModelScope.launch {
             gamesRepository.updatePlayState(
+                game.f95ZoneThreadId,
                 if (game.playState == PlayState.Completed) {
                     PlayState.None
                 } else {
                     PlayState.Completed
                 },
-                game,
             )
         }
 
     fun toggleWaitingForUpdate(game: Game) =
         viewModelScope.launch {
             gamesRepository.updatePlayState(
+                game.f95ZoneThreadId,
                 if (game.playState == PlayState.WaitingForUpdate) {
                     PlayState.None
                 } else {
                     PlayState.WaitingForUpdate
                 },
-                game,
             )
         }
 
     fun toggleHidden(game: Game) =
         viewModelScope.launch {
-            gamesRepository.updateHidden(!game.hidden, game)
+            gamesRepository.updateHidden(game.f95ZoneThreadId, !game.hidden)
         }
 
     fun updateRating(
         rating: Int,
         game: Game,
     ) = viewModelScope.launch {
-        gamesRepository.updateRating(rating, game)
+        gamesRepository.updateRating(game.f95ZoneThreadId, rating)
     }
 
     fun startUpdateCheck() {
@@ -157,7 +159,25 @@ class GamesViewModel(
         }
     }
 
-    fun launchGame(game: Game) {
-        gameLauncher.launch(game)
+    fun launchGame(game: Game) =
+        viewModelScope.launch {
+            val executablePaths = game.executablePaths
+            if (game.executablePaths.isEmpty()) {
+                val message = R.strings.gameLauncherInvalidExecutableToast.format(game.title)
+                eventCenter.emit(Event.ToastMessage(message))
+                return@launch
+            } else if (executablePaths.size > 1) {
+                showExecutablePathPicker.emit(game)
+            } else {
+                gameLauncher.launch(game, executablePaths.first())
+            }
+        }
+
+    fun launchGame(
+        game: Game,
+        executablePath: String,
+    ) = viewModelScope.launch {
+        showExecutablePathPicker.emit(null)
+        gameLauncher.launch(game, executablePath)
     }
 }

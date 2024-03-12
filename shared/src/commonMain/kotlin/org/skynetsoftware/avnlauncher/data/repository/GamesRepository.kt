@@ -4,6 +4,7 @@ import io.realm.kotlin.MutableRealm
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import io.realm.kotlin.ext.realmSetOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -38,97 +39,117 @@ interface GamesRepository {
 
     // write
     suspend fun updatePlayTime(
+        id: Int,
         playTime: Long,
-        game: Game,
     )
 
     suspend fun updateLastPlayed(
+        id: Int,
         lastPlayed: Long,
-        game: Game,
     )
 
     suspend fun updateLastUpdateCheck(
+        id: Int,
         lastUpdateCheck: Long,
-        game: Game,
     )
 
     suspend fun updateUpdateAvailable(
+        id: Int,
         updateAvailable: Boolean,
-        game: Game,
     )
 
     suspend fun updateReleaseDate(
+        id: Int,
         releaseDate: Long,
-        game: Game,
     )
 
     suspend fun updateFirstReleaseDate(
+        id: Int,
         firstReleaseDate: Long,
-        game: Game,
     )
 
     suspend fun updateAvailableVersion(
+        id: Int,
         availableVersion: String?,
-        game: Game,
     )
 
     suspend fun updateVersion(
+        id: Int,
         version: String,
-        game: Game,
     )
 
     suspend fun updateRating(
+        id: Int,
         rating: Int,
-        game: Game,
     )
 
     suspend fun updateHidden(
+        id: Int,
         hidden: Boolean,
-        game: Game,
     )
 
     suspend fun updatePlayState(
+        id: Int,
         playState: PlayState,
-        game: Game,
     )
 
-    suspend fun updateExecutablePath(
-        executablePath: String,
-        game: Game,
+    suspend fun updateExecutablePaths(
+        id: Int,
+        executablePaths: Set<String>,
     )
 
-    suspend fun updateExecutablePaths(games: List<Pair<Game, String>>)
+    suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>)
 
     suspend fun updateTitle(
+        id: Int,
         title: String,
-        game: Game,
     )
 
     suspend fun updateImageUrl(
+        id: Int,
         imageUrl: String,
-        game: Game,
     )
 
     suspend fun updateLastRedirectUrl(
+        id: Int,
         lastRedirectUrl: String,
-        game: Game,
     )
 
     suspend fun updateCheckForUpdates(
+        id: Int,
         checkForUpdates: Boolean,
-        game: Game,
     )
 
     suspend fun insertGame(game: Game)
 
     suspend fun updateGames(games: List<Game>)
+
+    suspend fun updateGame(
+        id: Int,
+        title: String,
+        executablePaths: Set<String>,
+        imageUrl: String,
+        checkForUpdates: Boolean,
+    )
+
+    suspend fun updateGame(
+        id: Int,
+        updateAvailable: Boolean,
+        version: String,
+        availableVersion: String?,
+    )
+
+    suspend fun updateGame(
+        id: Int,
+        playTime: Long,
+        lastPlayed: Long,
+    )
 }
 
 private class GamesRepositoryRealm(
     private val realm: Realm,
 ) : GamesRepository {
-    override val games: Flow<List<Game>> = realm.query<RealmGame>().find().asFlow().map {
-            resultChange ->
+    override val games: Flow<List<Game>> = realm.query<RealmGame>().find().asFlow().map { resultChange ->
         resultChange.list.map { it.toGame() }
     }
 
@@ -141,122 +162,122 @@ private class GamesRepositoryRealm(
     }
 
     override suspend fun updatePlayTime(
+        id: Int,
         playTime: Long,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.playTime = playTime
+        findRealmGame(id)?.playTime = playTime
     }
 
     override suspend fun updateLastPlayed(
+        id: Int,
         lastPlayed: Long,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.lastPlayed = lastPlayed
+        findRealmGame(id)?.lastPlayed = lastPlayed
     }
 
     override suspend fun updateLastUpdateCheck(
+        id: Int,
         lastUpdateCheck: Long,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.lastUpdateCheck = lastUpdateCheck
+        findRealmGame(id)?.lastUpdateCheck = lastUpdateCheck
     }
 
     override suspend fun updateUpdateAvailable(
+        id: Int,
         updateAvailable: Boolean,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.updateAvailable = updateAvailable
+        findRealmGame(id)?.updateAvailable = updateAvailable
     }
 
     override suspend fun updateAvailableVersion(
+        id: Int,
         availableVersion: String?,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.availableVersion = availableVersion
+        findRealmGame(id)?.availableVersion = availableVersion
     }
 
     override suspend fun updateVersion(
+        id: Int,
         version: String,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.version = version
+        findRealmGame(id)?.version = version
     }
 
     override suspend fun updateRating(
+        id: Int,
         rating: Int,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.rating = rating
+        findRealmGame(id)?.rating = rating
     }
 
     override suspend fun updateHidden(
+        id: Int,
         hidden: Boolean,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.hidden = hidden
+        findRealmGame(id)?.hidden = hidden
     }
 
     override suspend fun updatePlayState(
+        id: Int,
         playState: PlayState,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.playState = playState.name
+        findRealmGame(id)?.playState = playState.name
     }
 
-    override suspend fun updateExecutablePath(
-        executablePath: String,
-        game: Game,
+    override suspend fun updateExecutablePaths(
+        id: Int,
+        executablePaths: Set<String>,
     ) = realmWrite {
-        findRealmGame(game)?.executablePath = executablePath
+        findRealmGame(id)?.executablePaths = realmSetOf(*executablePaths.toTypedArray())
     }
 
-    override suspend fun updateExecutablePaths(games: List<Pair<Game, String>>) =
+    override suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>) =
         realmWrite {
             games.forEach {
-                findRealmGame(it.first)?.executablePath = it.second
+                findRealmGame(it.first)?.executablePaths = realmSetOf(*it.second.toTypedArray())
             }
         }
 
     override suspend fun updateTitle(
+        id: Int,
         title: String,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.title = title
+        findRealmGame(id)?.title = title
     }
 
     override suspend fun updateImageUrl(
+        id: Int,
         imageUrl: String,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.imageUrl = imageUrl
+        findRealmGame(id)?.imageUrl = imageUrl
     }
 
     override suspend fun updateReleaseDate(
+        id: Int,
         releaseDate: Long,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.releaseDate = releaseDate
+        findRealmGame(id)?.releaseDate = releaseDate
     }
 
     override suspend fun updateFirstReleaseDate(
+        id: Int,
         firstReleaseDate: Long,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.firstReleaseDate = firstReleaseDate
+        findRealmGame(id)?.firstReleaseDate = firstReleaseDate
     }
 
     override suspend fun updateLastRedirectUrl(
+        id: Int,
         lastRedirectUrl: String,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.lastRedirectUrl = lastRedirectUrl
+        findRealmGame(id)?.lastRedirectUrl = lastRedirectUrl
     }
 
     override suspend fun updateCheckForUpdates(
+        id: Int,
         checkForUpdates: Boolean,
-        game: Game,
     ) = realmWrite {
-        findRealmGame(game)?.checkForUpdates = checkForUpdates
+        findRealmGame(id)?.checkForUpdates = checkForUpdates
     }
 
     override suspend fun insertGame(game: Game) =
@@ -272,7 +293,43 @@ private class GamesRepositoryRealm(
             }
         }
 
-    private fun MutableRealm.findRealmGame(game: Game) = query<RealmGame>("title == $0", game.title).first().find()
+    override suspend fun updateGame(
+        id: Int,
+        title: String,
+        executablePaths: Set<String>,
+        imageUrl: String,
+        checkForUpdates: Boolean,
+    ) = realmWrite {
+        val realmGame = findRealmGame(id)
+        realmGame?.checkForUpdates = checkForUpdates
+        realmGame?.title = title
+        realmGame?.imageUrl = imageUrl
+        realmGame?.executablePaths = realmSetOf(*executablePaths.toTypedArray())
+    }
+
+    override suspend fun updateGame(
+        id: Int,
+        updateAvailable: Boolean,
+        version: String,
+        availableVersion: String?,
+    ) = realmWrite {
+        val realmGame = findRealmGame(id)
+        realmGame?.updateAvailable = updateAvailable
+        realmGame?.version = version
+        realmGame?.availableVersion = availableVersion
+    }
+
+    override suspend fun updateGame(
+        id: Int,
+        playTime: Long,
+        lastPlayed: Long,
+    ) = realmWrite {
+        val realmGame = findRealmGame(id)
+        realmGame?.playTime = playTime
+        realmGame?.lastPlayed = lastPlayed
+    }
+
+    private fun MutableRealm.findRealmGame(id: Int) = query<RealmGame>("f95ZoneThreadId == $0", id).first().find()
 
     private suspend fun <R> realmWrite(block: MutableRealm.() -> R): R {
         return realm.write(block)
@@ -294,117 +351,117 @@ private class GamesRepositorySyncApi(
     }
 
     override suspend fun updatePlayTime(
+        id: Int,
         playTime: Long,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateLastPlayed(
+        id: Int,
         lastPlayed: Long,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateLastUpdateCheck(
+        id: Int,
         lastUpdateCheck: Long,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateUpdateAvailable(
+        id: Int,
         updateAvailable: Boolean,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateAvailableVersion(
+        id: Int,
         availableVersion: String?,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateVersion(
+        id: Int,
         version: String,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateRating(
+        id: Int,
         rating: Int,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateHidden(
+        id: Int,
         hidden: Boolean,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updatePlayState(
+        id: Int,
         playState: PlayState,
-        game: Game,
     ) {
         notSupportedError()
     }
 
-    override suspend fun updateExecutablePath(
-        executablePath: String,
-        game: Game,
+    override suspend fun updateExecutablePaths(
+        id: Int,
+        executablePaths: Set<String>,
     ) {
         notSupportedError()
     }
 
-    override suspend fun updateExecutablePaths(games: List<Pair<Game, String>>) {
+    override suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>) {
         notSupportedError()
     }
 
     override suspend fun updateTitle(
+        id: Int,
         title: String,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateImageUrl(
+        id: Int,
         imageUrl: String,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateReleaseDate(
+        id: Int,
         releaseDate: Long,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateFirstReleaseDate(
+        id: Int,
         firstReleaseDate: Long,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateLastRedirectUrl(
+        id: Int,
         lastRedirectUrl: String,
-        game: Game,
     ) {
         notSupportedError()
     }
 
     override suspend fun updateCheckForUpdates(
+        id: Int,
         checkForUpdates: Boolean,
-        game: Game,
     ) {
         notSupportedError()
     }
@@ -414,6 +471,33 @@ private class GamesRepositorySyncApi(
     }
 
     override suspend fun updateGames(games: List<Game>) {
+        notSupportedError()
+    }
+
+    override suspend fun updateGame(
+        id: Int,
+        title: String,
+        executablePaths: Set<String>,
+        imageUrl: String,
+        checkForUpdates: Boolean,
+    ) {
+        notSupportedError()
+    }
+
+    override suspend fun updateGame(
+        id: Int,
+        playTime: Long,
+        lastPlayed: Long,
+    ) {
+        notSupportedError()
+    }
+
+    override suspend fun updateGame(
+        id: Int,
+        updateAvailable: Boolean,
+        version: String,
+        availableVersion: String?,
+    ) {
         notSupportedError()
     }
 

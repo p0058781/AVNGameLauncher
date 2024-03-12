@@ -55,6 +55,7 @@ object R {
         const val gamePickerPickGame = "Pick Game"
         const val settingsDialogForceDarkTheme = "Force Dark Theme"
         const val settingsDialogForceDarkThemeDescription = "Dark Theme will be forced even if system is set to Light Theme"
+        const val pickeExecutablePathDialogTitle = "Pick Executable"
     }
 
     object images {
@@ -73,5 +74,6 @@ object R {
         const val close = "close.png"
         const val appIcon = "icon.png"
         const val settings = "settings.png"
+        const val add = "add.png"
     }
 }

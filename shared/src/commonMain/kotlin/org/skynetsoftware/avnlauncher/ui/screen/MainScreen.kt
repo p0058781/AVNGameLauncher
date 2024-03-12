@@ -83,6 +83,7 @@ import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
 // TODO scaling is not working on desktop
+// TODO write tests
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = koinInject(),
@@ -104,6 +105,7 @@ fun MainScreen(
     var settingsDialogVisible by remember { mutableStateOf(false) }
     val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
     var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
+    var showExecutablePathPicker by gamesViewModel.showExecutablePathPicker.collectAsMutableState()
 
     MaterialTheme(
         colors = if (isSystemInDarkTheme()) darkColors else lightColors,
@@ -246,6 +248,18 @@ fun MainScreen(
                 editGameViewModel = koinInject(parameters = { parametersOf(it) }),
                 onCloseRequest = {
                     selectedGame = null
+                },
+            )
+        }
+        showExecutablePathPicker?.let { game ->
+            PickExecutableDialog(
+                executablePaths = game.executablePaths,
+                onCloseRequest = {
+                    showExecutablePathPicker = null
+                },
+                onExecutablePicked = { executablePath ->
+                    showExecutablePathPicker = null
+                    gamesViewModel.launchGame(game, executablePath)
                 },
             )
         }
@@ -528,7 +542,7 @@ private fun GameItem(
                             },
                         )
                     }
-                    if (game.executablePath.isNullOrBlank()) {
+                    if (game.executablePaths.isEmpty()) {
                         Image(
                             painter = painterResource(R.images.warning),
                             contentDescription = null,
