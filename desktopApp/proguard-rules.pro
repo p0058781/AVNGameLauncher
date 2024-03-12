@@ -53,3 +53,6 @@
 -keep class io.ktor.client.engine.** implements io.ktor.client.HttpClientEngineContainer
 
 -keep class ** implements java.sql.Driver
+
+-keep class org.apache.logging.** { *; }
+-keep class org.slf4j.** { *; }
