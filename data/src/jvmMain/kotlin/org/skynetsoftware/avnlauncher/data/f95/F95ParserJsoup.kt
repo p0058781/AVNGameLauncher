@@ -4,6 +4,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
 import org.skynetsoftware.avnlauncher.domain.utils.Result
@@ -30,45 +31,76 @@ private class F95ParserJsoup : F95Parser {
         }
         return try {
             val document = Jsoup.parse(httpResponse.bodyAsText())
-            val bbWrapper = document.select(".bbWrapper")
-            val imageUrl = bbWrapper.select("div a").first()?.attr("href")
-                ?: throw IllegalArgumentException("invalid imageUrl detected")
-            val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
-                ?: throw IllegalArgumentException("cant get title")
-
-            val matchResult = titleRegex.matchEntire(titleRaw)
-            val title =
-                matchResult?.groups?.get(1)?.value?.trim() ?: throw IllegalArgumentException("invalid title detected")
-            val version =
-                matchResult.groups[2]?.value?.trim() ?: throw IllegalArgumentException("invalid version detected")
-            val releaseDate = releaseDateFormat.parse(
-                releaseDateRegex.find(
-                    bbWrapper.first()?.html() ?: throw IllegalArgumentException("bbWraper html not found"),
-                )?.groups?.get(1)?.value
-                    ?: throw IllegalArgumentException("can't get release data"),
-            ) ?: throw IllegalArgumentException("can't parse releaseDate")
-
-            val ratingRaw =
-                document.select("div.p-title-pageAction:nth-child(1) > span:nth-child(1) > span:nth-child(1)").first()
-                    ?.attr("title")
-                    ?: throw IllegalArgumentException("cant get rating")
-            val rating = ratingRegex.find(ratingRaw)?.groups?.get(0)?.value?.trim()?.toFloatOrNull()
-                ?: throw IllegalArgumentException("cant parse rating")
-            val firstReleaseDate =
-                (
-                    document.select(".listInline > li:nth-child(2) > a:nth-child(3) > time:nth-child(1)").first()
-                        ?.attr("data-time")?.toLongOrNull()
-                        ?: throw IllegalArgumentException("cant parse firstReleaseDate")
-                ) * ONE_SECOND_MILLIS
-            val tagsContainer = document.select(".js-tagList a.tagItem")
-            val tags = hashSetOf<String>()
-            tagsContainer.forEach {
-                tags.add(it.text())
-            }
-            val game = F95Game(gameThreadId, title, imageUrl, version, rating, firstReleaseDate, releaseDate.time, tags)
+            val imageUrl = parseImageUrl(document)
+            val (title, version) = parseTitleVersion(document)
+            val releaseDate = parseReleaseDate(document)
+            val rating = parseRating(document)
+            val firstReleaseDate = parseFirstReleaseDate(document)
+            val tags = parseTags(document)
+            val game = F95Game(gameThreadId, title, imageUrl, version, rating, firstReleaseDate, releaseDate, tags)
             Result.Ok(game)
         } catch (t: Throwable) {
             Result.Error(t)
         }
+    }
+
+    private fun parseTags(document: Document): Set<String> {
+        val tagsContainer = document.select(".js-tagList a.tagItem")
+        val tags = hashSetOf<String>()
+        tagsContainer.forEach {
+            tags.add(it.text())
+        }
+        return tags
+    }
+
+    @Throws(IllegalStateException::class)
+    private fun parseFirstReleaseDate(document: Document): Long {
+        return (
+            document.select(".listInline > li:nth-child(2) > a:nth-child(3) > time:nth-child(1)").first()
+                ?.attr("data-time")?.toLongOrNull()
+                ?: error("cant parse firstReleaseDate")
+        ) * ONE_SECOND_MILLIS
+    }
+
+    @Throws(IllegalStateException::class)
+    private fun parseRating(document: Document): Float {
+        val ratingRaw =
+            document.select("div.p-title-pageAction:nth-child(1) > span:nth-child(1) > span:nth-child(1)").first()
+                ?.attr("title")
+                ?: error("cant get rating")
+        return ratingRegex.find(ratingRaw)?.groups?.get(0)?.value?.trim()?.toFloatOrNull()
+            ?: error("cant parse rating")
+    }
+
+    @Throws(IllegalStateException::class)
+    private fun parseReleaseDate(document: Document): Long {
+        return releaseDateFormat.parse(
+            releaseDateRegex.find(
+                document.select(".bbWrapper").first()?.html() ?: error("bbWraper html not found"),
+            )?.groups?.get(1)?.value
+                ?: error("can't get release data"),
+        )?.time ?: error("can't parse releaseDate")
+    }
+
+    @Throws(IllegalStateException::class)
+    private fun parseTitleVersion(document: Document): Pair<String, String> {
+        val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
+            ?: error("cant get title")
+        val matchResult = titleRegex.matchEntire(titleRaw)
+        val title =
+            matchResult?.groups?.get(1)?.value?.trim() ?: error("invalid title detected")
+        val version =
+            matchResult.groups[2]?.value?.trim() ?: error("invalid version detected")
+        return title to version
+    }
+
+    @Throws(IllegalStateException::class)
+    private fun parseImageUrl(document: Document): String {
+        val bbImage = document.select("img.bbImage").first()
+        return if (bbImage?.parent()?.`is`("a") == true) {
+            bbImage.parent()?.attr("href")
+        } else {
+            bbImage?.attr("src")
+        } ?: error("failed to parse imageUrl")
     }
 }

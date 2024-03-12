@@ -2,9 +2,7 @@
 <resources>
     <string name="appName">AVN Game Launcher</string>
     <string name="editGameDialogTitle">Edit \'%s\'</string>
-    <string name="toastException">Exceptions: </string>
-    <string name="toastNoUpdatesAvailable">No Updates Available</string>
-    <string name="toastUpdateAvailable">Update Available:</string>
+    <string name="updateCheckUpdateAvailable">Updates Available: %d, Errors: %d</string>
     <string name="filterLabel">Filter:</string>
     <string name="sortLabel">Sort:</string>
     <string name="infoLabelPlayTime">Play Time:</string>
