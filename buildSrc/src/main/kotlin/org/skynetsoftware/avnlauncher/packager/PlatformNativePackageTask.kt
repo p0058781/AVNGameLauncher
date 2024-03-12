@@ -5,18 +5,19 @@ import java.io.BufferedOutputStream
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
-import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.attribute.PosixFilePermission
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.compress.archivers.zip.UnixStat
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import org.apache.tools.ant.types.ArchiveFileSet
 import org.gradle.api.DefaultTask
-import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import kotlin.io.path.Path
@@ -39,14 +40,7 @@ abstract class PlatformNativePackageTask : DefaultTask() {
         val usedMods = getUsedMods()
         val runtimeDir = createRuntime(jmodsDir, usedMods)
         val zipFile = createZip(runtimeDir)
-        //println(usedMods.joinToString { it })
-
-        /*
-        4. copy template from desktopApp/package/templates to build
-        5. copy created runtime from step 3 to template copied in step 4.
-        6. create zip file
-        7. cleanup temporary files in build
-        */
+        println("Package created: $zipFile")
     }
 
     private fun downloadJdkZip(): File {
@@ -96,7 +90,8 @@ abstract class PlatformNativePackageTask : DefaultTask() {
 
     private fun getUsedMods(): List<String> {
         val jarFile = project.file("build/libs/${jarFileName()}")
-        val inputStream = Runtime.getRuntime().exec(arrayOf("jdeps", "--print-module-deps", "--ignore-missing-deps", jarFile.absolutePath)).inputStream
+        val inputStream = Runtime.getRuntime()
+            .exec(arrayOf("jdeps", "--print-module-deps", "--ignore-missing-deps", jarFile.absolutePath)).inputStream
         val reader = BufferedReader(InputStreamReader(inputStream))
         val modsString = reader.readText().trim()
         return modsString.split(",")
@@ -109,10 +104,21 @@ abstract class PlatformNativePackageTask : DefaultTask() {
     private fun createRuntime(jmodsDir: File, usedMods: List<String>): File {
         val output = File(outDir, "runtime")
         output.deleteRecursively()
-        val process = Runtime.getRuntime().exec(arrayOf("jlink", "--no-header-files", "--no-man-pages", "--compress=2", "--strip-debug",
-            "--module-path", jmodsDir.absolutePath,  "--add-modules", usedMods.joinToString(",") { it }, "--output", output.absolutePath))
+        val process = Runtime.getRuntime().exec(arrayOf("jlink",
+            "--no-header-files",
+            "--no-man-pages",
+            "--compress=2",
+            "--strip-debug",
+            "--module-path",
+            jmodsDir.absolutePath,
+            "--add-modules",
+            usedMods.joinToString(",") { it },
+            "--output",
+            output.absolutePath
+        )
+        )
         val exitCode = process.waitFor()
-        if(exitCode != 0) {
+        if (exitCode!=0) {
             println(process.inputStream.bufferedReader().readText())
             throw RuntimeException("jlink exit code: $exitCode")
         }
@@ -126,26 +132,52 @@ abstract class PlatformNativePackageTask : DefaultTask() {
                 val jPackageXmlContent = createJPackageXml()
                 val cfgFileContent = createCfg()
                 addDirToZip(zipArchiveOutputStream, File(templatesDir, platform.toString()))
-                when(platform) {
+                when (platform) {
                     Platform.LinuxX64,
                     Platform.LinuxArm64 -> {
                         addDirToZip(zipArchiveOutputStream, runtimeDir, "lib/runtime")
-                        addFileToZip(zipArchiveOutputStream, project.file("build/libs/${jarFileName()}"), "lib/app/${jarFileName()}")
+                        addFileToZip(
+                            zipArchiveOutputStream,
+                            project.file("build/libs/${jarFileName()}"),
+                            "lib/app/${jarFileName()}"
+                        )
                         writeStringToZip(zipArchiveOutputStream, jPackageXmlContent, "lib/app/.jpackage.xml")
                         writeStringToZip(zipArchiveOutputStream, cfgFileContent, "lib/app/AVN Game Launcher.cfg")
                     }
+
                     Platform.WindowsX64 -> {
                         addDirToZip(zipArchiveOutputStream, runtimeDir, "runtime")
-                        addFileToZip(zipArchiveOutputStream, project.file("build/libs/${jarFileName()}"), "app/${jarFileName()}")
+                        addFileToZip(
+                            zipArchiveOutputStream,
+                            project.file("build/libs/${jarFileName()}"),
+                            "app/${jarFileName()}"
+                        )
                         writeStringToZip(zipArchiveOutputStream, jPackageXmlContent, "app/.jpackage.xml")
                         writeStringToZip(zipArchiveOutputStream, cfgFileContent, "app/AVN Game Launcher.cfg")
                     }
+
                     Platform.MacOSX64,
                     Platform.MacOSArm64 -> {
-                        addDirToZip(zipArchiveOutputStream, runtimeDir, "AVN Game Launcher.app/Contents/runtime/Contents/Home")
-                        addFileToZip(zipArchiveOutputStream, project.file("build/libs/${jarFileName()}"), "AVN Game Launcher.app/Contents/app/${jarFileName()}")
-                        writeStringToZip(zipArchiveOutputStream, jPackageXmlContent, "AVN Game Launcher.app/Contents/app/.jpackage.xml")
-                        writeStringToZip(zipArchiveOutputStream, cfgFileContent, "AVN Game Launcher.app/Contents/app/AVN Game Launcher.cfg")
+                        addDirToZip(
+                            zipArchiveOutputStream,
+                            runtimeDir,
+                            "AVN Game Launcher.app/Contents/runtime/Contents/Home"
+                        )
+                        addFileToZip(
+                            zipArchiveOutputStream,
+                            project.file("build/libs/${jarFileName()}"),
+                            "AVN Game Launcher.app/Contents/app/${jarFileName()}"
+                        )
+                        writeStringToZip(
+                            zipArchiveOutputStream,
+                            jPackageXmlContent,
+                            "AVN Game Launcher.app/Contents/app/.jpackage.xml"
+                        )
+                        writeStringToZip(
+                            zipArchiveOutputStream,
+                            cfgFileContent,
+                            "AVN Game Launcher.app/Contents/app/AVN Game Launcher.cfg"
+                        )
                     }
                 }
             }
@@ -188,8 +220,35 @@ abstract class PlatformNativePackageTask : DefaultTask() {
     private fun addFileToZip(zipArchiveOutputStream: ZipArchiveOutputStream, file: File, name: String) {
         val entry = ZipArchiveEntry(file, name)
         zipArchiveOutputStream.putArchiveEntry(entry)
+        if (platform==Platform.LinuxX64 || platform==Platform.LinuxArm64) {
+            keepPosixPermissions(file, entry)
+        }
         file.inputStream().copyTo(zipArchiveOutputStream)
         zipArchiveOutputStream.closeArchiveEntry()
+    }
+
+    private fun keepPosixPermissions(file: File, entry: ZipArchiveEntry) {
+        val permissionsSet = Files.getPosixFilePermissions(file.toPath())
+
+        var permissions = 0
+
+        permissionsSet.forEach {
+            permissions = when (it) {
+                PosixFilePermission.OWNER_READ -> permissions or 0b100000000
+                PosixFilePermission.OWNER_WRITE -> permissions or 0b010000000
+                PosixFilePermission.OWNER_EXECUTE -> permissions or 0b001000000
+                PosixFilePermission.GROUP_READ -> permissions or 0b000100000
+                PosixFilePermission.GROUP_WRITE -> permissions or 0b000010000
+                PosixFilePermission.GROUP_EXECUTE -> permissions or 0b000001000
+                PosixFilePermission.OTHERS_READ -> permissions or 0b000000100
+                PosixFilePermission.OTHERS_WRITE -> permissions or 0b000000010
+                PosixFilePermission.OTHERS_EXECUTE -> permissions or 0b000000001
+            }
+        }
+
+        permissions = UnixStat.FILE_FLAG or permissions
+
+        entry.unixMode = permissions
     }
 
 
