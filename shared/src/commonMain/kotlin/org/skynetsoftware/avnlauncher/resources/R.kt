@@ -53,6 +53,8 @@ object R {
         const val toolbarActionNsfw = "NSFW"
         const val searchLabel = "Search"
         const val gamePickerPickGame = "Pick Game"
+        const val settingsDialogForceDarkTheme = "Force Dark Theme"
+        const val settingsDialogForceDarkThemeDescription = "Dark Theme will be forced even if system is set to Light Theme"
     }
 
     object images {

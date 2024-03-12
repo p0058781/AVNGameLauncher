@@ -79,8 +79,6 @@ kotlin {
                 implementation(compose.desktop.common)
 
                 implementation(libs.mpfilepicker)
-
-                implementation(libs.systemthemedetector)
             }
         }
     }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,7 +79,6 @@ import org.skynetsoftware.avnlauncher.utils.SimpleDateFormat
 import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
-import org.skynetsoftware.avnlauncher.utils.isDarkTheme
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -106,7 +106,7 @@ fun MainScreen(
     var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
 
     MaterialTheme(
-        colors = if (isDarkTheme()) lightColors else darkColors,
+        colors = if (isSystemInDarkTheme()) darkColors else lightColors,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),

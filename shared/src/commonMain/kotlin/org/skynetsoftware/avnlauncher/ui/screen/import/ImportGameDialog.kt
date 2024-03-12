@@ -29,7 +29,6 @@ import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
-// TODO UI is broken on android
 @Composable
 fun ImportGameDialog(
     importGameViewModel: ImportGameViewModel = koinInject(),
