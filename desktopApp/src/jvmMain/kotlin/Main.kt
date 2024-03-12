@@ -1,12 +1,5 @@
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.window.WindowDraggableArea
-import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -20,8 +13,6 @@ import dev.icerock.moko.resources.desc.StringDesc
 import org.skynetsoftware.avnlauncher.AVNLauncherApp
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.resources.R
-import org.skynetsoftware.avnlauncher.utils.OS
-import org.skynetsoftware.avnlauncher.utils.os
 import java.awt.Dimension
 import java.awt.Toolkit
 import java.lang.reflect.Field
@@ -38,53 +29,27 @@ fun main() {
 
     AVNLauncherApp.onCreate()
     application {
-        if (os == OS.Mac) {
-            Window(
-                onCloseRequest = ::exitApplication,
-                title = "Fuck you apple",
-                icon = painterResource(R.images.appIcon),
-                state = WindowState(
-                    position = WindowPosition.Aligned(Alignment.Center),
-                    size = DpSize(300.dp, 150.dp),
-                ),
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(10.dp),
-                ) {
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                    ) {
-                        Text("Apple is not supported!!! Fuck Apple")
-                        Image(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
-                            painter = painterResource("fuck_apple.jpg"),
-                            contentDescription = "fuck apple.jpg",
-                        )
+        Window(
+            onCloseRequest = ::exitApplication,
+            // TODO maybe rename app to something that includes f95 since it is only f95
+            title = stringResource(MR.strings.appName),
+            icon = painterResource(R.images.appIcon),
+            state = WindowState(
+                position = WindowPosition.Aligned(Alignment.Center),
+                size = getDefaultWindowSize(),
+            ),
+            undecorated = true,
+        ) {
+            MainView(
+                exitApplication = {
+                    exitApplication()
+                },
+                draggableArea = { content ->
+                    WindowDraggableArea {
+                        content()
                     }
-                }
-            }
-        } else {
-            Window(
-                onCloseRequest = ::exitApplication,
-                title = stringResource(MR.strings.appName),
-                icon = painterResource(R.images.appIcon),
-                state = WindowState(
-                    position = WindowPosition.Aligned(Alignment.Center),
-                    size = getDefaultWindowSize(),
-                ),
-                undecorated = true,
-            ) {
-                MainView(
-                    exitApplication = {
-                        exitApplication()
-                    },
-                    draggableArea = { content ->
-                        WindowDraggableArea {
-                            content()
-                        }
-                    },
-                )
-            }
+                },
+            )
         }
     }
 }

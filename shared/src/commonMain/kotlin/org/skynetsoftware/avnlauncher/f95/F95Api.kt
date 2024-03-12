@@ -17,6 +17,7 @@ val f95ApiKoinModule = module {
 
 fun Int.createF95ThreadUrl() = "$F95_ZONE_THREAD_BASE_URL$this"
 
+// TODO login (automatic download, sync data)
 interface F95Api {
     suspend fun getGame(gameThreadId: Int): Result<F95Game>
 

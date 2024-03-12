@@ -80,9 +80,10 @@ private class ExecutableFinderDesktop(
 
     private fun platformFilter(path: Path): Boolean {
         return when (os) {
+            // TODO need to support more than just sh
             OS.Linux -> path.extension == "sh"
             OS.Windows -> path.extension == "exe"
-            OS.Mac -> throw IllegalStateException("Mac is not supported")
+            OS.Mac -> path.extension == "app"
         }
     }
 }

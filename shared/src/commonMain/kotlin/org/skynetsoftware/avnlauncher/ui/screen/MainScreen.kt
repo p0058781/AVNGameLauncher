@@ -311,6 +311,8 @@ expect fun ToolbarActions(
     exitApplication: () -> Unit,
 )
 
+// TODO custom filter/sort
+// TODO rename "hide" to "archive"
 @Composable
 private fun SortFilter(
     games: List<Game>,
@@ -447,6 +449,7 @@ private fun GamesList(
     }
 }
 
+// TODO link to f94 thread
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun GameItem(

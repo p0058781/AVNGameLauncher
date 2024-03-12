@@ -18,5 +18,6 @@ abstract class ConfigManagerShared {
     abstract val syncEnabledDefault: Boolean
     abstract val sfwModeEnabledDefault: Boolean
 }
+// TODO sync should be build type optional
 
 expect abstract class ConfigManager : ConfigManagerShared
