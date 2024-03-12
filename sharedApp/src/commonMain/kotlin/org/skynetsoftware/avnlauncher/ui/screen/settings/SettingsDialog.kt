@@ -28,6 +28,7 @@ import dev.icerock.moko.resources.compose.stringResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
+import org.skynetsoftware.avnlauncher.BuildKonfig
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.resources.R
@@ -59,6 +60,14 @@ fun SettingsDialog(
                 modifier = Modifier.padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(MR.strings.versionTemplate, BuildKonfig.version),
+                    style = MaterialTheme.typography.body2,
+                )
+                Spacer(
+                    modifier = Modifier.height(10.dp),
+                )
                 if (gamesDirShown) {
                     val gamesDir by remember { (settingsScreenModel.gamesDir as Option.Some).value }.collectAsState()
                     TextField(

@@ -1,9 +1,12 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     id("com.android.library")
     id("org.jetbrains.compose")
     alias(libs.plugins.moko.resource.generator)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -102,6 +105,14 @@ android {
 
 multiplatformResources {
     multiplatformResourcesPackage = "org.skynetsoftware.avnlauncher"
+}
+
+buildkonfig {
+    packageName = "org.skynetsoftware.avnlauncher"
+
+    defaultConfigs {
+        buildConfigField(STRING, "version", version.toString())
+    }
 }
 
 

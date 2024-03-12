@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.detekt).apply(false)
     alias(libs.plugins.sqldelight).apply(false)
     alias(libs.plugins.dependencygraphgenerator)
+    alias(libs.plugins.buildkonfig).apply(false)
 }
 
 subprojects {
@@ -28,11 +29,14 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlinx.kover")
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
+    version = "1.0.1"
+
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
         version.set("1.1.0")
         debug.set(true)
         filter {
             exclude("**/build.gradle.kts")
+            exclude("**/BuildKonfig.kt")
         }
     }
 
@@ -48,6 +52,7 @@ subprojects {
         exclude("**/GameEntityQueries.kt")
         exclude("**/Database.kt")
         exclude("**/DatabaseImpl.kt")
+        exclude("**/BuildKonfig.kt")
         reports {
             html.required.set(true)
             xml.required.set(false)

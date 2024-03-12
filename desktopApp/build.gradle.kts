@@ -18,7 +18,6 @@ plugins {
 }
 
 group = "org.skynetsoftware.avnlauncher"
-version = "1.0.1"
 
 kotlin {
     jvm {
