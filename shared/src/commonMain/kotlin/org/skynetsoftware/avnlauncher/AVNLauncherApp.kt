@@ -49,5 +49,6 @@ object AVNLauncherApp {
 
         val syncService = koinApplication.koin.get<SyncService>()
         syncService.start()
+        // TODO autostart from settings
     }
 }

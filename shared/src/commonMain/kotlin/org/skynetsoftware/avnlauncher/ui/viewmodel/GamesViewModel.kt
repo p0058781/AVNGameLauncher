@@ -55,22 +55,6 @@ class GamesViewModel(
         viewModelScope.launch {
             gamesRepository.refresh()
             validateExecutables(gamesRepository, settingsManager, configManager, logger)
-
-            launch {
-                filter.collect {
-                    logger.info("filter: $it")
-                }
-            }
-            launch {
-                games.collect {
-                    logger.info("games: ${it.size}")
-                }
-            }
-            launch {
-                repoGames.collect {
-                    logger.info("repo games: ${it.size}")
-                }
-            }
         }
     }
 

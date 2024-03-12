@@ -81,7 +81,7 @@ fun MainScreen(
     updateChecker: UpdateChecker = koinInject(),
     gameLauncher: GameLauncher = koinInject(),
     exitApplication: () -> Unit,
-    draggableArea: @Composable (content: @Composable () -> Unit) -> Unit
+    draggableArea: @Composable (content: @Composable () -> Unit) -> Unit,
 ) {
     val games by remember { gamesViewModel.games }.collectAsState()
     val totalPlayTime by remember { gamesViewModel.totalPlayTime }.collectAsState()
