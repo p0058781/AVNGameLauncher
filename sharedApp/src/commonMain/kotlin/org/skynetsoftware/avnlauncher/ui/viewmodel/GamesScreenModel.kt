@@ -52,9 +52,18 @@ class GamesScreenModel(
 
             @Suppress("MagicNumber")
             val searchQuery = values[4] as String
+
             sortOrder.sort(
                 filter.filter(games).filter { game ->
-                    if (searchQuery.isBlank()) true else game.title.lowercase().contains(searchQuery)
+                    if (searchQuery.isBlank()) {
+                        true
+                    } else if (game.title.lowercase().contains(searchQuery.lowercase())) {
+                        true
+                    } else if (game.tags.any { it.lowercase().contains(searchQuery.lowercase()) }) {
+                        true
+                    } else {
+                        false
+                    }
                 },
                 sortDirection,
             )
