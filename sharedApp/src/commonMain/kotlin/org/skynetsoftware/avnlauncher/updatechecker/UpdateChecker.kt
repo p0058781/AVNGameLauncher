@@ -33,6 +33,8 @@ abstract class UpdateChecker(private val configManager: ConfigManager) {
 
     abstract fun stopPeriodicUpdateChecks()
 
+    abstract fun checkForUpdates(forceUpdateCheck: Boolean)
+
     abstract suspend fun checkForUpdates(
         scope: CoroutineScope,
         forceUpdateCheck: Boolean = false,
@@ -77,6 +79,12 @@ private class UpdateCheckerImpl(
 
     override fun stopPeriodicUpdateChecks() {
         updateCheckSchedulerJob?.cancel()
+    }
+
+    override fun checkForUpdates(forceUpdateCheck: Boolean) {
+        scope.launch {
+            checkForUpdates(this, forceUpdateCheck)
+        }
     }
 
     override suspend fun checkForUpdates(

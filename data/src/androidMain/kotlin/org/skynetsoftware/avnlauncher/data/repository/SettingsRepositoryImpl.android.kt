@@ -19,4 +19,10 @@ internal actual class SettingsRepositoryImpl(settings: Settings, configManager: 
     override suspend fun setGamesDir(gamesDir: String) {
         // no-op on android
     }
+
+    override val minimizeToTrayOnClose = Option.None<StateFlow<Boolean>>()
+
+    override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
+        // no-op on android
+    }
 }

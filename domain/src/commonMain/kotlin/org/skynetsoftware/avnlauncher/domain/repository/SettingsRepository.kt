@@ -14,6 +14,7 @@ interface SettingsRepository {
     val lastSyncTime: StateFlow<Long>
     val sfwModeEnabled: StateFlow<Boolean>
     val periodicUpdateChecksEnabled: StateFlow<Boolean>
+    val minimizeToTrayOnClose: Option<out StateFlow<Boolean>>
 
     suspend fun setSelectedFilter(filter: Filter)
 
@@ -28,4 +29,6 @@ interface SettingsRepository {
     suspend fun setSfwModeEnabled(sfwModeEnabled: Boolean)
 
     suspend fun setPeriodicUpdateChecksEnabled(periodicUpdateChecksEnabled: Boolean)
+
+    suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean)
 }

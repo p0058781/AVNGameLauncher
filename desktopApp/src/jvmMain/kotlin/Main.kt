@@ -1,4 +1,6 @@
 import androidx.compose.foundation.window.WindowDraggableArea
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
@@ -17,6 +19,20 @@ import org.skynetsoftware.avnlauncher.resources.R
 import java.awt.Dimension
 import java.awt.Toolkit
 import java.lang.reflect.Field
+import org.koin.compose.koinInject
+import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
+import org.skynetsoftware.avnlauncher.domain.utils.Option
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.Notification
+import androidx.compose.ui.window.Tray
+import androidx.compose.ui.window.rememberTrayState
+import java.util.*
+import org.skynetsoftware.avnlauncher.state.Event
+import org.skynetsoftware.avnlauncher.state.EventCenter
+import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 
 private const val DEFAULT_WINDOW_WIDTH_PERCENT = 0.7f
 private const val DEFAULT_WINDOW_HEIGHT_PERCENT = 0.72f
@@ -39,29 +55,92 @@ fun main() {
             position = WindowPosition.Aligned(Alignment.Center),
             size = getDefaultWindowSize(),
         )
-        Window(
-            onCloseRequest = ::exitApplication,
-            title = stringResource(MR.strings.appName),
-            icon = painterResource(R.images.appIcon),
-            state = windowState,
-            undecorated = true,
-        ) {
-            MainView(
-                exitApplication = {
-                    exitApplication()
-                },
-                draggableArea = { content ->
-                    WindowDraggableArea {
-                        content()
+
+        val settingsRepository = koinInject<SettingsRepository>()
+        //on desktop this is always Option.Some
+        val minimizeToTrayOnClose by remember { (settingsRepository.minimizeToTrayOnClose as Option.Some).value }.collectAsState()
+        var minimized by remember { mutableStateOf(false) }
+        var open by remember { mutableStateOf(true) }
+
+        val onCloseRequest = {
+            if (minimizeToTrayOnClose) {
+                minimized = true
+            } else {
+                exitApplication()
+            }
+        }
+
+        if (open) {
+            if (minimizeToTrayOnClose) {
+                val trayState = rememberTrayState()
+                val updateChecker = koinInject<UpdateChecker>()
+                val eventCenter = koinInject<EventCenter>()
+
+                LaunchedEffect(null) {
+                    eventCenter.events.collect {
+                        if(it is Event.UpdateCheckComplete) {
+                            val count = it.updateCheckResult.games.count { game -> game.updateAvailable }
+                            if(count > 0) {
+                                trayState.sendNotification(Notification(
+                                    title = MR.strings.systemNotificationTitleUpdateAvailable.localized(),
+                                    message = MR.strings.systemNotificationDescriptionUpdateAvailable.localized(Locale.getDefault(), count),
+                                    type = Notification.Type.None
+                                ))
+                            }
+                        }
                     }
-                },
-                setMaximized = {
-                    windowState.placement = WindowPlacement.Maximized
-                },
-                setFloating = {
-                    windowState.placement = WindowPlacement.Floating
-                },
-            )
+                }
+                Tray(
+                    state = trayState,
+                    icon = painterResource(R.images.appIcon),
+                    menu = {
+                        Item(
+                            stringResource(MR.strings.trayShowHideWindow),
+                            onClick = {
+                                minimized = !minimized
+                            }
+                        )
+                        Item(
+                            stringResource(MR.strings.trayCheckForUpdates),
+                            onClick = {
+                                updateChecker.checkForUpdates(true)
+                            }
+                        )
+                        Item(
+                            stringResource(MR.strings.trayExit),
+                            onClick = {
+                                open = false
+                                exitApplication()
+                            }
+                        )
+                    }
+                )
+            }
+
+            if (!minimized) {
+                Window(
+                    onCloseRequest = onCloseRequest,
+                    title = stringResource(MR.strings.appName),
+                    icon = painterResource(R.images.appIcon),
+                    state = windowState,
+                    undecorated = true,
+                ) {
+                    MainView(
+                        exitApplication = onCloseRequest,
+                        draggableArea = { content ->
+                            WindowDraggableArea {
+                                content()
+                            }
+                        },
+                        setMaximized = {
+                            windowState.placement = WindowPlacement.Maximized
+                        },
+                        setFloating = {
+                            windowState.placement = WindowPlacement.Floating
+                        },
+                    )
+                }
+            }
         }
     }
 }

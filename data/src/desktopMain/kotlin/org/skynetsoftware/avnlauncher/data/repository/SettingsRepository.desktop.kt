@@ -29,8 +29,24 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings, con
     )
     override val gamesDir: Option<out StateFlow<String?>> get() = _gamesDir
 
+    private val _minimizeToTrayOnClose = Option.Some(
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::minimizeToTrayOnClose.name,
+                configManager.minimizeToTrayOnCloseDefault,
+            )
+        }
+    )
+    override val minimizeToTrayOnClose: Option<out StateFlow<Boolean>> get() = _minimizeToTrayOnClose
+
+
     override suspend fun setGamesDir(gamesDir: String) {
         _gamesDir.value.emit(gamesDir)
         settings[SettingsRepository::gamesDir.name] = gamesDir
+    }
+
+    override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
+        _minimizeToTrayOnClose.value.emit(minimizeToTrayOnClose)
+        settings[SettingsRepository::minimizeToTrayOnClose.name] = minimizeToTrayOnClose
     }
 }

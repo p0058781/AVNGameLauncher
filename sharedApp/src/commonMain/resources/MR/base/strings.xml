@@ -65,4 +65,11 @@
     <string name="playStateLabelWaitingForUpdate">Waiting for Update</string>
     <string name="playStateLabelCompleted">Completed</string>
     <string name="versionTemplate">Version: %s</string>
+    <string name="settingsDialogMinimizeToTrayOnClose">Minimise to Tray on Close</string>
+    <string name="settingsDialogMinimizeToTrayOnCloseDescription">When Main Windows is closed, app will only be minimised to system tray. Mostly used to periodically check for updates even when window is closed</string>
+    <string name="trayShowHideWindow">Show/Hide Window</string>
+    <string name="trayCheckForUpdates">Check for Updates</string>
+    <string name="trayExit">Tray Exit</string>
+    <string name="systemNotificationTitleUpdateAvailable">Updates Available</string>
+    <string name="systemNotificationDescriptionUpdateAvailable">There is updated available for %d games</string>
 </resources>

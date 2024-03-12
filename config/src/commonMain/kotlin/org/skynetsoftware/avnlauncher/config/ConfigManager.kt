@@ -18,6 +18,7 @@ abstract class ConfigManagerShared {
     @Suppress("MagicNumber")
     open val updateCheckInterval: Long = 3_600_000L // 1 hour
     abstract val periodicUpdateChecksDefault: Boolean
+    val minimizeToTrayOnCloseDefault: Boolean = false
 }
 
 expect abstract class ConfigManager : ConfigManagerShared

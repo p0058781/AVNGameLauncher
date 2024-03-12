@@ -19,7 +19,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":data"))
-                implementation(project(":domain"))
+                api(project(":domain"))
                 implementation(project(":logger"))
                 implementation(project(":config"))
                 implementation(compose.runtime)
@@ -31,8 +31,8 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.kotlinx.datetime)
 
-                implementation(libs.koin.core)
-                implementation(libs.koin.compose)
+                api(libs.koin.core)
+                api(libs.koin.compose)
 
                 implementation(libs.image.loader)
 

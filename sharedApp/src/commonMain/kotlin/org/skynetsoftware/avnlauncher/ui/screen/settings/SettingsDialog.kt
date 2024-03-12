@@ -47,6 +47,7 @@ fun SettingsDialog(
 ) {
     val periodicUpdateChecks by remember { settingsScreenModel.periodicUpdateChecksEnabled }.collectAsState()
     val gamesDirShown = settingsScreenModel.gamesDir is Option.Some
+    val minimizeToTrayOnCloseShown = settingsScreenModel.minimizeToTrayOnClose is Option.Some
 
     Dialog(
         title = stringResource(MR.strings.settings),
@@ -105,6 +106,18 @@ fun SettingsDialog(
                     },
                     description = stringResource(MR.strings.settingsDialogPeriodicUpdateChecksDescription),
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+                if (minimizeToTrayOnCloseShown) {
+                    val minimizeToTrayOnClose by remember { (settingsScreenModel.minimizeToTrayOnClose as Option.Some).value }.collectAsState()
+                    CheckBoxWithText(
+                        text = stringResource(MR.strings.settingsDialogMinimizeToTrayOnClose),
+                        checked = minimizeToTrayOnClose,
+                        onCheckedChange = {
+                            settingsScreenModel.setMinimizeToTrayOnClose(it)
+                        },
+                        description = stringResource(MR.strings.settingsDialogMinimizeToTrayOnCloseDescription),
+                    )
+                }
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
