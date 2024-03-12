@@ -51,6 +51,7 @@ object R {
         const val settingsDialogInputLabelGamesDir = "Games Dir"
         const val toolbarActionSfw = "SFW"
         const val toolbarActionNsfw = "NSFW"
+        const val searchLabel = "Search"
     }
 
     object images {

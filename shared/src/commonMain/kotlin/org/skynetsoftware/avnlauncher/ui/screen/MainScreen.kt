@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,10 +24,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
@@ -39,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +52,8 @@ import com.seiko.imageloader.LocalImageLoader
 import com.seiko.imageloader.model.ImageRequest
 import com.seiko.imageloader.model.blur
 import com.seiko.imageloader.rememberImagePainter
+import dev.icerock.moko.mvvm.flow.compose.collectAsMutableState
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -94,6 +102,7 @@ fun MainScreen(
     var importGameDialogVisible by remember { mutableStateOf(false) }
     var settingsDialogVisible by remember { mutableStateOf(false) }
     val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
+    var searchQuery by remember { gamesViewModel.searchQuery }.collectAsMutableState(context = Dispatchers.Main.immediate)
 
     val isDarkTheme by remember { mainViewModel.isDarkTheme }.collectAsState()
 
@@ -103,7 +112,6 @@ fun MainScreen(
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            // TODO search
             // TODO pull to refresh for remote client
             Column {
                 draggableArea {
@@ -114,8 +122,44 @@ fun MainScreen(
                             Text(
                                 text = R.strings.appName,
                                 style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.onSurface,
                             )
                             Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
+                        }
+                        Spacer(
+                            modifier = Modifier.width(10.dp),
+                        )
+                        Box(
+                            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+                        ) {
+                            OutlinedTextField(
+                                modifier = Modifier.padding(0.dp).fillMaxHeight(),
+                                value = searchQuery,
+                                onValueChange = {
+                                    searchQuery = it
+                                },
+                                placeholder = {
+                                    Text(
+                                        text = R.strings.searchLabel,
+                                        style = MaterialTheme.typography.body2,
+                                    )
+                                },
+                                textStyle = TextStyle(
+                                    color = MaterialTheme.colors.onSurface,
+                                ),
+                                singleLine = true,
+                                trailingIcon = {
+                                    if (searchQuery.isNotBlank()) {
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = "clear text",
+                                            modifier = Modifier.clickable {
+                                                searchQuery = ""
+                                            },
+                                        )
+                                    }
+                                },
+                            )
                         }
                         if (globalState != State.Idle) {
                             Text(
@@ -294,6 +338,7 @@ private fun TextAction(
             modifier = Modifier.clickable {
                 action()
             },
+            color = MaterialTheme.colors.onSurface,
         )
     }
 }

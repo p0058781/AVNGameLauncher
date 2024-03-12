@@ -29,7 +29,6 @@ import org.skynetsoftware.avnlauncher.ui.viewmodel.ImportGameViewModel
 import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
-// TODO use viewmodel
 @Composable
 fun ImportGameDialog(
     importGameViewModel: ImportGameViewModel = koinInject(),

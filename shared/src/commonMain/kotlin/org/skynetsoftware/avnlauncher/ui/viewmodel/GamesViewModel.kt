@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -34,12 +35,26 @@ class GamesViewModel(
 ) : ViewModel() {
     private val repoGames = gamesRepository.games.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    val searchQuery = MutableStateFlow<String>("")
+
     val filter: StateFlow<Filter> = settingsManager.selectedFilter
     val sortOrder: StateFlow<SortOrder> = settingsManager.selectedSortOrder
     val sortDirection: StateFlow<SortDirection> = settingsManager.selectedSortDirection
     val games: StateFlow<List<Game>> =
-        combine(repoGames, filter, sortOrder, sortDirection) { games, filter, sortOrder, sortDirection ->
-            sortOrder.sort(filter.filter(games), sortDirection)
+        combine(repoGames, filter, sortOrder, sortDirection, searchQuery) { values ->
+            @Suppress("UNCHECKED_CAST")
+            val games = values[0] as List<Game>
+            val filter = values[1] as Filter
+            val sortOrder = values[2] as SortOrder
+            val sortDirection = values[3] as SortDirection
+            val searchQuery = values[4] as String
+            sortOrder.sort(
+                filter.filter(games).filter {
+                        game ->
+                    if (searchQuery.isBlank()) true else game.title.lowercase().contains(searchQuery)
+                },
+                sortDirection,
+            )
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val firstPlayedTime = repoGames.map { games ->
