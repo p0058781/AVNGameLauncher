@@ -6,6 +6,7 @@ import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.logging.Logger
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.utils.OS
+import org.skynetsoftware.avnlauncher.utils.Option
 import org.skynetsoftware.avnlauncher.utils.os
 import java.io.File
 import java.nio.file.Files
@@ -20,10 +21,11 @@ actual suspend fun validateExecutables(
     configManager: ConfigManager,
     logger: Logger,
 ) {
-    if (configManager.remoteClientMode) {
+    val gamesDir = settingsManager.gamesDir
+    if (configManager.remoteClientMode || gamesDir !is Option.Some) {
         return
     }
-    val gamesDirRoot = settingsManager.gamesDir.value?.let { File(it) } ?: return
+    val gamesDirRoot = gamesDir.value.value?.let { File(it) } ?: return
     val allGames = gamesRepository.all()
     allGames.forEach { game ->
         if (game.executablePath.isNullOrEmpty()) {
@@ -62,6 +64,6 @@ private fun platformFilter(path: Path): Boolean {
     return when (os) {
         OS.Linux -> path.extension == "sh"
         OS.Windows -> path.extension == "exe"
-        OS.Mac -> TODO()
+        OS.Mac -> TODO("path filter not implemented for MacOS")
     }
 }

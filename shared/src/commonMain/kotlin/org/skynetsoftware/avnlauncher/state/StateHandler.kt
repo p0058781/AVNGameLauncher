@@ -24,12 +24,7 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
 
     private val activeStates = ActiveStates()
 
-    private fun validateStates() {
-        // TODO make sure ids are unique
-    }
-
     init {
-        validateStates()
         scope.launch {
             eventCenter.events.collect { event ->
                 when (event) {
@@ -82,6 +77,7 @@ class ActiveStates {
     }
 }
 
+// TODO write a test to validate that ids are unique
 sealed class State(val id: Int, val priority: Int) {
     object Idle : State(0, Int.MAX_VALUE)
 

@@ -3,8 +3,7 @@ package org.skynetsoftware.avnlauncher.imageloader
 import com.seiko.imageloader.ImageLoader
 import com.seiko.imageloader.cache.memory.maxSizePercent
 import com.seiko.imageloader.component.setupDefaultComponents
-import com.seiko.imageloader.util.DebugLogger
-import com.seiko.imageloader.util.LogPriority
+import com.seiko.imageloader.intercept.BlurInterceptor
 import kotlinx.coroutines.Dispatchers
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
@@ -16,12 +15,13 @@ actual val imageLoaderKoinModule = module {
 
 private fun imageLoader(configManager: ConfigManager) =
     ImageLoader(requestCoroutineContext = Dispatchers.IO) {
-        logger = DebugLogger(LogPriority.WARN)
+        // logger = DebugLogger(LogPriority.WARN)
         // TODO use avnLauncherLogger
         components {
             setupDefaultComponents()
         }
         interceptor {
+            addInterceptor(BlurInterceptor())
             memoryCacheConfig {
                 maxSizePercent(0.25)
             }

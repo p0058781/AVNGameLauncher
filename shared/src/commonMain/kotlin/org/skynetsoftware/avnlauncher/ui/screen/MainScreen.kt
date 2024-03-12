@@ -44,7 +44,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.LocalImageLoader
-import com.seiko.imageloader.rememberAsyncImagePainter
+import com.seiko.imageloader.model.ImageRequest
+import com.seiko.imageloader.model.blur
+import com.seiko.imageloader.rememberImagePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -59,6 +61,7 @@ import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameDialog
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameDialog
+import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsDialog
 import org.skynetsoftware.avnlauncher.ui.theme.CardColor
 import org.skynetsoftware.avnlauncher.ui.theme.CardHoverColor
 import org.skynetsoftware.avnlauncher.ui.theme.materialColors
@@ -71,6 +74,7 @@ import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 
 private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
+// TODO scaling is not working on desktop
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = koinInject(),
@@ -85,9 +89,11 @@ fun MainScreen(
     val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
     val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
     val globalState by remember { mainViewModel.state }.collectAsState()
+    val sfwMode by remember { mainViewModel.sfwMode }.collectAsState()
 
     var selectedGame by remember { mutableStateOf<Game?>(null) }
     var importGameDialogVisible by remember { mutableStateOf(false) }
+    var settingsDialogVisible by remember { mutableStateOf(false) }
     val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
 
     MaterialTheme(
@@ -97,7 +103,6 @@ fun MainScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             // TODO search
-            // TODO settings screen
             // TODO pull to refresh for remote client
             Column {
                 draggableArea {
@@ -125,11 +130,18 @@ fun MainScreen(
                         }
                         Actions(
                             remoteClientMode = mainViewModel.remoteClientMode,
+                            sfwMode = sfwMode,
                             startUpdateCheck = {
                                 gamesViewModel.startUpdateCheck()
                             },
                             onImportGameClicked = {
                                 importGameDialogVisible = true
+                            },
+                            onSettingsClicked = {
+                                settingsDialogVisible = true
+                            },
+                            onSfwModeClicked = {
+                                mainViewModel.toggleSfwMode()
                             },
                             exitApplication = exitApplication,
                         )
@@ -154,6 +166,7 @@ fun MainScreen(
                 GamesList(
                     games = games,
                     remoteClientMode = mainViewModel.remoteClientMode,
+                    sfwMode = sfwMode,
                     editGame = {
                         selectedGame = it
                     },
@@ -196,6 +209,13 @@ fun MainScreen(
                 },
             )
         }
+        if (settingsDialogVisible) {
+            SettingsDialog(
+                onCloseRequest = {
+                    settingsDialogVisible = false
+                },
+            )
+        }
         toastMessage?.let {
             Toast(
                 text = it,
@@ -208,23 +228,33 @@ fun MainScreen(
 private fun Actions(
     modifier: Modifier = Modifier,
     remoteClientMode: Boolean,
+    sfwMode: Boolean,
     startUpdateCheck: () -> Unit,
     onImportGameClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
+    onSfwModeClicked: () -> Unit,
     exitApplication: () -> Unit,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.End,
     ) {
+        TextAction(if (sfwMode) R.strings.toolbarActionSfw else R.strings.toolbarActionNsfw) {
+            onSfwModeClicked()
+        }
         if (!remoteClientMode) {
-            Action(R.images.import) {
+            IconAction(R.images.import) {
                 onImportGameClicked()
             }
-            Action(R.images.refresh) {
+            IconAction(R.images.refresh) {
                 startUpdateCheck()
             }
+            // TODO settings should be shown in remoteClientMode but with only appropriate options
+            IconAction(R.images.settings) {
+                onSettingsClicked()
+            }
         }
-        Action(R.images.close) {
+        IconAction(R.images.close) {
             exitApplication()
         }
     }
@@ -232,7 +262,7 @@ private fun Actions(
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun Action(
+private fun IconAction(
     icon: String,
     action: () -> Unit,
 ) {
@@ -246,6 +276,23 @@ private fun Action(
                 action()
             },
             colorFilter = ColorFilter.tint(Color.White),
+        )
+    }
+}
+
+@Composable
+private fun TextAction(
+    text: String,
+    action: () -> Unit,
+) {
+    Box(
+        modifier = Modifier.padding(10.dp),
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.clickable {
+                action()
+            },
         )
     }
 }
@@ -352,6 +399,7 @@ private fun SortFilter(
 private fun GamesList(
     games: List<Game>,
     remoteClientMode: Boolean,
+    sfwMode: Boolean,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     togglePlaying: (game: Game) -> Unit,
@@ -371,6 +419,7 @@ private fun GamesList(
             GameItem(
                 game = game,
                 remoteClientMode = remoteClientMode,
+                sfwMode = sfwMode,
                 editGame = editGame,
                 launchGame = launchGame,
                 togglePlaying = togglePlaying,
@@ -389,6 +438,7 @@ private fun GamesList(
 private fun GameItem(
     game: Game,
     remoteClientMode: Boolean,
+    sfwMode: Boolean,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     togglePlaying: (game: Game) -> Unit,
@@ -419,8 +469,13 @@ private fun GameItem(
                 modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(
-                        url = game.imageUrl,
+                    painter = rememberImagePainter(
+                        request = ImageRequest {
+                            data(game.imageUrl)
+                            if (sfwMode) {
+                                blur(30)
+                            }
+                        },
                     ),
                     contentDescription = null,
                     modifier = Modifier.aspectRatio(3.5f),

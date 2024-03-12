@@ -27,7 +27,8 @@ private class ConfigManagerImpl : ConfigManager() {
     override val cacheDir: String = cacheDirFile.absolutePath
     override val dataDir: String = dataDirFile.absolutePath
     override val remoteClientMode: Boolean = false
-    override val syncEnabled: Boolean = true
+    override val syncEnabledDefault: Boolean = true
+    override val sfwModeEnabledDefault: Boolean = false
 
     init {
         cacheDirFile.mkdirs()

@@ -40,6 +40,16 @@ object R {
         const val editGameDialogCheckForUpdates = "Check for Updates"
         const val gameLauncherInvalidExecutableToast = "Can't launch '%s', executablePath is invalid"
         const val gameLauncherAnotherGameRunning = "Can't start '%s', '%s' is already running"
+        const val settings = "Settings"
+        const val settingsDialogSyncEnabled = "Sync Enabled"
+        const val settingsSaved = "Settings Saved"
+        const val settingsButtonSave = "Save"
+        const val settingsDialogFastUpdateCheck = "Fast Update Check"
+        const val settingsDialogSyncEnabledDescription = "All data will be synced to remote server"
+        const val settingsDialogFastUpdateCheckDescription = "Update check will be faster but less reliable"
+        const val settingsDialogInputLabelGamesDir = "Games Dir"
+        const val toolbarActionSfw = "SFW"
+        const val toolbarActionNsfw = "NSFW"
     }
 
     object images {
@@ -57,5 +67,6 @@ object R {
         const val edit = "edit.png"
         const val close = "close.png"
         const val appIcon = "icon.png"
+        const val settings = "settings.png"
     }
 }

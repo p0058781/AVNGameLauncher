@@ -15,7 +15,8 @@ abstract class ConfigManagerShared {
     open val selectedSortOrderDefault: SortOrder = SortOrder.LastPlayed
     open val selectedSortOrderDirectionDefault: SortDirection = SortDirection.Descending
     open val fastUpdateCheckDefault: Boolean = false
-    abstract val syncEnabled: Boolean
+    abstract val syncEnabledDefault: Boolean
+    abstract val sfwModeEnabledDefault: Boolean
 }
 
 expect abstract class ConfigManager : ConfigManagerShared
