@@ -10,7 +10,7 @@ jobs:
       RUNNER_TOOL_CACHE: /toolcache
     name: Build & Test
 
-    runs-on: linux
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
