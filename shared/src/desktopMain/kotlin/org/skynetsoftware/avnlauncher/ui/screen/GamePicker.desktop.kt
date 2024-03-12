@@ -22,9 +22,7 @@ actual fun GamePicker(
             onGamePicked(path?.path)
         }
 
-        OS.Mac -> FilePicker(visible, fileExtensions = listOf("app")) { path ->
-            onGamePicked(path?.path)
-        }
+        OS.Mac -> throw IllegalStateException("Mac is not supported")
     }
 }
 
