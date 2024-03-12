@@ -71,32 +71,32 @@ class SettingsManagerImpl(private val settings: Settings, configManager: ConfigM
     override val remoteClientMode: StateFlow<Boolean> get() = _remoteClientMode
 
     override fun setSelectedFilter(filter: Filter) {
-        _selectedFilter.value = filter
+        _selectedFilter.tryEmit(filter)
         settings[SettingsManager::selectedFilter.name] = filter::class.simpleName
     }
 
     override fun setSelectedSortOrder(sortOrder: SortOrder) {
-        _selectedSortOrder.value = sortOrder
+        _selectedSortOrder.tryEmit(sortOrder)
         settings[SettingsManager::selectedSortOrder.name] = sortOrder::class.simpleName
     }
 
     override fun setSelectedSortDirection(sortDirection: SortDirection) {
-        _selectedSortDirection.value = sortDirection
+        _selectedSortDirection.tryEmit(sortDirection)
         settings[SettingsManager::selectedSortDirection.name] = sortDirection.name
     }
 
     override fun setFastUpdateCheck(fastUpdateCheck: Boolean) {
-        _fastUpdateCheck.value = fastUpdateCheck
+        _fastUpdateCheck.tryEmit(fastUpdateCheck)
         settings[SettingsManager::fastUpdateCheck.name] = fastUpdateCheck
     }
 
     override fun setGamesDir(gamesDir: String) {
-        _gamesDir.value = gamesDir
+        _gamesDir.tryEmit(gamesDir)
         settings[SettingsManager::gamesDir.name] = gamesDir
     }
 
     override fun setRemoteClientMode(remoteClientMode: Boolean) {
-        _remoteClientMode.value = remoteClientMode
+        _remoteClientMode.tryEmit(remoteClientMode)
         settings[SettingsManager::remoteClientMode.name] = remoteClientMode
     }
 
