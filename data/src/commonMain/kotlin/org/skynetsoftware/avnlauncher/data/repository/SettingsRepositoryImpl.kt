@@ -4,36 +4,37 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
+import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.MutableStateFlow
 
 internal expect fun Module.settingsKoinModule()
 
+expect object SettingsDefaults : ISettingsDefaults
+
 abstract class SettingsRepositoryShared internal constructor(
     private val settings: Settings,
-    private val configManager: ConfigManager,
 ) : SettingsRepository {
     private val _selectedFilter = MutableStateFlow {
         val selectedFilterClassname =
             settings.getString(
                 SettingsRepository::selectedFilter.name,
-                configManager.selectedFilterDefault::class.simpleName!!,
+                SettingsDefaults.selectedFilter::class.simpleName!!,
             )
-        Filter.entries.find { it::class.simpleName == selectedFilterClassname } ?: configManager.selectedFilterDefault
+        Filter.entries.find { it::class.simpleName == selectedFilterClassname } ?: SettingsDefaults.selectedFilter
     }
     override val selectedFilter: StateFlow<Filter> get() = _selectedFilter
 
     private val _selectedSortOrder = MutableStateFlow {
         val selectedSortOrderClassname = settings.getString(
             SettingsRepository::selectedSortOrder.name,
-            configManager.selectedSortOrderDefault::class.simpleName!!,
+            SettingsDefaults.selectedSortOrder::class.simpleName!!,
         )
         SortOrder.entries.find { it::class.simpleName == selectedSortOrderClassname }
-            ?: configManager.selectedSortOrderDefault
+            ?: SettingsDefaults.selectedSortOrder
     }
     override val selectedSortOrder: StateFlow<SortOrder> get() = _selectedSortOrder
 
@@ -41,22 +42,22 @@ abstract class SettingsRepositoryShared internal constructor(
         val selectedSortDirectionClassname =
             settings.getString(
                 SettingsRepository::selectedSortDirection.name,
-                configManager.selectedSortOrderDirectionDefault.name,
+                SettingsDefaults.selectedSortOrderDirection.name,
             )
         SortDirection.entries.find { it.name == selectedSortDirectionClassname }
-            ?: configManager.selectedSortOrderDirectionDefault
+            ?: SettingsDefaults.selectedSortOrderDirection
     }
     override val selectedSortDirection: StateFlow<SortDirection> get() = _selectedSortDirection
 
-    private val _lastSyncTime =
-        MutableStateFlow { settings.getLong(SettingsRepository::lastSyncTime.name, 0L) }
-    override val lastSyncTime: StateFlow<Long> get() = _lastSyncTime
+    private val _lastUpdateCheck =
+        MutableStateFlow { settings.getLong(SettingsRepository::lastUpdateCheck.name, 0L) }
+    override val lastUpdateCheck: StateFlow<Long> get() = _lastUpdateCheck
 
     private val _sfwModeEnabled =
         MutableStateFlow {
             settings.getBoolean(
                 SettingsRepository::sfwModeEnabled.name,
-                configManager.sfwModeEnabledDefault,
+                SettingsDefaults.sfwModeEnabled,
             )
         }
     override val sfwModeEnabled: StateFlow<Boolean> get() = _sfwModeEnabled
@@ -65,10 +66,19 @@ abstract class SettingsRepositoryShared internal constructor(
         MutableStateFlow {
             settings.getBoolean(
                 SettingsRepository::periodicUpdateChecksEnabled.name,
-                configManager.periodicUpdateChecksDefault,
+                SettingsDefaults.periodicUpdateChecks,
             )
         }
     override val periodicUpdateChecksEnabled: StateFlow<Boolean> get() = _periodicUpdateChecksEnabled
+
+    private val _updateCheckInterval =
+        MutableStateFlow {
+            settings.getLong(
+                SettingsRepository::updateCheckInterval.name,
+                SettingsDefaults.updateCheckInterval,
+            )
+        }
+    override val updateCheckInterval: StateFlow<Long> get() = _updateCheckInterval
 
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
@@ -85,9 +95,9 @@ abstract class SettingsRepositoryShared internal constructor(
         settings[SettingsRepository::selectedSortDirection.name] = sortDirection.name
     }
 
-    override suspend fun setLastSyncTime(lastSyncTime: Long) {
-        _lastSyncTime.emit(lastSyncTime)
-        settings[SettingsRepository::lastSyncTime.name] = lastSyncTime
+    override suspend fun setLastUpdateCheck(lastUpdateCheck: Long) {
+        _lastUpdateCheck.emit(lastUpdateCheck)
+        settings[SettingsRepository::lastUpdateCheck.name] = lastUpdateCheck
     }
 
     override suspend fun setSfwModeEnabled(sfwModeEnabled: Boolean) {
@@ -98,6 +108,11 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setPeriodicUpdateChecksEnabled(periodicUpdateChecksEnabled: Boolean) {
         _periodicUpdateChecksEnabled.emit(periodicUpdateChecksEnabled)
         settings[SettingsRepository::periodicUpdateChecksEnabled.name] = periodicUpdateChecksEnabled
+    }
+
+    override suspend fun setUpdateCheckInterval(updateCheckInterval: Long) {
+        _updateCheckInterval.emit(updateCheckInterval)
+        settings[SettingsRepository::updateCheckInterval.name] = updateCheckInterval
     }
 }
 

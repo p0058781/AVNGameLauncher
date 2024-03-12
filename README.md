@@ -1,8 +1,8 @@
 # AVN Game Launcher
-![module graph](docs/features.png)
+![features](docs/features.png)
 
 ## Modules
-![module graph](docs/project-dependency-graph.png)
+![module graph](docs/project-dependency-graph.svg)
 
 ### desktopApp
 ### androidApp

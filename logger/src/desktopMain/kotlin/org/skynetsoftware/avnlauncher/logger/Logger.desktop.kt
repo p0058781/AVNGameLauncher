@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.config.Config
 import org.slf4j.LoggerFactory
 import java.io.File
 
@@ -14,7 +14,7 @@ actual val loggerKoinModule = module {
 
 private class LoggerImpl(
     level: Logger.Level,
-    configManager: ConfigManager,
+    config: Config,
 ) : Logger {
     init {
         val builder = ConfigurationBuilderFactory.newConfigurationBuilder()
@@ -22,8 +22,8 @@ private class LoggerImpl(
         val console = builder.newAppender("stdout", "Console")
 
         val fileAppender = builder.newAppender("rolling", "RollingFile")
-        fileAppender.addAttribute("fileName", File(configManager.dataDir, "log.txt").absolutePath)
-        fileAppender.addAttribute("filePattern", File(configManager.dataDir, "log-%d{MM-dd-yy}.txt.gz").absolutePath)
+        fileAppender.addAttribute("fileName", File(config.dataDir, "log.txt").absolutePath)
+        fileAppender.addAttribute("filePattern", File(config.dataDir, "log-%d{MM-dd-yy}.txt.gz").absolutePath)
         val triggeringPolicies = builder.newComponent("Policies")
             .addComponent(
                 builder.newComponent("CronTriggeringPolicy")

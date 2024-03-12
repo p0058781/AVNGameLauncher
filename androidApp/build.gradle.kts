@@ -11,6 +11,7 @@ kotlin {
             dependencies {
                 implementation(project(":sharedApp"))
                 implementation(project(":logger"))
+                implementation(project(":config"))
                 implementation(libs.koin.android)
                 implementation(libs.androidx.work.runtimektx)
             }

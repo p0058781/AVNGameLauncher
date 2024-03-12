@@ -11,10 +11,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.Event
@@ -29,17 +29,14 @@ val updateCheckerKoinModule = module {
     }
 }
 
-abstract class UpdateChecker(private val configManager: ConfigManager) {
-    abstract fun startPeriodicUpdateChecks(interval: Long = configManager.updateCheckInterval)
+abstract class UpdateChecker {
+    abstract fun startPeriodicUpdateChecks()
 
     abstract fun stopPeriodicUpdateChecks()
 
-    abstract fun checkForUpdates(forceUpdateCheck: Boolean)
+    abstract fun checkForUpdates()
 
-    abstract suspend fun checkForUpdates(
-        scope: CoroutineScope,
-        forceUpdateCheck: Boolean = false,
-    ): UpdateCheckResult
+    abstract suspend fun checkForUpdates(scope: CoroutineScope): UpdateCheckResult
 }
 
 @Suppress("LongParameterList")
@@ -48,23 +45,23 @@ private class UpdateCheckerImpl(
     private val logger: Logger,
     private val f95Repository: F95Repository,
     private val eventCenter: EventCenter,
-    private val configManager: ConfigManager,
+    private val settingsRepository: SettingsRepository,
     coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
-) : UpdateChecker(configManager) {
+) : UpdateChecker() {
     private var updateCheckRunning = false
     private val scope = CoroutineScope(SupervisorJob() + coroutineDispatcher)
 
     private var updateCheckSchedulerJob: Job? = null
 
-    override fun startPeriodicUpdateChecks(interval: Long) {
+    override fun startPeriodicUpdateChecks() {
         updateCheckSchedulerJob?.cancel()
         updateCheckSchedulerJob = scope.launch {
+            val interval = settingsRepository.updateCheckInterval.value
             while (isActive) {
                 val now = Clock.System.now().toEpochMilliseconds()
-                val newestLastUpdateCheck = gamesRepository.all()
-                    .takeIf { it.isNotEmpty() }?.maxOf { it.lastUpdateCheck } ?: now
+                val lastUpdateCheck = settingsRepository.lastUpdateCheck.value
 
-                var lastUpdateCheckElapsedTime = now - newestLastUpdateCheck
+                var lastUpdateCheckElapsedTime = now - lastUpdateCheck
 
                 if (lastUpdateCheckElapsedTime > interval) {
                     checkForUpdates(this)
@@ -82,20 +79,17 @@ private class UpdateCheckerImpl(
         updateCheckSchedulerJob?.cancel()
     }
 
-    override fun checkForUpdates(forceUpdateCheck: Boolean) {
+    override fun checkForUpdates() {
         scope.launch {
-            checkForUpdates(this, forceUpdateCheck)
+            checkForUpdates(this)
         }
     }
 
-    override suspend fun checkForUpdates(
-        scope: CoroutineScope,
-        forceUpdateCheck: Boolean,
-    ): UpdateCheckResult {
+    override suspend fun checkForUpdates(scope: CoroutineScope): UpdateCheckResult {
         return runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
             val start = Clock.System.now().toEpochMilliseconds()
-            val allGames = getGamesToCheckForUpdate(forceUpdateCheck)
+            val allGames = gamesRepository.all().filter { it.checkForUpdates }
             logger.info("Checking ${allGames.size} games for updates")
             val updateCheckResults = checkForUpdates(allGames)
             logger.info(
@@ -132,15 +126,9 @@ private class UpdateCheckerImpl(
             )
             gamesRepository.updateGames(gamesWithUpdate)
             eventCenter.emit(Event.UpdateCheckComplete(mergedResult))
+            settingsRepository.setLastUpdateCheck(Clock.System.now().toEpochMilliseconds())
             mergedResult
         }
-    }
-
-    private suspend fun getGamesToCheckForUpdate(forceUpdateCheck: Boolean): List<Game> {
-        val now = Clock.System.now().toEpochMilliseconds()
-        return gamesRepository.all()
-            .filter { forceUpdateCheck || now > it.lastUpdateCheck + configManager.updateCheckInterval }
-            .filter { it.checkForUpdates }
     }
 
     private suspend fun checkForUpdates(games: List<Game>): List<UpdateCheckResult> {
@@ -214,7 +202,6 @@ private fun Game.mergeWith(f95Game: Game) =
         updateAvailable = updateAvailable,
         added = added,
         lastPlayed = lastPlayed,
-        lastUpdateCheck = lastUpdateCheck,
         hidden = hidden,
         releaseDate = f95Game.releaseDate,
         firstReleaseDate = f95Game.firstReleaseDate,

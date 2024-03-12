@@ -2,6 +2,7 @@ package org.skynetsoftware.avnlauncher
 
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
+import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.data.gameImportKoinModule
@@ -17,12 +18,15 @@ import org.skynetsoftware.avnlauncher.updatechecker.updateCheckerKoinModule
 import org.skynetsoftware.avnlauncher.utils.executableFinderKoinModule
 
 object AVNLauncherApp {
-    fun onCreate(initKoin: KoinApplication.() -> Unit = {}) {
+    fun onCreate(
+        config: Config,
+        initKoin: KoinApplication.() -> Unit = {},
+    ) {
         val koinApplication = startKoin {
             initKoin()
             modules(
                 imageLoaderKoinModule(),
-                configKoinModule,
+                configKoinModule(config),
                 dataKoinModule,
                 loggerKoinModule,
                 gameImportKoinModule,

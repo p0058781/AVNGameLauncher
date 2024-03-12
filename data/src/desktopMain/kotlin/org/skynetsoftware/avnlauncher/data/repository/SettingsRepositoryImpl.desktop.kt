@@ -4,18 +4,20 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.MutableStateFlow
 import org.skynetsoftware.avnlauncher.domain.utils.Option
 
+actual object SettingsDefaults : ISettingsDefaults()
+
 internal actual fun Module.settingsKoinModule() {
     single { Settings() }
-    single<SettingsRepository> { SettingsRepositoryImpl(get(), get()) }
+    single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 }
 
-internal actual class SettingsRepositoryImpl(private val settings: Settings, configManager: ConfigManager) :
-    SettingsRepositoryShared(settings, configManager) {
+internal actual class SettingsRepositoryImpl(private val settings: Settings) :
+    SettingsRepositoryShared(settings) {
     private val _gamesDir = Option.Some(
         MutableStateFlow {
             val value = settings.getString(
@@ -33,7 +35,7 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings, con
         MutableStateFlow {
             settings.getBoolean(
                 SettingsRepository::minimizeToTrayOnClose.name,
-                configManager.minimizeToTrayOnCloseDefault,
+                SettingsDefaults.minimizeToTrayOnClose,
             )
         },
     )

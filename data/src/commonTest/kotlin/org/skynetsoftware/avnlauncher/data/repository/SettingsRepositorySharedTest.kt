@@ -12,10 +12,8 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.domain.model.Filter
-import org.skynetsoftware.avnlauncher.domain.model.SortDirection
-import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -30,7 +28,7 @@ class SettingsRepositorySharedTest : KoinTest {
 
     private val settingsRepository by inject<SettingsRepository>()
 
-    private val configManager = mockk<ConfigManager>()
+    private val config = mockk<Config>()
 
     @BeforeTest
     fun setup() {
@@ -39,16 +37,10 @@ class SettingsRepositorySharedTest : KoinTest {
                 module {
                     settingsKoinModule()
                     single<Settings> { settingsMock }
-                    single<ConfigManager> { configManager }
+                    single<Config> { config }
                 },
             )
         }
-        every { configManager.selectedFilterDefault } returns Filter.All
-        every { configManager.selectedSortOrderDefault } returns SortOrder.LastPlayed
-        every { configManager.selectedSortOrderDirectionDefault } returns SortDirection.Descending
-        every { configManager.sfwModeEnabledDefault } returns false
-        every { configManager.periodicUpdateChecksDefault } returns true
-        every { configManager.minimizeToTrayOnCloseDefault } returns false
     }
 
     @AfterTest

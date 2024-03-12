@@ -13,7 +13,6 @@ data class Game(
     val updateAvailable: Boolean,
     val added: Long,
     val lastPlayed: Long,
-    val lastUpdateCheck: Long,
     val hidden: Boolean,
     val releaseDate: Long,
     val firstReleaseDate: Long,

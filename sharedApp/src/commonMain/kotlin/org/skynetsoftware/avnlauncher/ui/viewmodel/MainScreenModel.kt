@@ -80,7 +80,7 @@ class MainScreenModel(
 
     fun startUpdateCheck() {
         screenModelScope.launch {
-            val updateCheckResult = updateChecker.checkForUpdates(this, true)
+            val updateCheckResult = updateChecker.checkForUpdates(this)
             eventCenter.emit(Event.ToastMessage(updateCheckResult))
         }
     }

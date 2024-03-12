@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.logger.Logger
 import java.util.concurrent.TimeUnit
@@ -23,7 +24,12 @@ class AndroidAVNLauncherApp : Application(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
-        AVNLauncherApp.onCreate {
+        AVNLauncherApp.onCreate(
+            config = Config(
+                dataDir = dataDir.absolutePath,
+                cacheDir = cacheDir.absolutePath,
+            ),
+        ) {
             androidContext(this@AndroidAVNLauncherApp)
         }
 

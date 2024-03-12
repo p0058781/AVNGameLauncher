@@ -7,7 +7,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
@@ -164,7 +163,6 @@ class GamesRepositoryImplTest : KoinTest {
                     updateAvailable = capture(gameEntitySlots.updateAvailable),
                     added = capture(gameEntitySlots.added),
                     lastPlayed = capture(gameEntitySlots.lastPlayed),
-                    lastUpdateCheck = capture(gameEntitySlots.lastUpdateCheck),
                     hidden = capture(gameEntitySlots.hidden),
                     releaseDate = capture(gameEntitySlots.releaseDate),
                     firstReleaseDate = capture(gameEntitySlots.firstReleaseDate),
@@ -190,7 +188,6 @@ class GamesRepositoryImplTest : KoinTest {
                     updateAvailable = gameEntitySlots.updateAvailable.captured,
                     added = gameEntitySlots.added.captured,
                     lastPlayed = gameEntitySlots.lastPlayed.captured,
-                    lastUpdateCheck = gameEntitySlots.lastUpdateCheck.captured,
                     hidden = gameEntitySlots.hidden.captured,
                     releaseDate = gameEntitySlots.releaseDate.captured,
                     firstReleaseDate = gameEntitySlots.firstReleaseDate.captured,
@@ -220,7 +217,6 @@ class GamesRepositoryImplTest : KoinTest {
                     updateAvailable = expected.updateAvailable,
                     added = expected.added,
                     lastPlayed = expected.lastPlayed,
-                    lastUpdateCheck = expected.lastUpdateCheck,
                     hidden = expected.hidden,
                     releaseDate = expected.releaseDate,
                     firstReleaseDate = expected.firstReleaseDate,
@@ -471,7 +467,6 @@ class GamesRepositoryImplTest : KoinTest {
             updateAvailable = (0..1).random() == 1,
             added = System.currentTimeMillis(),
             lastPlayed = System.currentTimeMillis(),
-            lastUpdateCheck = System.currentTimeMillis(),
             hidden = (0..1).random() == 1,
             releaseDate = System.currentTimeMillis(),
             firstReleaseDate = System.currentTimeMillis(),

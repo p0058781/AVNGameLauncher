@@ -16,7 +16,6 @@ class GameEntitySlots {
     val updateAvailable: CapturingSlot<Boolean> = slot()
     val added: CapturingSlot<Long> = slot()
     val lastPlayed: CapturingSlot<Long> = slot()
-    val lastUpdateCheck: CapturingSlot<Long> = slot()
     val hidden: CapturingSlot<Boolean> = slot()
     val releaseDate: CapturingSlot<Long> = slot()
     val firstReleaseDate: CapturingSlot<Long> = slot()

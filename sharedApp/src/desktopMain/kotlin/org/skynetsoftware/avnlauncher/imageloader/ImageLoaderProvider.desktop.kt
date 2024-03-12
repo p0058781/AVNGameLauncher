@@ -6,7 +6,7 @@ import com.seiko.imageloader.component.setupDefaultComponents
 import kotlinx.coroutines.CoroutineDispatcher
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.logger.Logger
 
 actual fun imageLoaderKoinModule(coroutineDispatcher: CoroutineDispatcher) =
@@ -15,7 +15,7 @@ actual fun imageLoaderKoinModule(coroutineDispatcher: CoroutineDispatcher) =
     }
 
 private fun imageLoader(
-    configManager: ConfigManager,
+    config: Config,
     avnLauncherLogger: Logger,
     coroutineDispatcher: CoroutineDispatcher,
 ) = ImageLoader(requestCoroutineContext = coroutineDispatcher) {
@@ -31,7 +31,7 @@ private fun imageLoader(
             maxSizePercent(MEMORY_CACHE_MAX_SIZE_PERCENT)
         }
         diskCacheConfig {
-            directory(configManager.cacheDir.toPath().resolve("images"))
+            directory(config.cacheDir.toPath().resolve("images"))
             maxSizeBytes(DISK_CACHE_MAX_SIZE_BYTES)
         }
     }

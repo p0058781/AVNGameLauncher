@@ -80,7 +80,6 @@ private class GamesRepositoryImpl(
                     updateAvailable = game.updateAvailable,
                     added = game.added,
                     lastPlayed = game.lastPlayed,
-                    lastUpdateCheck = game.lastUpdateCheck,
                     hidden = game.hidden,
                     releaseDate = game.releaseDate,
                     firstReleaseDate = game.firstReleaseDate,

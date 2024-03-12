@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.utils
 
 import org.koin.dsl.module
-import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
@@ -15,12 +14,11 @@ import java.nio.file.Paths
 import kotlin.io.path.extension
 
 actual val executableFinderKoinModule = module {
-    single<ExecutableFinder> { ExecutableFinderDesktop(get(), get(), get()) }
+    single<ExecutableFinder> { ExecutableFinderDesktop(get(), get()) }
 }
 
 private class ExecutableFinderDesktop(
     val settingsRepository: SettingsRepository,
-    val configManager: ConfigManager,
     val logger: Logger,
 ) : ExecutableFinder {
     override fun validateExecutables(games: List<Game>): List<Pair<Int, Set<String>>> {

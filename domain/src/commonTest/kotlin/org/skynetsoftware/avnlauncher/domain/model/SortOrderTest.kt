@@ -160,7 +160,7 @@ class SortOrderTest {
     ): Game {
         return Game(
             title, "", "", 0, emptySet(), "", playTime, rating, 0f,
-            updateAvailable, added, lastPlayed, 0L, false, releaseDate, 0L,
+            updateAvailable, added, lastPlayed, false, releaseDate, 0L,
             PlayState.Playing, null, emptySet(), false, 0L, null, false,
         )
     }

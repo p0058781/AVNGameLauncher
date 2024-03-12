@@ -42,7 +42,7 @@ class CheckForUpdatesWorker(private val context: Context, workerParameters: Work
     override suspend fun doWork(): Result {
         logger.debug("doWork")
         return withContext(Dispatchers.IO) {
-            val result = updateChecker.checkForUpdates(this, true)
+            val result = updateChecker.checkForUpdates(this)
             val count = result.updates.count { it.updateAvailable }
             if (count > 0) {
                 sendNotification(count)

@@ -20,36 +20,40 @@ import androidx.compose.ui.window.rememberWindowState
 import dev.icerock.moko.resources.compose.stringResource
 import dev.icerock.moko.resources.desc.Resource
 import dev.icerock.moko.resources.desc.StringDesc
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.AVNLauncherApp
 import org.skynetsoftware.avnlauncher.MR
+import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
+import org.skynetsoftware.avnlauncher.domain.utils.OS
 import org.skynetsoftware.avnlauncher.domain.utils.Option
+import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 import java.awt.Dimension
 import java.awt.Toolkit
+import java.io.File
 import java.lang.reflect.Field
 import java.util.Locale
 
 private const val DEFAULT_WINDOW_WIDTH_PERCENT = 0.7f
 private const val DEFAULT_WINDOW_HEIGHT_PERCENT = 0.72f
+private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 
-@Suppress("TooGenericExceptionCaught", "LongMethod")
-fun main() {
-    try {
-        val xToolkit = Toolkit.getDefaultToolkit()
-        val awtAppClassNameField: Field = xToolkit.javaClass.getDeclaredField("awtAppClassName")
-        awtAppClassNameField.setAccessible(true)
-        awtAppClassNameField.set(xToolkit, StringDesc.Resource(MR.strings.appName).localized())
-    } catch (e: Exception) {
-        @Suppress("PrintStackTrace")
-        e.printStackTrace()
-    }
+@Suppress("LongMethod")
+fun main(args: Array<String>) {
+    setAwtAppName()
 
-    AVNLauncherApp.onCreate()
+    val parser = ArgParser("avnlauncher")
+    val dataDir by parser.option(ArgType.String, shortName = "d", fullName = "data-dir", description = "Data dir")
+    val cacheDir by parser.option(ArgType.String, shortName = "c", fullName = "cache-dir", description = "Cache dir")
+    parser.parse(args)
+
+    AVNLauncherApp.onCreate(createConfig(dataDir, cacheDir))
     application {
         val windowState = rememberWindowState(
             position = WindowPosition.Aligned(Alignment.Center),
@@ -119,7 +123,7 @@ fun main() {
                         Item(
                             stringResource(MR.strings.trayCheckForUpdates),
                             onClick = {
-                                updateChecker.checkForUpdates(true)
+                                updateChecker.checkForUpdates()
                             },
                         )
                         Item(
@@ -161,7 +165,42 @@ fun main() {
     }
 }
 
-fun getDefaultWindowSize(): DpSize {
+@Suppress("TooGenericExceptionCaught")
+private fun setAwtAppName() {
+    try {
+        val xToolkit = Toolkit.getDefaultToolkit()
+        val awtAppClassNameField: Field = xToolkit.javaClass.getDeclaredField("awtAppClassName")
+        awtAppClassNameField.setAccessible(true)
+        awtAppClassNameField.set(xToolkit, StringDesc.Resource(MR.strings.appName).localized())
+    } catch (e: Exception) {
+        @Suppress("PrintStackTrace")
+        e.printStackTrace()
+    }
+}
+
+private fun createConfig(
+    dataDir: String?,
+    cacheDir: String?,
+): Config {
+    val dataDirFile = dataDir?.let { File(it) } ?: when (os) {
+        OS.Linux -> File(System.getProperty("user.home"), ".config/$DEFAULT_DATA_DIR_NAME")
+        OS.Windows -> File(System.getenv("AppData"), DEFAULT_DATA_DIR_NAME)
+        OS.Mac -> File(System.getProperty("user.home"), "Library/Application Support/$DEFAULT_DATA_DIR_NAME")
+    }
+    val cacheDirFile = cacheDir?.let { File(it) } ?: when (os) {
+        OS.Linux -> File(System.getProperty("user.home"), ".cache/$DEFAULT_DATA_DIR_NAME")
+        OS.Windows -> File(System.getenv("AppData"), "$DEFAULT_DATA_DIR_NAME/cache")
+        OS.Mac -> File(System.getProperty("user.home"), "Library/Caches/$DEFAULT_DATA_DIR_NAME")
+    }
+    dataDirFile.mkdirs()
+    cacheDirFile.mkdirs()
+    return Config(
+        dataDir = dataDirFile.absolutePath,
+        cacheDir = cacheDirFile.absolutePath,
+    )
+}
+
+private fun getDefaultWindowSize(): DpSize {
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
     val width: Int = (screenSize.width * DEFAULT_WINDOW_WIDTH_PERCENT).toInt()
     val height: Int = (screenSize.height * DEFAULT_WINDOW_HEIGHT_PERCENT).toInt()

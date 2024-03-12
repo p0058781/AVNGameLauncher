@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.domain.utils.Result
@@ -44,13 +45,15 @@ class F95ApiTest : KoinTest {
         23184,
     )
 
+    private val config = Config(System.getProperty("java.io.tmpdir")!!, System.getProperty("java.io.tmpdir")!!)
+
     private val f95Api: F95Api by inject()
 
     @BeforeTest
     fun beforeTest() {
         startKoin {
             modules(
-                configKoinModule,
+                configKoinModule(config),
                 dataKoinModule,
                 loggerKoinModule,
             )
