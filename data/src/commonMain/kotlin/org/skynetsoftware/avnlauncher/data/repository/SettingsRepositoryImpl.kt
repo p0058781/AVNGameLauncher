@@ -73,6 +73,15 @@ abstract class SettingsRepositoryShared internal constructor(
         MutableStateFlow { settings.getBoolean(SettingsRepository::forceDarkTheme.name, false) }
     override val forceDarkTheme: StateFlow<Boolean> get() = _forceDarkTheme
 
+    private val _periodicUpdateChecksEnabled =
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::periodicUpdateChecksEnabled.name,
+                configManager.periodicUpdateChecksDefault,
+            )
+        }
+    override val periodicUpdateChecksEnabled: StateFlow<Boolean> get() = _periodicUpdateChecksEnabled
+
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
         settings[SettingsRepository::selectedFilter.name] = filter::class.simpleName
@@ -106,6 +115,11 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setForceDarkTheme(forceDarkTheme: Boolean) {
         _forceDarkTheme.emit(forceDarkTheme)
         settings[SettingsRepository::forceDarkTheme.name] = forceDarkTheme
+    }
+
+    override suspend fun setPeriodicUpdateChecksEnabled(periodicUpdateChecksEnabled: Boolean) {
+        _periodicUpdateChecksEnabled.emit(periodicUpdateChecksEnabled)
+        settings[SettingsRepository::periodicUpdateChecksEnabled.name] = periodicUpdateChecksEnabled
     }
 }
 

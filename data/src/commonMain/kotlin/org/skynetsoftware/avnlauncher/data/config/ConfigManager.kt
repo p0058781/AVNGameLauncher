@@ -15,6 +15,10 @@ abstract class ConfigManagerShared {
     open val selectedSortOrderDirectionDefault: SortDirection = SortDirection.Descending
     open val fastUpdateCheckDefault: Boolean = true
     abstract val sfwModeEnabledDefault: Boolean
+
+    @Suppress("MagicNumber")
+    open val updateCheckInterval: Long = 3_600_000L // 1 hour
+    abstract val periodicUpdateChecksDefault: Boolean
 }
 
 expect abstract class ConfigManager : ConfigManagerShared

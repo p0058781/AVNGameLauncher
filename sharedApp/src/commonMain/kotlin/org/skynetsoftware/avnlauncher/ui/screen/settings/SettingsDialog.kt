@@ -45,6 +45,7 @@ fun SettingsDialog(
     onCloseRequest: () -> Unit = {},
 ) {
     val fastUpdateCheck by remember { settingsScreenModel.fastUpdateCheck }.collectAsState()
+    val periodicUpdateChecks by remember { settingsScreenModel.periodicUpdateChecksEnabled }.collectAsState()
     val forceDarkTheme by remember { settingsScreenModel.forceDarkTheme }.collectAsState()
     val gamesDirShown = settingsScreenModel.gamesDir is Option.Some
 
@@ -96,6 +97,15 @@ fun SettingsDialog(
                         settingsScreenModel.setFastUpdateCheck(it)
                     },
                     description = stringResource(MR.strings.settingsDialogFastUpdateCheckDescription),
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                CheckBoxWithText(
+                    text = stringResource(MR.strings.settingsDialogPeriodicUpdateChecks),
+                    checked = periodicUpdateChecks,
+                    onCheckedChange = {
+                        settingsScreenModel.setPeriodicUpdateChecks(it)
+                    },
+                    description = stringResource(MR.strings.settingsDialogPeriodicUpdateChecksDescription),
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 CheckBoxWithText(

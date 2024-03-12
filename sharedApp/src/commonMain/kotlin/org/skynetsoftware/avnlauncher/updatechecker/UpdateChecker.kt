@@ -1,9 +1,17 @@
 package org.skynetsoftware.avnlauncher.updatechecker
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.data.config.ConfigManager
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
@@ -13,32 +21,66 @@ import org.skynetsoftware.avnlauncher.domain.utils.valueOrNull
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
-
-private const val UPDATE_CHECK_INTERVAL = 86_400_000L // 24h
+import kotlin.math.max
 
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
-        UpdateCheckerImpl(get(), get(), get(), get(), get())
+        UpdateCheckerImpl(get(), get(), get(), get(), get(), get())
     }
 }
 
-interface UpdateChecker {
-    suspend fun startUpdateCheck(
+abstract class UpdateChecker(private val configManager: ConfigManager) {
+    abstract fun startPeriodicUpdateChecks(interval: Long = configManager.updateCheckInterval)
+
+    abstract fun stopPeriodicUpdateChecks()
+
+    abstract suspend fun checkForUpdates(
         scope: CoroutineScope,
         forceUpdateCheck: Boolean = false,
     ): UpdateCheckResult
 }
 
+@Suppress("LongParameterList")
 private class UpdateCheckerImpl(
     private val gamesRepository: GamesRepository,
     private val logger: Logger,
     private val f95Repository: F95Repository,
     private val settingsRepository: SettingsRepository,
     private val eventCenter: EventCenter,
-) : UpdateChecker {
+    private val configManager: ConfigManager,
+    coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
+) : UpdateChecker(configManager) {
     private var updateCheckRunning = false
+    private val scope = CoroutineScope(SupervisorJob() + coroutineDispatcher)
 
-    override suspend fun startUpdateCheck(
+    private var updateCheckSchedulerJob: Job? = null
+
+    override fun startPeriodicUpdateChecks(interval: Long) {
+        updateCheckSchedulerJob?.cancel()
+        updateCheckSchedulerJob = scope.launch {
+            while (isActive) {
+                val now = Clock.System.now().toEpochMilliseconds()
+                val newestLastUpdateCheck = gamesRepository.all().maxOf { it.lastUpdateCheck }
+
+                var lastUpdateCheckElapsedTime = now - newestLastUpdateCheck
+
+                if (lastUpdateCheckElapsedTime > interval) {
+                    checkForUpdates(this)
+                    lastUpdateCheckElapsedTime = 0
+                }
+
+                val delay = interval - max(0, lastUpdateCheckElapsedTime)
+                delay(delay)
+                checkForUpdates(this)
+            }
+        }
+    }
+
+    override fun stopPeriodicUpdateChecks() {
+        updateCheckSchedulerJob?.cancel()
+    }
+
+    override suspend fun checkForUpdates(
         scope: CoroutineScope,
         forceUpdateCheck: Boolean,
     ): UpdateCheckResult {
@@ -46,7 +88,7 @@ private class UpdateCheckerImpl(
             eventCenter.emit(Event.UpdateCheckStarted)
             val now = Clock.System.now().toEpochMilliseconds()
             val games = gamesRepository.all()
-                .filter { forceUpdateCheck || now > it.lastUpdateCheck + UPDATE_CHECK_INTERVAL }
+                .filter { forceUpdateCheck || now > it.lastUpdateCheck + configManager.updateCheckInterval }
                 .filter { it.checkForUpdates }
             val fastUpdateCheck = settingsRepository.fastUpdateCheck.value
             val updatesResult = games.map { game ->
