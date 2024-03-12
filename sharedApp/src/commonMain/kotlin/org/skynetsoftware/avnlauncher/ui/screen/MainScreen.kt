@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -61,7 +63,7 @@ import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalDraggableArea
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.model.PlayState
+import org.skynetsoftware.avnlauncher.domain.model.label
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
@@ -223,18 +225,6 @@ data class MainScreen(
                 launchGame = {
                     gamesScreenModel.launchGame(it)
                 },
-                togglePlaying = {
-                    gamesScreenModel.togglePlaying(it)
-                },
-                toggleCompleted = {
-                    gamesScreenModel.toggleCompleted(it)
-                },
-                toggleWaitingForUpdate = {
-                    gamesScreenModel.toggleWaitingForUpdate(it)
-                },
-                toggleHidden = {
-                    gamesScreenModel.toggleHidden(it)
-                },
                 resetUpdateAvailable = { availableVersion, game ->
                     gamesScreenModel.resetUpdateAvailable(availableVersion, game)
                 },
@@ -298,11 +288,7 @@ private fun GamesList(
     sfwMode: Boolean,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
-    togglePlaying: (game: Game) -> Unit,
-    toggleCompleted: (game: Game) -> Unit,
-    toggleWaitingForUpdate: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
-    toggleHidden: (game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
     LazyVerticalGrid(
@@ -317,11 +303,7 @@ private fun GamesList(
                 sfwMode = sfwMode,
                 editGame = editGame,
                 launchGame = launchGame,
-                togglePlaying = togglePlaying,
-                toggleCompleted = toggleCompleted,
-                toggleWaitingForUpdate = toggleWaitingForUpdate,
                 resetUpdateAvailable = resetUpdateAvailable,
-                toggleHidden = toggleHidden,
                 updateRating = updateRating,
             )
         }
@@ -336,11 +318,7 @@ private fun GameItem(
     sfwMode: Boolean,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
-    togglePlaying: (game: Game) -> Unit,
-    toggleCompleted: (game: Game) -> Unit,
-    toggleWaitingForUpdate: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
-    toggleHidden: (game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
@@ -359,21 +337,30 @@ private fun GameItem(
             Column(
                 modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),
             ) {
-                val modifier = Modifier
-                Image(
-                    painter = rememberImagePainter(
-                        request = ImageRequest {
-                            if (sfwMode) {
-                                data("https://picsum.photos/seed/${game.f95ZoneThreadId}/400/200")
-                            } else {
-                                data(game.imageUrl)
-                            }
-                        },
-                    ),
-                    contentDescription = null,
-                    modifier = modifier.aspectRatio(GAME_IMAGE_ASPECT_RATIO),
-                    contentScale = ContentScale.Crop,
-                )
+                Box {
+                    Image(
+                        painter = rememberImagePainter(
+                            request = ImageRequest {
+                                if (sfwMode) {
+                                    data("https://picsum.photos/seed/${game.f95ZoneThreadId}/400/200")
+                                } else {
+                                    data(game.imageUrl)
+                                }
+                            },
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.aspectRatio(GAME_IMAGE_ASPECT_RATIO),
+                        contentScale = ContentScale.Crop,
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                            .background(MaterialTheme.colors.surface).padding(5.dp).clip(
+                                RoundedCornerShape(5.dp),
+                            ),
+                        text = game.playState.label(),
+                        style = MaterialTheme.typography.body2,
+                    )
+                }
 
                 Row(
                     modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).fillMaxWidth(),
@@ -384,75 +371,6 @@ private fun GameItem(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f),
                     )
-                    Image(
-                        painter = painterResource(R.images.playing),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            togglePlaying(game)
-                        },
-                        colorFilter = ColorFilter.tint(
-                            if (game.playState == PlayState.Playing) {
-                                MaterialTheme.colors.primary
-                            } else {
-                                MaterialTheme.colors.onSurface
-                            },
-                        ),
-                    )
-                    Image(
-                        painter = painterResource(R.images.completed),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            toggleCompleted(game)
-                        },
-                        colorFilter = ColorFilter.tint(
-                            if (game.playState == PlayState.Completed) {
-                                MaterialTheme.colors.primary
-                            } else {
-                                MaterialTheme.colors.onSurface
-                            },
-                        ),
-                    )
-                    Image(
-                        painter = painterResource(R.images.waiting),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            toggleWaitingForUpdate(game)
-                        },
-                        colorFilter = ColorFilter.tint(
-                            if (game.playState == PlayState.WaitingForUpdate) {
-                                MaterialTheme.colors.primary
-                            } else {
-                                MaterialTheme.colors.onSurface
-                            },
-                        ),
-                    )
-                    if (game.updateAvailable) {
-                        Image(
-                            painter = painterResource(R.images.update),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                                game.availableVersion?.let {
-                                    resetUpdateAvailable(it, game)
-                                }
-                            },
-                        )
-                    }
-                    if (game.executablePaths.isEmpty()) {
-                        Image(
-                            painter = painterResource(R.images.warning),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically),
-                        )
-                    }
-                    Image(
-                        painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
-                        contentDescription = null,
-                        modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            toggleHidden(game)
-                        },
-                        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
-                    )
-
                     Image(
                         painter = painterResource(R.images.edit),
                         contentDescription = null,
@@ -493,13 +411,35 @@ private fun GameItem(
                         },
                     )
                 }
-                RatingBar(
-                    rating = game.rating,
-                    modifier = Modifier.padding(start = 10.dp, top = 10.dp),
-                    onClick = { rating ->
-                        updateRating(rating, game)
-                    },
-                )
+                Row(
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
+                ) {
+                    RatingBar(
+                        rating = game.rating,
+                        modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
+                        onClick = { rating ->
+                            updateRating(rating, game)
+                        },
+                    )
+                    if (game.updateAvailable) {
+                        Image(
+                            painter = painterResource(R.images.update),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
+                                game.availableVersion?.let {
+                                    resetUpdateAvailable(it, game)
+                                }
+                            },
+                        )
+                    }
+                    if (game.executablePaths.isEmpty()) {
+                        Image(
+                            painter = painterResource(R.images.warning),
+                            contentDescription = null,
+                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically),
+                        )
+                    }
+                }
             }
         }
     }

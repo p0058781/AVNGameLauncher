@@ -77,9 +77,8 @@ private class GameLauncherDesktop(
                     repository.updateGame(game.f95ZoneThreadId, totalTime, System.currentTimeMillis())
                 }
                 logger.info(
-                    """game exited: ${game.title}, exit code: ${process.exitValue()} 
-                        elapsedTime: $elapsedTime, totalTime: $totalTime
-                    """.trimIndent(),
+                    "game exited: ${game.title}, " +
+                        "exit code: ${process.exitValue()} elapsedTime: $elapsedTime, totalTime: $totalTime",
                 )
             } catch (t: Throwable) {
                 logger.error(t)

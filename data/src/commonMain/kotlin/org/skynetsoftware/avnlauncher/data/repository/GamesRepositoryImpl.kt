@@ -22,7 +22,6 @@ internal fun Module.gamesRepositoryKoinModule() {
     }
 }
 
-@Suppress("TooManyFunctions")
 internal class GamesRepositoryImpl(
     private val realm: Realm,
 ) : GamesRepository {
@@ -39,20 +38,6 @@ internal class GamesRepositoryImpl(
         rating: Int,
     ) = realmWrite {
         findRealmGame(id)?.rating = rating
-    }
-
-    override suspend fun updateHidden(
-        id: Int,
-        hidden: Boolean,
-    ) = realmWrite {
-        findRealmGame(id)?.hidden = hidden
-    }
-
-    override suspend fun updatePlayState(
-        id: Int,
-        playState: PlayState,
-    ) = realmWrite {
-        findRealmGame(id)?.playState = playState.name
     }
 
     override suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>) =
@@ -75,18 +60,23 @@ internal class GamesRepositoryImpl(
             }
         }
 
+    @Suppress("LongParameterList")
     override suspend fun updateGame(
         id: Int,
         title: String,
         executablePaths: Set<String>,
         imageUrl: String,
         checkForUpdates: Boolean,
+        playState: PlayState,
+        hidden: Boolean,
     ) = realmWrite {
         val realmGame = findRealmGame(id)
         realmGame?.checkForUpdates = checkForUpdates
         realmGame?.title = title
         realmGame?.imageUrl = imageUrl
         realmGame?.executablePaths = executablePaths.toRealmSet()
+        realmGame?.playState = playState.name
+        realmGame?.hidden = hidden
     }
 
     override suspend fun updateGame(

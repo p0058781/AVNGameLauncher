@@ -13,7 +13,6 @@ import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
@@ -108,47 +107,6 @@ class GamesScreenModel(
     ) = screenModelScope.launch {
         gamesRepository.updateGame(game.f95ZoneThreadId, false, availableVersion, null)
     }
-
-    fun togglePlaying(game: Game) =
-        screenModelScope.launch {
-            gamesRepository.updatePlayState(
-                game.f95ZoneThreadId,
-                if (game.playState == PlayState.Playing) {
-                    PlayState.None
-                } else {
-                    PlayState.Playing
-                },
-            )
-        }
-
-    fun toggleCompleted(game: Game) =
-        screenModelScope.launch {
-            gamesRepository.updatePlayState(
-                game.f95ZoneThreadId,
-                if (game.playState == PlayState.Completed) {
-                    PlayState.None
-                } else {
-                    PlayState.Completed
-                },
-            )
-        }
-
-    fun toggleWaitingForUpdate(game: Game) =
-        screenModelScope.launch {
-            gamesRepository.updatePlayState(
-                game.f95ZoneThreadId,
-                if (game.playState == PlayState.WaitingForUpdate) {
-                    PlayState.None
-                } else {
-                    PlayState.WaitingForUpdate
-                },
-            )
-        }
-
-    fun toggleHidden(game: Game) =
-        screenModelScope.launch {
-            gamesRepository.updateHidden(game.f95ZoneThreadId, !game.hidden)
-        }
 
     fun updateRating(
         rating: Int,
