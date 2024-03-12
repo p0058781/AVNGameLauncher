@@ -1,12 +1,13 @@
 package org.skynetsoftware.avnlauncher.state
 
-import org.skynetsoftware.avnlauncher.data.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class StateHandlerTest {
     private val game = Game(
-        "", "", 0, null, "", 0L, 0,
+        "", "", 0, emptySet(), "", 0L, 0,
         0f, false, 0L, 0L, 0L, false, 0L, 0L,
         PlayState.Playing, null, emptySet(), null, false,
     )
