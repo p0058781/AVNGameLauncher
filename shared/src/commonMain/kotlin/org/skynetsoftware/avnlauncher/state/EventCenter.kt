@@ -33,15 +33,21 @@ private class EventCenterImpl : EventCenter {
 }
 
 sealed class Event {
+    // UpdateChecker
     object UpdateCheckStarted : Event()
 
     object UpdateCheckComplete : Event()
 
+    // GameLauncher
     class PlayingStarted(val game: Game) : Event()
 
     object PlayingEnded : Event()
 
+    // SyncService
     object SyncStarted : Event()
 
     object SyncCompleted : Event()
+
+    // Toast
+    class ToastMessage(val message: String, val duration: Long = 3000L) : Event()
 }

@@ -48,14 +48,11 @@ import com.seiko.imageloader.rememberAsyncImagePainter
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.data.UpdateChecker
-import org.skynetsoftware.avnlauncher.data.buildToastMessage
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.repository.Filter
 import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
-import org.skynetsoftware.avnlauncher.launcher.GameLauncher
 import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
@@ -78,8 +75,6 @@ private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 fun MainScreen(
     mainViewModel: MainViewModel = koinInject(),
     gamesViewModel: GamesViewModel = koinInject(),
-    updateChecker: UpdateChecker = koinInject(),
-    gameLauncher: GameLauncher = koinInject(),
     exitApplication: () -> Unit,
     draggableArea: @Composable (content: @Composable () -> Unit) -> Unit,
 ) {
@@ -93,7 +88,7 @@ fun MainScreen(
 
     var selectedGame by remember { mutableStateOf<Game?>(null) }
     var importGameDialogVisible by remember { mutableStateOf(false) }
-    var toastMessage by remember { mutableStateOf<String?>(null) }
+    val toastMessage by remember { mainViewModel.toastMessage }.collectAsState()
 
     MaterialTheme(
         colors = materialColors,
@@ -131,9 +126,7 @@ fun MainScreen(
                         Actions(
                             remoteClientMode = mainViewModel.remoteClientMode,
                             startUpdateCheck = {
-                                updateChecker.startUpdateCheck(true) { updateResult ->
-                                    toastMessage = updateResult.buildToastMessage()
-                                }
+                                gamesViewModel.startUpdateCheck()
                             },
                             onImportGameClicked = {
                                 importGameDialogVisible = true
@@ -165,7 +158,7 @@ fun MainScreen(
                         selectedGame = it
                     },
                     launchGame = {
-                        gameLauncher.launch(it)
+                        gamesViewModel.launchGame(it)
                     },
                     togglePlaying = {
                         gamesViewModel.togglePlaying(it)
@@ -194,9 +187,6 @@ fun MainScreen(
                 onCloseRequest = {
                     selectedGame = null
                 },
-                showToast = { message ->
-                    toastMessage = message
-                },
             )
         }
         if (importGameDialogVisible) {
@@ -204,17 +194,11 @@ fun MainScreen(
                 onCloseRequest = {
                     importGameDialogVisible = false
                 },
-                showToast = {
-                    toastMessage = it
-                },
             )
         }
         toastMessage?.let {
             Toast(
                 text = it,
-                onDismiss = {
-                    toastMessage = null
-                },
             )
         }
     }

@@ -28,14 +28,15 @@ import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.ui.screen.Dialog
 import org.skynetsoftware.avnlauncher.ui.theme.Foreground
 import org.skynetsoftware.avnlauncher.ui.theme.Gray
+import org.skynetsoftware.avnlauncher.ui.viewmodel.MainViewModel
 import org.skynetsoftware.avnlauncher.utils.format
 
 // TODO use viewmodel
 @Composable
 fun ImportGameDialog(
     gameImport: GameImport = koinInject(),
+    mainViewModel: MainViewModel = koinInject(),
     onCloseRequest: () -> Unit = {},
-    showToast: (message: String) -> Unit = {},
 ) {
     var threadId by remember { mutableStateOf<String?>(null) }
     var importing by remember { mutableStateOf(false) }
@@ -77,7 +78,7 @@ fun ImportGameDialog(
                                 gameImport.importGame(it.toInt()) { title ->
                                     importing = false
                                     onCloseRequest()
-                                    showToast(R.strings.importGameDialogSuccessToast.format(title))
+                                    mainViewModel.showToast(R.strings.importGameDialogSuccessToast.format(title))
                                 }
                             }
                         },

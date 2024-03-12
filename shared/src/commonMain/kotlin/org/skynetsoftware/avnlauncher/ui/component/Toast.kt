@@ -8,25 +8,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import org.skynetsoftware.avnlauncher.ui.theme.Foreground
 import org.skynetsoftware.avnlauncher.ui.theme.ToastBackground
 
-enum class ToastDuration(val value: Int) {
-    Short(1000),
-    Long(3000),
-}
-
 @Composable
-fun Toast(
-    text: String,
-    onDismiss: () -> Unit,
-    duration: ToastDuration = ToastDuration.Long,
-) {
+fun Toast(text: String) {
     Box(
         modifier = Modifier.fillMaxSize().padding(bottom = 20.dp),
         contentAlignment = Alignment.BottomCenter,
@@ -41,10 +30,6 @@ fun Toast(
                     text = text,
                     color = Foreground,
                 )
-            }
-            LaunchedEffect(Unit) {
-                delay(duration.value.toLong())
-                onDismiss()
             }
         }
     }

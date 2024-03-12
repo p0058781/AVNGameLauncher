@@ -9,19 +9,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.config.ConfigManager
+import org.skynetsoftware.avnlauncher.data.UpdateChecker
+import org.skynetsoftware.avnlauncher.data.buildToastMessage
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 import org.skynetsoftware.avnlauncher.data.repository.Filter
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
+import org.skynetsoftware.avnlauncher.launcher.GameLauncher
 import org.skynetsoftware.avnlauncher.logging.Logger
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
+import org.skynetsoftware.avnlauncher.state.Event
+import org.skynetsoftware.avnlauncher.state.EventCenter
 
 class GamesViewModel(
     private val gamesRepository: GamesRepository,
     private val settingsManager: SettingsManager,
     private val configManager: ConfigManager,
+    private val updateChecker: UpdateChecker,
+    private val gameLauncher: GameLauncher,
+    private val eventCenter: EventCenter,
     logger: Logger,
 ) : ViewModel() {
     private val repoGames = gamesRepository.games.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
@@ -128,6 +136,16 @@ class GamesViewModel(
         game: Game,
     ) = viewModelScope.launch {
         gamesRepository.updateRating(rating, game)
+    }
+
+    fun startUpdateCheck() {
+        updateChecker.startUpdateCheck(true) { updateResult ->
+            eventCenter.emit(Event.ToastMessage(updateResult.buildToastMessage()))
+        }
+    }
+
+    fun launchGame(game: Game) {
+        gameLauncher.launch(game)
     }
 }
 

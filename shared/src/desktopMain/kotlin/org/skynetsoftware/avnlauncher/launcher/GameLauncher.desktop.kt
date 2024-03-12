@@ -6,9 +6,11 @@ import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.logging.Logger
+import org.skynetsoftware.avnlauncher.resources.R
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.OS
+import org.skynetsoftware.avnlauncher.utils.format
 import org.skynetsoftware.avnlauncher.utils.os
 
 actual val gameLauncherKoinModule = module {
@@ -31,9 +33,9 @@ private class GameLauncherDesktop(
 
     override fun launch(game: Game) {
         if (processStarterThread?.running == true) {
-            // TODO show in UI
-            logger.warning("cant start game: ${game.title}, game: ${processStarterThread?.game?.title} is already running")
-            // game is already running
+            val message = R.strings.gameLauncherAnotherGameRunning.format(game.title, processStarterThread?.game?.title)
+            logger.warning(message)
+            eventCenter.emit(Event.ToastMessage(message))
             return
         }
 
@@ -53,7 +55,9 @@ private class GameLauncherDesktop(
         @Suppress("NewApi")
         override fun run() {
             if (game.executablePath.isNullOrBlank()) {
-                logger.info("cant launch game, executablePath is invalid")
+                val message = R.strings.gameLauncherInvalidExecutableToast.format(game.title)
+                logger.info(message)
+                eventCenter.emit(Event.ToastMessage(message))
                 return
             }
             try {
