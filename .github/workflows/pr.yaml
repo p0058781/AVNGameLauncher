@@ -22,7 +22,7 @@ jobs:
           java-version: 17
           distribution: corretto
       - name: KTLint & Detekt
-        run: ./analyze_code.sh -q
+        run: ./analyze_code.sh
       - name: Build & Test
         run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease
       - name: Upload kover report
