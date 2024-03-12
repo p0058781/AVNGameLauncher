@@ -159,12 +159,12 @@ fun EditGameDialog(
                     )
                 }
             }
-            if (showFilePicker > 0) {
+            if (showFilePicker >= 0) {
                 var currentPath = executablePaths[showFilePicker]
                 if (currentPath.isEmpty()) {
                     currentPath = executablePaths.find { it.isNotEmpty() } ?: currentPath
                 }
-                GamePicker(showFilePicker > 0, currentPath) {
+                GamePicker(showFilePicker >= 0, currentPath) {
                     it?.let {
                         editGameViewModel.setExecutablePath(showFilePicker, it)
                     }
