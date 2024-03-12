@@ -82,11 +82,11 @@ class ActiveStates {
 sealed class State(val id: Int, val priority: Int) {
     object Idle : State(0, Int.MAX_VALUE)
 
-    object UpdateCheckRunning : State(1, 0)
+    object UpdateCheckRunning : State(1, 1)
 
     class Playing(val game: Game) : State(2, 2)
 
-    object Syncing : State(3, 1)
+    object Syncing : State(3, 0)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

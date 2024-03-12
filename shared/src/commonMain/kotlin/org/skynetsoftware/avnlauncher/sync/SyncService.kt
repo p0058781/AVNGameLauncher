@@ -14,6 +14,8 @@ import org.skynetsoftware.avnlauncher.data.UpdateChecker
 import org.skynetsoftware.avnlauncher.data.model.toSyncGame
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.settings.SettingsManager
+import org.skynetsoftware.avnlauncher.state.Event
+import org.skynetsoftware.avnlauncher.state.EventCenter
 import kotlin.math.max
 
 val syncServiceModule = module {
@@ -22,7 +24,7 @@ val syncServiceModule = module {
         if (configManager.remoteClientMode) {
             SyncServiceNoOp()
         } else {
-            SyncServiceImpl(get(), get(), get(), get())
+            SyncServiceImpl(get(), get(), get(), get(), get())
         }
     }
 }
@@ -46,6 +48,7 @@ private class SyncServiceImpl(
     private val syncApi: SyncApi,
     private val updateChecker: UpdateChecker,
     private val settingsManager: SettingsManager,
+    private val eventCenter: EventCenter,
 ) : SyncService {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -79,8 +82,10 @@ private class SyncServiceImpl(
     }
 
     private suspend fun sync() {
+        eventCenter.emit(Event.SyncStarted)
         updateChecker.startUpdateCheck(scope, true)
         val allGames = gamesRepository.all().map { it.toSyncGame() }
         syncApi.set(allGames)
+        eventCenter.emit(Event.SyncCompleted)
     }
 }
