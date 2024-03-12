@@ -1,3 +1,6 @@
+import com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorExtension
+import guru.nidi.graphviz.attribute.Color
+import guru.nidi.graphviz.attribute.Style
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 
@@ -19,6 +22,7 @@ plugins {
     alias(libs.plugins.kover).apply(false)
     alias(libs.plugins.detekt).apply(false)
     alias(libs.plugins.sqldelight).apply(false)
+    alias(libs.plugins.dependencygraphgenerator)
 }
 
 subprojects {
