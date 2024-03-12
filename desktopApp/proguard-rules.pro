@@ -23,7 +23,7 @@
 
 -keep class org.sqlite.** { *; }
 
--keepattributes *Annotation*, InnerClasses
+-keepattributes *Annotation*, InnerClasses, Signature
 
 
 -keep class kotlin.** { *; }
