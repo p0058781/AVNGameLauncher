@@ -1,7 +1,11 @@
 package org.skynetsoftware.avnlauncher.logging
 
 import io.realm.kotlin.Realm
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.model.RealmLog
@@ -24,7 +28,6 @@ interface Logger {
 }
 
 private class LoggerImpl(private val realm: Realm) : Logger {
-
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val timeFormat = SimpleDateFormat("dd.MM.yyyy, HH:mm:ss")
 
@@ -44,17 +47,21 @@ private class LoggerImpl(private val realm: Realm) : Logger {
         log(Severity.Error, throwable.stackTraceToString())
     }
 
-    private fun log(severity: Severity, message: String) {
+    private fun log(
+        severity: Severity,
+        message: String,
+    ) {
         val time = Clock.System.now()
         println("$severity[${timeFormat.format(time.toEpochMilliseconds())}]: $message")
         coroutineScope.launch {
             realm.write {
-                copyToRealm(RealmLog().apply {
-                    this.severity = severity.name
-                    this.logMessage = message
-                })
+                copyToRealm(
+                    RealmLog().apply {
+                        this.severity = severity.name
+                        this.logMessage = message
+                    },
+                )
             }
         }
     }
-
 }

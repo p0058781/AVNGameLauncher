@@ -11,7 +11,7 @@ import org.skynetsoftware.avnlauncher.data.repository.SortDirection
 import org.skynetsoftware.avnlauncher.data.repository.SortOrder
 
 val settingsKoinModule = module {
-    single<SettingsManager> { SettingsManagerImpl(Settings(), get()) }
+    single<SettingsManager> { SettingsManagerImpl(Settings()) }
 }
 
 interface SettingsManager {
@@ -20,17 +20,19 @@ interface SettingsManager {
     val selectedSortDirection: StateFlow<SortDirection>
     val fastUpdateCheck: StateFlow<Boolean>
     val gamesDir: StateFlow<String?>
-    val remoteClientMode: StateFlow<Boolean>
 
     suspend fun setSelectedFilter(filter: Filter)
+
     suspend fun setSelectedSortOrder(sortOrder: SortOrder)
+
     suspend fun setSelectedSortDirection(sortDirection: SortDirection)
+
     suspend fun setFastUpdateCheck(fastUpdateCheck: Boolean)
+
     suspend fun setGamesDir(gamesDir: String)
-    suspend fun setRemoteClientMode(remoteClientMode: Boolean)
 }
 
-class SettingsManagerImpl(private val settings: Settings, configManager: ConfigManager) : SettingsManager {
+class SettingsManagerImpl(private val settings: Settings) : SettingsManager {
     private val _selectedFilter = MutableStateFlow {
         val selectedFilterClassname =
             settings.getString(SettingsManager::selectedFilter.name, Filter.All::class.simpleName ?: "All")
@@ -41,7 +43,7 @@ class SettingsManagerImpl(private val settings: Settings, configManager: ConfigM
     private val _selectedSortOrder = MutableStateFlow {
         val selectedSortOrderClassname = settings.getString(
             SettingsManager::selectedSortOrder.name,
-            SortOrder.LastPlayed::class.simpleName ?: "LastPlayed"
+            SortOrder.LastPlayed::class.simpleName ?: "LastPlayed",
         )
         SortOrder.entries.find { it::class.simpleName == selectedSortOrderClassname } ?: SortOrder.LastPlayed
     }
@@ -57,18 +59,10 @@ class SettingsManagerImpl(private val settings: Settings, configManager: ConfigM
     private val _fastUpdateCheck = MutableStateFlow(settings.getBoolean(SettingsManager::fastUpdateCheck.name, false))
     override val fastUpdateCheck: StateFlow<Boolean> get() = _fastUpdateCheck
 
-    //TODO remove hardcoded value when settings screen is done
+    // TODO remove hardcoded value when settings screen is done
     private val _gamesDir =
         MutableStateFlow(settings.getString(SettingsManager::gamesDir.name, "/mnt/sata_4tb/AVN/Games"))
     override val gamesDir: StateFlow<String?> get() = _gamesDir
-
-    private val _remoteClientMode = MutableStateFlow(
-        settings.getBoolean(
-            SettingsManager::remoteClientMode.name,
-            configManager.remoteClientModeDefault
-        )
-    )
-    override val remoteClientMode: StateFlow<Boolean> get() = _remoteClientMode
 
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
@@ -95,14 +89,9 @@ class SettingsManagerImpl(private val settings: Settings, configManager: ConfigM
         settings[SettingsManager::gamesDir.name] = gamesDir
     }
 
-    override suspend fun setRemoteClientMode(remoteClientMode: Boolean) {
-        _remoteClientMode.emit(remoteClientMode)
-        settings[SettingsManager::remoteClientMode.name] = remoteClientMode
-    }
-
     private fun <T> MutableStateFlow(initialValue: () -> T): MutableStateFlow<T> {
         return MutableStateFlow(initialValue())
     }
 }
 
-//TODO [medium] import game executable search location for desktop
+// TODO [medium] import game executable search location for desktop

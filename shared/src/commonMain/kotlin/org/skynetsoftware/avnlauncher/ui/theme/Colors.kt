@@ -19,7 +19,6 @@ val Red = Color(186, 69, 69)
 
 val materialColors = darkColors(
     primary = Red,
-    surface = DarkGray
+    surface = DarkGray,
 )
-//TODO Need to not force dark theme
-
+// TODO Need to not force dark theme

@@ -2,37 +2,38 @@ package org.skynetsoftware.avnlauncher.launcher
 
 import kotlinx.coroutines.runBlocking
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.logging.Logger
-import org.skynetsoftware.avnlauncher.settings.SettingsManager
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.utils.OS
 import org.skynetsoftware.avnlauncher.utils.os
 
 actual val gameLauncherKoinModule = module {
-    single<GameLauncher> { GameLauncherDesktop(get(), get(), get(), get()) }
+    single<GameLauncher> {
+        val configManager = get<ConfigManager>()
+        if (configManager.remoteClientMode) {
+            GameLauncherNoOp()
+        } else {
+            GameLauncherDesktop(get(), get(), get())
+        }
+    }
 }
 
 private class GameLauncherDesktop(
     private val repository: GamesRepository,
     private val logger: Logger,
     private val eventCenter: EventCenter,
-    private val settingsManager: SettingsManager
 ) : GameLauncher {
-
     private var processStarterThread: ProcessStarterThread? = null
 
     override fun launch(game: Game) {
-        if (settingsManager.remoteClientMode.value) {
-            logger.info("cant start game in remote client mode")
-            return
-        }
         if (processStarterThread?.running == true) {
-            //TODO show in UI
+            // TODO show in UI
             logger.warning("cant start game: ${game.title}, game: ${processStarterThread?.game?.title} is already running")
-            //game is already running
+            // game is already running
             return
         }
 
@@ -77,20 +78,22 @@ private class GameLauncherDesktop(
                     repository.updatePlayTime(totalTime, game)
                     repository.updateLastPlayed(System.currentTimeMillis(), game)
                 }
-                logger.info("game exited: ${game.title}, exit code: ${process.exitValue()} elapsedTime: $elapsedTime, totalTime: $totalTime")
+                logger.info(
+                    "game exited: ${game.title}, exit code: ${process.exitValue()} elapsedTime: $elapsedTime, totalTime: $totalTime",
+                )
             } catch (t: Throwable) {
                 logger.error(t)
             } finally {
                 eventCenter.emit(Event.PlayingEnded)
                 running = false
             }
-
         }
 
         private fun createCommand(executablePath: String): String {
             return when (os) {
                 OS.Linux,
-                OS.Windows -> executablePath
+                OS.Windows,
+                -> executablePath
 
                 OS.Mac -> "open $executablePath"
             }

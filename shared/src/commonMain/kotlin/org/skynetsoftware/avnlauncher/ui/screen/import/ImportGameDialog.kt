@@ -1,8 +1,24 @@
 package org.skynetsoftware.avnlauncher.ui.screen.import
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -14,7 +30,7 @@ import org.skynetsoftware.avnlauncher.ui.theme.Foreground
 import org.skynetsoftware.avnlauncher.ui.theme.Gray
 import org.skynetsoftware.avnlauncher.utils.format
 
-//TODO use viewmodel
+// TODO use viewmodel
 @Composable
 fun ImportGameDialog(
     gameImport: GameImport = koinInject(),
@@ -34,14 +50,14 @@ fun ImportGameDialog(
             if (importing) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     CircularProgressIndicator()
                 }
             } else {
                 Column(
                     modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -49,7 +65,7 @@ fun ImportGameDialog(
                         onValueChange = {
                             threadId = it
                         },
-                        label = { Text(R.strings.importGameDialogThreadIdHint) }
+                        label = { Text(R.strings.importGameDialogThreadIdHint) },
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
@@ -74,7 +90,6 @@ fun ImportGameDialog(
                     }
                 }
             }
-
         }
     }
 }

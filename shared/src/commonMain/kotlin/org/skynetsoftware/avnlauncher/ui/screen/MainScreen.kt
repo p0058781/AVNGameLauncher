@@ -5,13 +5,36 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,7 +80,7 @@ fun MainScreen(
     gamesViewModel: GamesViewModel = koinInject(),
     updateChecker: UpdateChecker = koinInject(),
     gameLauncher: GameLauncher = koinInject(),
-    exitApplication: () -> Unit
+    exitApplication: () -> Unit,
 ) {
     val games by remember { gamesViewModel.games }.collectAsState()
     val totalPlayTime by remember { gamesViewModel.totalPlayTime }.collectAsState()
@@ -66,21 +89,20 @@ fun MainScreen(
     val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
     val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
     val globalState by remember { mainViewModel.state }.collectAsState()
-    val remoteClientMode by remember { mainViewModel.remoteClientMode }.collectAsState()
 
     var selectedGame by remember { mutableStateOf<Game?>(null) }
     var importGameDialogVisible by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
 
     MaterialTheme(
-        colors = materialColors
+        colors = materialColors,
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
         ) {
-            //TODO search
-            //TODO settings screen
-            //TODO pull to refresh for remote client
+            // TODO search
+            // TODO settings screen
+            // TODO pull to refresh for remote client
             Column {
                 TopAppBar {
                     Column(
@@ -90,9 +112,9 @@ fun MainScreen(
                             text = R.strings.appName,
                             style = MaterialTheme.typography.h6,
                         )
-                        Text(R.strings.totalPlayTime.format(totalPlayTime, averagePlayTime))
+                        Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
                     }
-                    if(globalState != State.Idle) {
+                    if (globalState != State.Idle) {
                         Text(
                             modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
                             textAlign = TextAlign.End,
@@ -101,11 +123,11 @@ fun MainScreen(
                         )
                     } else {
                         Spacer(
-                            modifier = Modifier.weight(1f).fillMaxWidth()
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
                         )
                     }
                     Actions(
-                        remoteClientMode = remoteClientMode,
+                        remoteClientMode = mainViewModel.remoteClientMode,
                         startUpdateCheck = {
                             updateChecker.startUpdateCheck(true) { updateResult ->
                                 toastMessage = updateResult.buildToastMessage()
@@ -114,7 +136,7 @@ fun MainScreen(
                         onImportGameClicked = {
                             importGameDialogVisible = true
                         },
-                        exitApplication = exitApplication
+                        exitApplication = exitApplication,
                     )
                 }
                 SortFilter(
@@ -131,11 +153,11 @@ fun MainScreen(
                     },
                     setSortDirection = {
                         gamesViewModel.setSortDirection(it)
-                    }
+                    },
                 )
                 GamesList(
                     games = games,
-                    remoteClientMode = remoteClientMode,
+                    remoteClientMode = mainViewModel.remoteClientMode,
                     editGame = {
                         selectedGame = it
                     },
@@ -160,8 +182,7 @@ fun MainScreen(
                     updateRating = { rating, game ->
                         gamesViewModel.updateRating(rating, game)
                     },
-
-                    )
+                )
             }
         }
         selectedGame?.let {
@@ -172,7 +193,7 @@ fun MainScreen(
                 },
                 showToast = { message ->
                     toastMessage = message
-                }
+                },
             )
         }
         if (importGameDialogVisible) {
@@ -182,7 +203,7 @@ fun MainScreen(
                 },
                 showToast = {
                     toastMessage = it
-                }
+                },
             )
         }
         toastMessage?.let {
@@ -190,12 +211,10 @@ fun MainScreen(
                 text = it,
                 onDismiss = {
                     toastMessage = null
-                }
+                },
             )
         }
-
     }
-
 }
 
 @Composable
@@ -208,9 +227,9 @@ private fun Actions(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.End
+        horizontalArrangement = Arrangement.End,
     ) {
-        if(!remoteClientMode) {
+        if (!remoteClientMode) {
             Action(R.images.import) {
                 onImportGameClicked()
             }
@@ -222,17 +241,16 @@ private fun Actions(
             exitApplication()
         }
     }
-
 }
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun Action(
     icon: String,
-    action: () -> Unit
+    action: () -> Unit,
 ) {
     Box(
-        modifier = Modifier.padding(10.dp)
+        modifier = Modifier.padding(10.dp),
     ) {
         Image(
             painter = painterResource(icon),
@@ -240,7 +258,7 @@ private fun Action(
             modifier = Modifier.size(20.dp).clickable {
                 action()
             },
-            colorFilter = ColorFilter.tint(Color.White)
+            colorFilter = ColorFilter.tint(Color.White),
         )
     }
 }
@@ -256,27 +274,28 @@ private fun SortFilter(
     setSortOrder: (sortOrder: SortOrder) -> Unit,
     setSortDirection: (sortDirection: SortDirection) -> Unit,
 ) {
-
     var showFilterDropdown by remember { mutableStateOf(false) }
     var showSortOrderDropdown by remember { mutableStateOf(false) }
 
     Box(
-        modifier = modifier
+        modifier = modifier,
     ) {
         Row {
             Row(
                 modifier = Modifier.clickable {
                     showFilterDropdown = true
-                }
+                },
             ) {
                 Text(R.strings.filterLabel)
                 Spacer(modifier = Modifier.width(5.dp))
-                Text(buildString {
-                    append(currentFilter.label)
-                    append("(")
-                    append(games.size)
-                    append(")")
-                })
+                Text(
+                    buildString {
+                        append(currentFilter.label)
+                        append("(")
+                        append(games.size)
+                        append(")")
+                    },
+                )
             }
             Spacer(modifier = Modifier.width(5.dp))
             Text("|")
@@ -284,7 +303,7 @@ private fun SortFilter(
             Row(
                 modifier = Modifier.clickable {
                     showSortOrderDropdown = true
-                }
+                },
             ) {
                 Text(R.strings.sortLabel)
                 Spacer(modifier = Modifier.width(5.dp))
@@ -294,7 +313,7 @@ private fun SortFilter(
                         append("(")
                         append(currentSortDirection.label)
                         append(")")
-                    }
+                    },
                 )
             }
         }
@@ -302,8 +321,7 @@ private fun SortFilter(
             expanded = showFilterDropdown,
             onDismissRequest = {
                 showFilterDropdown = false
-            }
-
+            },
         ) {
             Filter.entries.forEach {
                 DropdownMenuItem(
@@ -320,8 +338,7 @@ private fun SortFilter(
             expanded = showSortOrderDropdown,
             onDismissRequest = {
                 showSortOrderDropdown = false
-            }
-
+            },
         ) {
             SortOrder.entries.forEach {
                 DropdownMenuItem(
@@ -357,12 +374,11 @@ private fun GamesList(
     toggleHidden: (game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
-
     LazyVerticalGrid(
         columns = GridCells.Adaptive(gamesGridCellMinSizeDp()),
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
-        contentPadding = PaddingValues(10.dp)
+        contentPadding = PaddingValues(10.dp),
     ) {
         items(games) { game ->
             GameItem(
@@ -375,11 +391,10 @@ private fun GamesList(
                 toggleWaitingForUpdate = toggleWaitingForUpdate,
                 resetUpdateAvailable = resetUpdateAvailable,
                 toggleHidden = toggleHidden,
-                updateRating = updateRating
+                updateRating = updateRating,
             )
         }
     }
-
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -400,29 +415,29 @@ private fun GameItem(
     val cardHover by cardHoverInteractionSource.collectIsHoveredAsState()
 
     CompositionLocalProvider(
-        LocalImageLoader provides koinInject()
+        LocalImageLoader provides koinInject(),
     ) {
         Card(
             backgroundColor = if (cardHover) CardHoverColor else CardColor,
             modifier = Modifier
                 .hoverable(cardHoverInteractionSource)
                 .clickable {
-                    if(!remoteClientMode) {
+                    if (!remoteClientMode) {
                         launchGame(game)
                     }
                 },
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)
+                modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),
             ) {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        url = game.imageUrl
+                        url = game.imageUrl,
                     ),
                     contentDescription = null,
                     modifier = Modifier.aspectRatio(3.5f),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
                 )
 
                 Row(
@@ -432,108 +447,105 @@ private fun GameItem(
                         text = game.title,
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
                     Image(
                         painter = painterResource(R.images.playing),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            if(!remoteClientMode) {
+                            if (!remoteClientMode) {
                                 togglePlaying(game)
                             }
                         },
-                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Playing) Color.Green else Color.White)
+                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Playing) Color.Green else Color.White),
                     )
                     Image(
                         painter = painterResource(R.images.completed),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            if(!remoteClientMode) {
+                            if (!remoteClientMode) {
                                 toggleCompleted(game)
                             }
                         },
-                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Completed) Color.Green else Color.White)
+                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.Completed) Color.Green else Color.White),
                     )
                     Image(
                         painter = painterResource(R.images.waiting),
                         contentDescription = null,
                         modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                            if(!remoteClientMode) {
+                            if (!remoteClientMode) {
                                 toggleWaitingForUpdate(game)
                             }
                         },
-                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.WaitingForUpdate) Color.Green else Color.White)
+                        colorFilter = ColorFilter.tint(if (game.playState == PlayState.WaitingForUpdate) Color.Green else Color.White),
                     )
                     if (game.updateAvailable) {
                         Image(
                             painter = painterResource(R.images.update),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
-                                if(!remoteClientMode) {
+                                if (!remoteClientMode) {
                                     game.availableVersion?.let {
                                         resetUpdateAvailable(it, game)
                                     }
                                 }
-                            }
+                            },
                         )
                     }
                     if (game.executablePath.isNullOrBlank()) {
                         Image(
                             painter = painterResource(R.images.warning),
                             contentDescription = null,
-                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically)
+                            modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically),
                         )
                     }
-                    if(!remoteClientMode) {
+                    if (!remoteClientMode) {
                         Image(
                             painter = painterResource(if (game.hidden) R.images.visible else R.images.gone),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                                 toggleHidden(game)
                             },
-                            colorFilter = ColorFilter.tint(Color.White)
+                            colorFilter = ColorFilter.tint(Color.White),
                         )
                     }
-                    if(!remoteClientMode) {
+                    if (!remoteClientMode) {
                         Image(
                             painter = painterResource(R.images.edit),
                             contentDescription = null,
                             modifier = Modifier.size(30.dp).padding(5.dp).align(Alignment.CenterVertically).clickable {
                                 editGame(game)
                             },
-                            colorFilter = ColorFilter.tint(Color.White)
+                            colorFilter = ColorFilter.tint(Color.White),
                         )
                     }
                 }
 
                 Column(
-                    modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth()
+                    modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth(),
                 ) {
                     InfoItem(R.strings.infoLabelPlayTime, formatPlayTime(game.playTime))
                     InfoItem(R.strings.infoLabelVersion, game.version)
                     InfoItem(R.strings.infoLabelAvailableVersion, game.availableVersion ?: R.strings.noValue)
                     InfoItem(
                         R.strings.infoLabelReleaseDate,
-                        if (game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate)
+                        if (game.releaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.releaseDate),
                     )
                     InfoItem(
                         R.strings.infoLabelFirstReleaseDate,
-                        if (game.firstReleaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.firstReleaseDate)
+                        if (game.firstReleaseDate <= 0L) R.strings.noValue else releaseDateFormat.format(game.firstReleaseDate),
                     )
                 }
                 RatingBar(
                     rating = game.rating,
                     modifier = Modifier.padding(start = 10.dp, top = 10.dp),
                     onClick = { rating ->
-                        if(!remoteClientMode) {
+                        if (!remoteClientMode) {
                             updateRating(rating, game)
                         }
-                    }
+                    },
                 )
-
             }
-
-
         }
     }
 }
@@ -541,26 +553,27 @@ private fun GameItem(
 @Composable
 private fun InfoItem(
     label: String,
-    value: String
+    value: String,
 ) {
     Row {
         Text(
             text = label,
             modifier = Modifier.padding(end = 10.dp),
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.subtitle1,
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.subtitle1
+            style = MaterialTheme.typography.subtitle1,
         )
     }
 }
 
-private fun State.buildText() = buildString {
-    when(val state = this@buildText) {
-        State.Idle -> append(R.strings.stateIdle)
-        is State.Playing -> append(R.strings.statePlaying.format(state.game.title))
-        State.Syncing -> append(R.strings.stateSyncing)
-        State.UpdateCheckRunning -> append(R.strings.stateCheckingForUpdates)
+private fun State.buildText() =
+    buildString {
+        when (val state = this@buildText) {
+            State.Idle -> append(R.strings.stateIdle)
+            is State.Playing -> append(R.strings.statePlaying.format(state.game.title))
+            State.Syncing -> append(R.strings.stateSyncing)
+            State.UpdateCheckRunning -> append(R.strings.stateCheckingForUpdates)
+        }
     }
-}

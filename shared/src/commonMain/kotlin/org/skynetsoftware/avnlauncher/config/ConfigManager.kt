@@ -7,8 +7,7 @@ expect val configKoinModule: Module
 interface ConfigManagerShared {
     val dataDir: String
     val cacheDir: String
-    val remoteClientModeDefault: Boolean
+    val remoteClientMode: Boolean
 }
 
-expect interface ConfigManager: ConfigManagerShared
-
+expect interface ConfigManager : ConfigManagerShared

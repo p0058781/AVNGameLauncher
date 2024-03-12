@@ -7,6 +7,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 actual fun gamesGridCellMinSizeDp(): Dp {
-    //TODO check if this is correct
+    // TODO check if this is correct
     return (LocalConfiguration.current.smallestScreenWidthDp / 2).dp
 }

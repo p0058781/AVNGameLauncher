@@ -1,5 +1,6 @@
 package org.skynetsoftware.avnlauncher.ui.viewmodel
 
+import org.skynetsoftware.avnlauncher.config.ConfigManager
 import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.logging.Logger
@@ -13,23 +14,28 @@ import java.nio.file.Paths
 import kotlin.io.path.extension
 import kotlin.jvm.optionals.getOrNull
 
-actual suspend fun validateExecutables(gamesRepository: GamesRepository, settingsManager: SettingsManager, logger: Logger) {
-    if(settingsManager.remoteClientMode.value) {
+actual suspend fun validateExecutables(
+    gamesRepository: GamesRepository,
+    settingsManager: SettingsManager,
+    configManager: ConfigManager,
+    logger: Logger,
+) {
+    if (configManager.remoteClientMode) {
         return
     }
     val gamesDirRoot = settingsManager.gamesDir.value?.let { File(it) } ?: return
     val allGames = gamesRepository.all()
     allGames.forEach { game ->
-        if(game.executablePath.isNullOrEmpty()) {
+        if (game.executablePath.isNullOrEmpty()) {
             val executable = findExecutable(gamesDirRoot, game)
-            if(executable != null) {
+            if (executable != null) {
                 gamesRepository.updateExecutablePath(executable, game)
             } else {
                 logger.warning("No executable found for '${game.title}'")
             }
         } else {
             val executablePathFile = File(game.executablePath)
-            if(!executablePathFile.exists()) {
+            if (!executablePathFile.exists()) {
                 gamesRepository.updateExecutablePath("", game)
             }
         }
@@ -37,7 +43,10 @@ actual suspend fun validateExecutables(gamesRepository: GamesRepository, setting
 }
 
 @Suppress("NewApi")
-private fun findExecutable(gamesDirRoot: File, game: Game): String? {
+private fun findExecutable(
+    gamesDirRoot: File,
+    game: Game,
+): String? {
     return gamesDirRoot.listFiles()
         ?.filter { it.isDirectory }
         ?.firstOrNull { it.name == game.title }?.let {
@@ -50,7 +59,7 @@ private fun findExecutable(gamesDirRoot: File, game: Game): String? {
 }
 
 private fun platformFilter(path: Path): Boolean {
-    return when(os) {
+    return when (os) {
         OS.Linux -> path.extension == "sh"
         OS.Windows -> path.extension == "exe"
         OS.Mac -> TODO()

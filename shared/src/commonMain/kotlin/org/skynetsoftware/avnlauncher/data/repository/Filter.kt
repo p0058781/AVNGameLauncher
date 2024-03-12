@@ -4,7 +4,6 @@ import org.skynetsoftware.avnlauncher.data.model.Game
 import org.skynetsoftware.avnlauncher.data.model.PlayState
 
 sealed class Filter(val label: String) {
-
     abstract fun filter(input: List<Game>): List<Game>
 
     object All : Filter("All") {

@@ -1,9 +1,11 @@
 package org.skynetsoftware.avnlauncher.f95
 
 import com.russhwolf.settings.Settings
-import io.ktor.client.plugins.cookies.*
-import io.ktor.http.*
-import io.ktor.util.date.*
+import io.ktor.client.plugins.cookies.CookiesStorage
+import io.ktor.http.Cookie
+import io.ktor.http.CookieEncoding
+import io.ktor.http.Url
+import io.ktor.util.date.GMTDate
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -15,7 +17,10 @@ class F95CookiesStorage(private val settings: Settings) : CookiesStorage {
         readFromSetting()
     }
 
-    override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
+    override suspend fun addCookie(
+        requestUrl: Url,
+        cookie: Cookie,
+    ) {
         if (requestUrl.host != "f95zone.to") return
         if (cookie.name.isBlank()) return
 
@@ -59,7 +64,7 @@ private data class SerializableCookie(
     val expires: Long?,
     val secure: Boolean,
     val httpOnly: Boolean,
-    val extensions: Map<String, String?>
+    val extensions: Map<String, String?>,
 )
 
 private fun Cookie.toSerializableCookie(): SerializableCookie {
@@ -71,7 +76,7 @@ private fun Cookie.toSerializableCookie(): SerializableCookie {
         expires = expires?.timestamp,
         secure = secure,
         httpOnly = httpOnly,
-        extensions = extensions
+        extensions = extensions,
     )
 }
 
@@ -84,6 +89,6 @@ private fun SerializableCookie.toCookie(): Cookie {
         expires = GMTDate(expires),
         secure = secure,
         httpOnly = httpOnly,
-        extensions = extensions
+        extensions = extensions,
     )
 }

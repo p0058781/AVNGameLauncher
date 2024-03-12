@@ -6,11 +6,15 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.inject
-import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class F95ApiTest : KoinTest {
-
-    private val gameIds = listOf(75232, 79512, 49572, 9242, 62625, 38131, 53676, 25739, 12818, 79758, 107102, 68105,
+    private val gameIds = listOf(
+        75232, 79512, 49572, 9242, 62625, 38131, 53676, 25739, 12818, 79758, 107102, 68105,
         25332, 33797, 79740, 85108, 119199, 42668, 115436, 86797, 56677, 29981, 49330, 18063, 48734, 12181, 112212,
         52337, 34378, 52621, 20766, 36610, 4907, 1904, 18909, 3222, 10668, 17836, 7875, 13673, 14093, 18207, 10672,
         36263, 10120, 13009, 128289, 64576, 100968, 125510, 72109, 37164, 90112, 33607, 35119, 106495, 34351,
@@ -22,7 +26,8 @@ class F95ApiTest : KoinTest {
         99159, 85280, 78309, 125534, 45004, 55994, 106380, 113520, 91617, 82710, 111945, 67104, 77680, 95537,
         66753, 35068, 50840, 118423, 58369, 10361, 133769, 103587, 161185, 143959, 146412, 161093, 65970, 130096,
         90033, 87477, 163962, 158551, 143045, 164483, 126219, 140107, 58555, 135723, 16569, 140310, 147103, 125324,
-        110808, 66912, 93557, 135123, 25264)
+        110808, 66912, 93557, 135123, 25264,
+    )
 
     private val f95Api: F95Api by inject()
 
@@ -31,7 +36,7 @@ class F95ApiTest : KoinTest {
         startKoin {
             modules(
                 f95ParserKoinModule,
-                f95ApiKoinModule
+                f95ApiKoinModule,
             )
         }
     }
@@ -42,43 +47,42 @@ class F95ApiTest : KoinTest {
     }
 
     @Test
-    fun `all games from list return Result success`() = runBlocking {
-        gameIds.forEach {
-            val result = f95Api.getGame(it)
+    fun `all games from list return Result success`() =
+        runBlocking {
+            gameIds.forEach {
+                val result = f95Api.getGame(it)
+                if (result.isFailure) {
+                    println(it)
+                    result.exceptionOrNull()?.printStackTrace()
+                }
+                assertTrue(result.isSuccess)
+            }
+        }
+
+    @Test
+    fun `getGame with gameThreadUrl returns Result success for valid url`() =
+        runTest {
+            val result = f95Api.getGame("https://f95zone.to/threads/erotica-ep-6-daniels-k.161013/")
             if (result.isFailure) {
-                println(it)
                 result.exceptionOrNull()?.printStackTrace()
             }
             assertTrue(result.isSuccess)
         }
-    }
 
     @Test
-    fun `getGame with gameThreadUrl returns Result success for valid url`() = runTest {
-        val result = f95Api.getGame("https://f95zone.to/threads/erotica-ep-6-daniels-k.161013/")
-        if (result.isFailure) {
-            result.exceptionOrNull()?.printStackTrace()
+    fun `getGame with gameThreadUrl returns Result failure for invalid url`() =
+        runTest {
+            val result = f95Api.getGame("google.com")
+            if (result.isFailure) {
+                result.exceptionOrNull()?.printStackTrace()
+            }
+            assertTrue(result.isFailure)
         }
-        assertTrue(result.isSuccess)
-    }
 
     @Test
-    fun `getGame with gameThreadUrl returns Result failure for invalid url`() = runTest {
-        val result = f95Api.getGame("google.com")
-        if (result.isFailure) {
-            result.exceptionOrNull()?.printStackTrace()
+    fun `getRedirectUrl return correct url`() =
+        runBlocking {
+            val redirectUrl = f95Api.getRedirectUrl(gameIds[0])
+            assertEquals("", redirectUrl.getOrThrow())
         }
-        assertTrue(result.isFailure)
-    }
-
-    @Test
-    fun `getRedirectUrl return correct url`() = runBlocking {
-        val redirectUrl = f95Api.getRedirectUrl(gameIds[0])
-        assertEquals("", redirectUrl.getOrThrow())
-    }
-
-    @Test
-    fun `getGame is able to parse download links`() {
-
-    }
 }

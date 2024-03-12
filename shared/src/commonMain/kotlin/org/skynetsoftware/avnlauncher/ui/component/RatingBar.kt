@@ -16,11 +16,10 @@ import org.skynetsoftware.avnlauncher.resources.R
 fun RatingBar(
     modifier: Modifier = Modifier,
     rating: Int,
-    onClick: (rating: Int) -> Unit
+    onClick: (rating: Int) -> Unit,
 ) {
-
     Row(
-        modifier
+        modifier,
     ) {
         for (i in 0 until 5) {
             Image(

@@ -2,7 +2,7 @@
 
 package org.skynetsoftware.avnlauncher.resources
 
-//TODO This is a dumb temporary "solution" since moko-resources doesn't support kotlin 1.9 and compose 1.5 yet
+// TODO This is a dumb temporary "solution" since moko-resources doesn't support kotlin 1.9 and compose 1.5 yet
 object R {
     object strings {
         const val appName = "AVN Game Launcher"
@@ -56,5 +56,4 @@ object R {
         const val close = "close.png"
         const val appIcon = "icon.png"
     }
-
 }
