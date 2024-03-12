@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,16 +44,13 @@ fun SettingsDialog(
     val fastUpdateCheck by remember { settingsViewModel.fastUpdateCheck }.collectAsState()
     val forceDarkTheme by remember { settingsViewModel.forceDarkTheme }.collectAsState()
     val gamesDirShown = settingsViewModel.gamesDir is Option.Some
-    // it is ok to cast directly to Some because it is lazy initialized
-    // if gamesDirShown is false then this should never get called and initialized
-    val gamesDir by remember { (settingsViewModel.gamesDir as Option.Some).value }.collectAsState()
 
     Dialog(
         title = R.strings.settings,
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
         ) {
             var showFilePicker by remember { mutableStateOf(false) }
             Column(
@@ -62,6 +58,7 @@ fun SettingsDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (gamesDirShown) {
+                    val gamesDir by remember { (settingsViewModel.gamesDir as Option.Some).value }.collectAsState()
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = gamesDir ?: "",
@@ -80,6 +77,13 @@ fun SettingsDialog(
                         },
                     )
                     Spacer(modifier = Modifier.height(10.dp))
+
+                    GamesDirPicker(showFilePicker, gamesDir) {
+                        showFilePicker = false
+                        it?.let {
+                            settingsViewModel.setGamesDir(it)
+                        }
+                    }
                 }
                 CheckBoxWithText(
                     text = R.strings.settingsDialogSyncEnabled,
@@ -108,14 +112,6 @@ fun SettingsDialog(
                     description = R.strings.settingsDialogForceDarkThemeDescription,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-            }
-            if (gamesDirShown) {
-                GamesDirPicker(showFilePicker, gamesDir) {
-                    showFilePicker = false
-                    it?.let {
-                        settingsViewModel.setGamesDir(it)
-                    }
-                }
             }
         }
     }

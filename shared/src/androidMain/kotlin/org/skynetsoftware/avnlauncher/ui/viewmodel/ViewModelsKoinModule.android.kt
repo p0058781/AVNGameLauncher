@@ -8,4 +8,5 @@ actual val viewModelsKoinModule = module {
     viewModel<EditGameViewModel> { EditGameViewModel(get(), get()) }
     viewModel<MainViewModel> { MainViewModel(get(), get(), get(), get()) }
     viewModel<ImportGameViewModel> { ImportGameViewModel(get()) }
+    viewModel<SettingsViewModel> { SettingsViewModel(get()) }
 }

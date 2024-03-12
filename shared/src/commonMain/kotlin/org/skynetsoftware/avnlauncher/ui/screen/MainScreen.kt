@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -42,7 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
@@ -115,65 +115,67 @@ fun MainScreen(
             Column {
                 draggableArea {
                     TopAppBar {
-                        Column(
-                            modifier = Modifier.padding(start = 10.dp),
-                        ) {
-                            Text(
-                                text = R.strings.appName,
-                                style = MaterialTheme.typography.h6,
-                                color = MaterialTheme.colors.onSurface,
-                            )
-                            Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
-                        }
-                        Spacer(
-                            modifier = Modifier.width(10.dp),
-                        )
-                        // TODO search cant fit on android
-                        Box(
-                            modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
-                        ) {
-                            OutlinedTextField(
-                                modifier = Modifier.padding(0.dp).fillMaxHeight(),
-                                value = searchQuery,
-                                onValueChange = {
-                                    searchQuery = it
-                                },
-                                placeholder = {
-                                    Text(
-                                        text = R.strings.searchLabel,
-                                        style = MaterialTheme.typography.body2,
-                                    )
-                                },
-                                textStyle = TextStyle(
+                        ToolbarTitle {
+                            Column(
+                                modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                            ) {
+                                Text(
+                                    text = R.strings.appName,
+                                    style = MaterialTheme.typography.h6,
                                     color = MaterialTheme.colors.onSurface,
-                                ),
-                                singleLine = true,
-                                trailingIcon = {
-                                    if (searchQuery.isNotBlank()) {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "clear text",
-                                            modifier = Modifier.clickable {
-                                                searchQuery = ""
-                                            },
+                                )
+                                Text(R.strings.totalPlayTime.format(formatPlayTime(totalPlayTime), averagePlayTime))
+                            }
+                        }
+                        ToolbarSearch {
+                            Box(
+                                modifier = Modifier.padding(top = 5.dp, bottom = 5.dp),
+                            ) {
+                                OutlinedTextField(
+                                    modifier = Modifier.padding(0.dp).fillMaxHeight(),
+                                    value = searchQuery,
+                                    onValueChange = {
+                                        searchQuery = it
+                                    },
+                                    placeholder = {
+                                        Text(
+                                            text = R.strings.searchLabel,
+                                            style = MaterialTheme.typography.body2,
                                         )
-                                    }
-                                },
-                            )
+                                    },
+                                    textStyle = TextStyle(
+                                        color = MaterialTheme.colors.onSurface,
+                                    ),
+                                    singleLine = true,
+                                    trailingIcon = {
+                                        if (searchQuery.isNotBlank()) {
+                                            Icon(
+                                                imageVector = Icons.Default.Clear,
+                                                contentDescription = "clear text",
+                                                modifier = Modifier.clickable {
+                                                    searchQuery = ""
+                                                },
+                                            )
+                                        }
+                                    },
+                                )
+                            }
                         }
-                        if (globalState != State.Idle) {
-                            Text(
-                                modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
-                                textAlign = TextAlign.End,
-                                text = globalState.buildText(),
-                                style = MaterialTheme.typography.subtitle2,
-                            )
-                        } else {
-                            Spacer(
-                                modifier = Modifier.weight(1f).fillMaxWidth(),
-                            )
+                        ToolbarState {
+                            if (globalState != State.Idle) {
+                                Text(
+                                    modifier = Modifier.weight(1f).fillMaxWidth().padding(end = 10.dp),
+                                    textAlign = TextAlign.End,
+                                    text = globalState.buildText(),
+                                    style = MaterialTheme.typography.subtitle2,
+                                )
+                            } else {
+                                Spacer(
+                                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                                )
+                            }
                         }
-                        Actions(
+                        ToolbarActions(
                             remoteClientMode = mainViewModel.remoteClientMode,
                             sfwMode = sfwMode,
                             startUpdateCheck = {
@@ -270,7 +272,7 @@ fun MainScreen(
 }
 
 @Composable
-private fun Actions(
+expect fun ToolbarActions(
     modifier: Modifier = Modifier,
     remoteClientMode: Boolean,
     sfwMode: Boolean,
@@ -279,68 +281,7 @@ private fun Actions(
     onSettingsClicked: () -> Unit,
     onSfwModeClicked: () -> Unit,
     exitApplication: () -> Unit,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.End,
-    ) {
-        TextAction(if (sfwMode) R.strings.toolbarActionSfw else R.strings.toolbarActionNsfw) {
-            onSfwModeClicked()
-        }
-        if (!remoteClientMode) {
-            IconAction(R.images.import) {
-                onImportGameClicked()
-            }
-            IconAction(R.images.refresh) {
-                startUpdateCheck()
-            }
-            IconAction(R.images.settings) {
-                onSettingsClicked()
-            }
-        }
-        IconAction(R.images.close) {
-            exitApplication()
-        }
-    }
-}
-
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-private fun IconAction(
-    icon: String,
-    action: () -> Unit,
-) {
-    Box(
-        modifier = Modifier.padding(10.dp),
-    ) {
-        Image(
-            painter = painterResource(icon),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp).clickable {
-                action()
-            },
-            colorFilter = ColorFilter.tint(Color.White),
-        )
-    }
-}
-
-@Composable
-private fun TextAction(
-    text: String,
-    action: () -> Unit,
-) {
-    Box(
-        modifier = Modifier.padding(10.dp),
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.clickable {
-                action()
-            },
-            color = MaterialTheme.colors.onSurface,
-        )
-    }
-}
+)
 
 @Composable
 private fun SortFilter(
@@ -662,6 +603,15 @@ private fun InfoItem(
         )
     }
 }
+
+@Composable
+expect fun RowScope.ToolbarTitle(content: @Composable RowScope.() -> Unit)
+
+@Composable
+expect fun RowScope.ToolbarSearch(content: @Composable RowScope.() -> Unit)
+
+@Composable
+expect fun RowScope.ToolbarState(content: @Composable RowScope.() -> Unit)
 
 private fun State.buildText() =
     buildString {
