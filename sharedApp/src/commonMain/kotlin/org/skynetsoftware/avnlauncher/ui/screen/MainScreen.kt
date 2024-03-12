@@ -82,7 +82,7 @@ import kotlin.random.Random
 
 private const val GAME_IMAGE_ASPECT_RATIO = 3.5f
 
-private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
+private val releaseDateFormat = SimpleDateFormat("MMM dd, yyyy")
 
 data class MainScreen(
     val exitApplication: () -> Unit,
