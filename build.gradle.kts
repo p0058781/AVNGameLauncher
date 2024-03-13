@@ -29,7 +29,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlinx.kover")
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
-    version = "1.0.1"
+    version = "1.1.0"
 
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
         version.set("1.1.0")
