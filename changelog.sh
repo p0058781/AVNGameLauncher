@@ -1,3 +1,3 @@
 #!/bin/bash
 
-git log --pretty=format:"%s" "$1"..."$2"
+git --no-pager log --pretty=format:"%s" "$1"..."$2"

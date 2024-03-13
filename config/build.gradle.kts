@@ -12,7 +12,6 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
-                implementation(project(":domain"))
                 implementation(libs.koin.core)
             }
         }
@@ -39,7 +38,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "org.skynetsoftware.avnlauncher.logger"
+    namespace = "org.skynetsoftware.avnlauncher.config"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
