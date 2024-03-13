@@ -103,6 +103,12 @@ There are 3 available statuses for games, you can use them however you like, I u
 9. Click anywhere on the game card to launch the game
 
 ## How to build
+1. You will need JDK 17 and Android SDK
+2. Execute `./gradlew run` to run desktop app for you system, or run `./gradlew packageReleaseUberJarForCurrentOS` 
+to build Jar file or `./gradlew createDistributable` to create distributable with embedded jre
+3. Execute `./gradlew installDebug` or `./gradlew installRelease` to install to connected device.
+Or run `./gradlew assembleDebug` or `./gradlew assembleRelease` to build apk  
+
 
 > [!WARNING]  
 > Everything below is under construction
