@@ -11,23 +11,6 @@
 - SFW Mode. Replaces images with random image, and replaces game name with random phrase
 - Game updates notifications
 
-![features](docs/features.png)
-1. Total play time
-2. Search by title and tags
-3. Filter and Sort order
-4. SFW Mode. Replaces images and titles with SFW versions
-5. Import Game from F95
-6. Check for updates for all games
-7. Edit Game
-8. Current version and available version in brackets
-9. New version available (click to reset, make available version current version)
-10. Add to favorites
-11. Open F95 game thread in browser
-12. Game executable path (game package name on Android) is not set
-13. Your rating (click to change) and F95 rating in brackets
-14. Status (Playing, Waiting for Update, Completed)
-15. Release date and first release date in brackets
-
 ### FAQ
 - **Will login be implemented, to import games that are only accessible if logged in?**  
 No, unless f95 starts disabling public access to the majority of games
