@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -221,7 +222,7 @@ fun ExecutablePaths(
                 value = executablePath,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text(stringResource(MR.strings.editGameInputLabelExecutablePath)) },
+                label = { Text(stringResource(inputLabelExecutablePath)) },
                 trailingIcon = {
                     Image(
                         painter = painterResource(Images.edit),
@@ -271,3 +272,5 @@ fun ExecutablePaths(
         }
     }
 }
+
+expect val inputLabelExecutablePath: StringResource
