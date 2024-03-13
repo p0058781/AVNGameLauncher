@@ -5,33 +5,48 @@ on:
       - '**'
 
 jobs:
-  build:
-    env: 
-      RUNNER_TOOL_CACHE: /toolcache
-    name: Build & Test
+  build_test_and_release:
+      env:
+        RUNNER_TOOL_CACHE: /toolcache
+      name: Build & Upload
 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3-beta
-      - name: Set up our JDK environment
-        uses: actions/setup-java@v4
-        with:
-          java-version: 17
-          distribution: corretto
-      - name: KTLint & Detekt
-        run: ./analyze_code.sh
-      - name: Build & Test
-        run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease releaseJar packageLinuxX64 packageWinX64 packageMacOSX64 assembleRelease
-      - name: Create a Release
-        uses: softprops/action-gh-release@v2
-        with:
-          prerelease: ${{ contains(github.ref_name, '_pre') }}
-          files: |-
-            **/build/reports/kover/*
-            androidApp/build/outputs/apk/release/*.apk
-            desktopApp/build/libs/desktopApp-release-*.jar
-            desktopApp/build/package/**/release-*.zip
-            desktopApp/build/proguard/mapping.txt
+      strategy:
+        matrix:
+          os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+      runs-on: ${{ matrix.os }}
+      steps:
+        - name: Check out repository code
+          uses: actions/checkout@v4
+        - name: Setup Gradle
+          uses: gradle/gradle-build-action@v3-beta
+        - name: Set up our JDK environment
+          uses: actions/setup-java@v4
+          with:
+            java-version: 17
+            distribution: corretto
+        - name: KTLint & Detekt
+          if: matrix.os == 'ubuntu-latest'
+          run: ./analyze_code.sh
+        - name: Run Tests
+          if: matrix.os == 'ubuntu-latest'
+          run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease
+        - name: Package Uber Jar for ${{ runner.os }}
+          run: ./gradlew --console=plain packageReleaseUberJarForCurrentOS
+        - name: Create release distributable for ${{ runner.os }}
+          run: ./gradlew --console=plain createReleaseDistributable
+        - name: Zip release distributable for ${{ runner.os }}
+          run: |
+            cd desktopApp/build/compose/binaries/main-release/app/ &&
+            7z a avn-game-launcher-${{ runner.os }}-release.zip *
+        - name: Build Android APK
+          if: matrix.os == 'ubuntu-latest'
+          run: ./gradlew --console=plain assembleRelease
+        - name: Create a Release
+          uses: softprops/action-gh-release@v2
+          with:
+            prerelease: ${{ contains(github.ref_name, '_pre') }}
+            files: |-
+              androidApp/build/outputs/apk/release/*.apk
+              desktopApp/build/compose/binaries/main-release/app/avn-game-launcher-${{ runner.os }}-release.zip
+              desktopApp/build/compose/jars/*
