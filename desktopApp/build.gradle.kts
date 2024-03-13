@@ -37,7 +37,7 @@ compose.desktop {
         jvmArgs("-Dapple.awt.application.appearance=system")
 
         nativeDistributions {
-            modules("java.sql", "java.management")
+            modules("java.sql", "java.management", "jdk.unsupported")
             packageName = "AVN Game Launcher"
             licenseFile.set(project.rootProject.file("LICENSE.txt"))
             val resourcesDir = rootProject.project("sharedApp").file("src/commonMain/resources")
