@@ -48,6 +48,7 @@ actual fun GamePicker(
             title = stringResource(MR.strings.gamePickerPickGame),
             onDismiss = {
                 visible = false
+                onGamePicked(null)
             },
         ) {
             Surface(
