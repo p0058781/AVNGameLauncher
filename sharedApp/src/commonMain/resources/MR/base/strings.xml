@@ -76,4 +76,5 @@
     <string name="systemNotificationUpdatesChannelDescription">Notifications for new Game Versions</string>
     <string name="noGamesTextPart1">You don\'t have any games currently\nChange filter or click</string>
     <string name="noGamesTextPart2">in the top bar to import game.</string>
+    <string name="editGameInputLabelExecutablePathAndroid">Game Package Name</string>
 </resources>
