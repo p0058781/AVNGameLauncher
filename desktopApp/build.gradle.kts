@@ -24,7 +24,6 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.cli)
                 implementation(project(":sharedApp"))
-                implementation(project(":config"))
             }
         }
     }

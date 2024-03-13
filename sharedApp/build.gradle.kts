@@ -20,8 +20,8 @@ kotlin {
             dependencies {
                 implementation(project(":data"))
                 api(project(":domain"))
-                implementation(project(":logger"))
-                implementation(project(":config"))
+                api(project(":logger"))
+                api(project(":config"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
