@@ -237,7 +237,7 @@ fun Rating(
             rating = game.rating,
             modifier = Modifier.align(Alignment.CenterVertically),
             onClick = { rating ->
-                updateRating(rating, game)
+                updateRating(if (game.rating == rating) 0 else rating, game)
             },
         )
         Spacer(
