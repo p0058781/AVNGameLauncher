@@ -1,6 +1,8 @@
 # AVN Game Launcher
 #### Adult Visual Novel Game Launcher for F95zone.to
 
+[![PR Pipeline](https://github.com/p0058781/AVNGameLauncher/actions/workflows/pr.yaml/badge.svg?branch=master)](https://github.com/p0058781/AVNGameLauncher/actions/workflows/pr.yaml) [![Release Pipeline](https://github.com/p0058781/AVNGameLauncher/actions/workflows/release.yaml/badge.svg)](https://github.com/p0058781/AVNGameLauncher/actions/workflows/release.yaml)
+
 ### Features
 - Start game directly from AVN Game Launcher (obviously, it's in the name)
 - Automatically check for new versions of all your games
@@ -106,3 +108,19 @@ Or run `./gradlew assembleDebug` or `./gradlew assembleRelease` to build apk
 ### logger
 ### config
 ### domain
+
+```
+Copyright (C) 2024  p0058781
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
