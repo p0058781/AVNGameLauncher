@@ -47,3 +47,12 @@ compose.desktop {
         }
     }
 }
+
+tasks {
+    withType<org.gradle.jvm.tasks.Jar> {
+        manifest {
+            attributes["Main-Class"] = "MainKt"
+            attributes["Add-Opens"] = "java.desktop/sun.awt.X11 java.desktop/sun.awt.wl"
+        }
+    }
+}
