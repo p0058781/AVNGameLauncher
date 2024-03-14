@@ -2,6 +2,8 @@ complexity:
   LongParameterList:
     functionThreshold: 20
     ignoreAnnotated: ['Composable']
+  LongMethod:
+    ignoreAnnotated: ['Composable']
 
 exceptions:
   TooGenericExceptionCaught:
