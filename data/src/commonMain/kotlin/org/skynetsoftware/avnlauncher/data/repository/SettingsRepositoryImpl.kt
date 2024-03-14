@@ -5,6 +5,7 @@ import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.domain.model.Filter
+import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
@@ -48,6 +49,17 @@ abstract class SettingsRepositoryShared internal constructor(
             ?: SettingsDefaults.selectedSortOrderDirection
     }
     override val selectedSortDirection: StateFlow<SortDirection> get() = _selectedSortDirection
+
+    private val _selectedGamesDisplayMode = MutableStateFlow {
+        val selectedGamesDisplayModeClassname =
+            settings.getString(
+                SettingsRepository::selectedGamesDisplayMode.name,
+                SettingsDefaults.selectedGamesDisplayMode.name,
+            )
+        GamesDisplayMode.entries.find { it.name == selectedGamesDisplayModeClassname }
+            ?: SettingsDefaults.selectedGamesDisplayMode
+    }
+    override val selectedGamesDisplayMode: StateFlow<GamesDisplayMode> get() = _selectedGamesDisplayMode
 
     private val _lastUpdateCheck =
         MutableStateFlow { settings.getLong(SettingsRepository::lastUpdateCheck.name, 0L) }
@@ -93,6 +105,11 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setSelectedSortDirection(sortDirection: SortDirection) {
         _selectedSortDirection.emit(sortDirection)
         settings[SettingsRepository::selectedSortDirection.name] = sortDirection.name
+    }
+
+    override suspend fun setSelectedGamesDisplayMode(gamesDisplayMode: GamesDisplayMode) {
+        _selectedGamesDisplayMode.emit(gamesDisplayMode)
+        settings[SettingsRepository::selectedGamesDisplayMode.name] = gamesDisplayMode.name
     }
 
     override suspend fun setLastUpdateCheck(lastUpdateCheck: Long) {

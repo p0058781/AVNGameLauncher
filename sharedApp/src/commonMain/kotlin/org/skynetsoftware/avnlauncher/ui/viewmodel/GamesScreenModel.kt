@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.MR
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
@@ -37,6 +38,7 @@ class GamesScreenModel(
     val filter: StateFlow<Filter> = settingsRepository.selectedFilter
     val sortOrder: StateFlow<SortOrder> = settingsRepository.selectedSortOrder
     val sortDirection: StateFlow<SortDirection> = settingsRepository.selectedSortDirection
+    val gamesDisplayMode: StateFlow<GamesDisplayMode> = settingsRepository.selectedGamesDisplayMode
     val games: StateFlow<List<Game>> =
         combine(repoGames, filter, sortOrder, sortDirection, searchQuery) { values ->
             @Suppress("UNCHECKED_CAST", "MagicNumber")
@@ -101,6 +103,11 @@ class GamesScreenModel(
     fun setSortDirection(sortDirection: SortDirection) =
         screenModelScope.launch {
             settingsRepository.setSelectedSortDirection(sortDirection)
+        }
+
+    fun setGamesDisplayMode(gamesDisplayMode: GamesDisplayMode) =
+        screenModelScope.launch {
+            settingsRepository.setSelectedGamesDisplayMode(gamesDisplayMode)
         }
 
     fun resetUpdateAvailable(

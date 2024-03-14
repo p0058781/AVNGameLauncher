@@ -2,6 +2,7 @@ package org.skynetsoftware.avnlauncher.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
 import org.skynetsoftware.avnlauncher.domain.model.Filter
+import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.utils.Option
@@ -10,6 +11,7 @@ abstract class ISettingsDefaults {
     open val selectedFilter: Filter = Filter.All
     open val selectedSortOrder: SortOrder = SortOrder.LastPlayed
     open val selectedSortOrderDirection: SortDirection = SortDirection.Descending
+    open val selectedGamesDisplayMode: GamesDisplayMode = GamesDisplayMode.Grid
     open val sfwModeEnabled: Boolean = false
 
     @Suppress("MagicNumber")
@@ -22,6 +24,7 @@ interface SettingsRepository {
     val selectedFilter: StateFlow<Filter>
     val selectedSortOrder: StateFlow<SortOrder>
     val selectedSortDirection: StateFlow<SortDirection>
+    val selectedGamesDisplayMode: StateFlow<GamesDisplayMode>
     val gamesDir: Option<out StateFlow<String?>>
     val sfwModeEnabled: StateFlow<Boolean>
     val periodicUpdateChecksEnabled: StateFlow<Boolean>
@@ -34,6 +37,8 @@ interface SettingsRepository {
     suspend fun setSelectedSortOrder(sortOrder: SortOrder)
 
     suspend fun setSelectedSortDirection(sortDirection: SortDirection)
+
+    suspend fun setSelectedGamesDisplayMode(gamesDisplayMode: GamesDisplayMode)
 
     suspend fun setGamesDir(gamesDir: String)
 

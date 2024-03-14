@@ -19,4 +19,6 @@ object Images {
     const val minimize = "minimize.png"
     const val heart_filled = "heart_filled.png"
     const val heart = "heart.png"
+    const val grid = "grid.png"
+    const val list = "list.png"
 }
