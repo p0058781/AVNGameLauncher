@@ -1,4 +1,4 @@
-rootProject.name = "AVN Launcher V3"
+rootProject.name = "AVN Game Launcher"
 
 include(":androidApp")
 include(":sharedApp")
