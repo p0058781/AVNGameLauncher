@@ -8,32 +8,20 @@ jsoup = "1.16.1"
 koin = "3.5.0"
 koin-compose = "1.1.0"
 kotlinx-coroutines-core = "1.7.3"
-kotlinx-serialization-json = "1.6.0"
 kotlinx-datetime = "0.4.1"
 kotlinx-cli = "0.3.6"
 ktor = "2.3.7"
 mpfilepicker = "2.1.0"
 multiplatform-settings-no-arg = "1.1.0"
-mvvm = "0.16.1"
 okio = "3.6.0"
-slf4j-simple = "2.0.9"
 turbine = "0.12.1"
-h2 = "2.1.214"
-exposed = "0.41.1"
-logback = "1.4.11"
-clikt = "4.2.1"
-system-theme-detector = "3.6"
 agp = "8.2.1"
 jetbrains-compose = "1.5.11"
 ktlint-plugin = "12.0.3"
 accompanist = "0.28.0"
 moko = "0.23.0"
 voyager = "1.0.0"
-webview-compose-multiplatform = "1.8.0"
-mosaic = "0.10.0"
-jline = "3.25.0"
 kover = "0.7.5"
-commons-compress = "1.25.0"
 detekt = "1.23.3"
 sqldelight = "2.0.1"
 log4j = "2.22.1"
@@ -47,46 +35,24 @@ activity-compose = { module = "androidx.activity:activity-compose", version.ref 
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "image-loader" }
-image-loader-extension-blur = { module = "io.github.qdsfdhvh:image-loader-extension-blur", version.ref = "image-loader" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
-koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinx-cli" }
-ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
-ktor-client-curl = { module = "io.ktor:ktor-client-curl", version.ref = "ktor" }
-ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-ktor-server-core-jvm = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-server-call-logging-jvm = { module = "io.ktor:ktor-server-call-logging-jvm", version.ref = "ktor" }
-ktor-server-resources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
-ktor-server-auth-jvm = { module = "io.ktor:ktor-server-auth-jvm", version.ref = "ktor" }
-ktor-server-netty-jvm = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
-ktor-server-tests-jvm = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-jetbrains-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
-jetbrains-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
-h2database = { module = "com.h2database:h2", version.ref = "h2" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings-no-arg" }
-mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
-mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j-simple" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
-systemthemedetector = { module = "com.github.Dansoftowner:jSystemThemeDetector", version.ref = "system-theme-detector" }
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 moko-resources = { module = "dev.icerock.moko:resources", version.ref = "moko" }
 moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko" }
@@ -94,12 +60,8 @@ moko-resources-test = { module = "dev.icerock.moko:resources-test", version.ref 
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-screenmodel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
-webview-compose-multiplatform = { module = "io.github.kevinnzou:compose-webview-multiplatform", version.ref = "webview-compose-multiplatform" }
-jline = { module = "org.jline:jline", version.ref = "jline" }
-apache-commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
 sqdelight-primitiveadapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 sqdelight-androiddriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
-sqdelight-nativedriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqdelight-sqlitedriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqdelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
@@ -120,7 +82,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 moko-resource-generator = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko" }
-mosaic = { id = "com.jakewharton.mosaic", version.ref = "mosaic" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
