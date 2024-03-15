@@ -34,7 +34,6 @@ import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.model.iconRes
-import org.skynetsoftware.avnlauncher.utils.next
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -64,15 +63,23 @@ fun SortFilter(
             Sort(currentSortOrder, currentSortDirection, setSortOrder, setSortDirection)
             Spacer(modifier = Modifier.width(5.dp))
             Text("|")
-            Spacer(modifier = Modifier.width(5.dp))
-            Image(
-                painter = painterResource(currentGamesDisplayMode.iconRes()),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp).clickable {
-                    setGamesDisplayMode(currentGamesDisplayMode.next())
-                },
-                colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
-            )
+            GamesDisplayMode.entries.forEach {
+                Spacer(modifier = Modifier.width(5.dp))
+                Image(
+                    painter = painterResource(it.iconRes()),
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp).clickable {
+                        setGamesDisplayMode(it)
+                    },
+                    colorFilter = ColorFilter.tint(
+                        if (it == currentGamesDisplayMode) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            MaterialTheme.colors.onSurface
+                        },
+                    ),
+                )
+            }
         }
     }
 }
