@@ -38,11 +38,8 @@ private class ExecutableFinderAndroid(
 
     private fun removeNotFoundExecutablePaths(executablePaths: Set<String>): Set<String> {
         val mutableExecutablePaths = executablePaths.toMutableSet()
-        mutableExecutablePaths.forEach {
-            val executablePathFile = File(it)
-            if (!executablePathFile.exists()) {
-                mutableExecutablePaths.remove(it)
-            }
+        mutableExecutablePaths.removeAll {
+            !File(it).exists()
         }
         return mutableExecutablePaths
     }
