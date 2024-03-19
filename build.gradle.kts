@@ -16,7 +16,6 @@ plugins {
 
     alias(libs.plugins.ktor.plugin).apply(false)
     alias(libs.plugins.ktlint.plugin).apply(false)
-    alias(libs.plugins.moko.resource.generator).apply(false)
     alias(libs.plugins.kover).apply(false)
     alias(libs.plugins.detekt).apply(false)
     alias(libs.plugins.sqldelight).apply(false)
@@ -53,6 +52,7 @@ subprojects {
         exclude("**/Database.kt")
         exclude("**/DatabaseImpl.kt")
         exclude("**/BuildKonfig.kt")
+        exclude("org/skynetsoftware/avnlauncher/app/generated/resources/**/*")
         reports {
             html.required.set(true)
             xml.required.set(false)

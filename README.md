@@ -19,7 +19,7 @@ No, unless f95 starts disabling public access to the majority of games
 - **Which file do I download?**  
   - **avn-game-launcher-{platform}-release.zip** - these are platform native packages, you don't need external dependencies (like jre) to run it, just extract and run
   - **AVN.Game.Launcher-{platform}-x64-1.0.1.jar**  - platform specific, Java 17 needs to be installed on your system
-  - **androidApp-release.apk** - Android APK
+  - **app-release.apk** - Android APK
 - **Which platforms are supported?**  
 Desktop (Linux, Mac, Windows), Android
 - **Can I import non-f95 game?**  
@@ -101,9 +101,7 @@ Or run `./gradlew assembleDebug` or `./gradlew assembleRelease` to build apk
 ## Modules
 ![module graph](docs/project-dependency-graph.svg)
 
-### desktopApp
-### androidApp
-### sharedApp
+### app
 ### data
 ### logger
 ### config

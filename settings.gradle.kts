@@ -1,8 +1,6 @@
-rootProject.name = "AVN Game Launcher"
+rootProject.name = "avn-game-launcher"
 
-include(":androidApp")
-include(":sharedApp")
-include(":desktopApp")
+include(":app")
 include(":domain")
 include(":data")
 include(":logger")
