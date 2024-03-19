@@ -101,9 +101,7 @@ Or run `./gradlew assembleDebug` or `./gradlew assembleRelease` to build apk
 ## Modules
 ![module graph](docs/project-dependency-graph.svg)
 
-### desktopApp
-### androidApp
-### sharedApp
+### app
 ### data
 ### logger
 ### config

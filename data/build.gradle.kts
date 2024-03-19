@@ -42,7 +42,6 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.koin.test)
                 implementation(libs.turbine)
-                implementation(libs.moko.resources.test)
                 implementation(libs.mockk)
             }
         }
