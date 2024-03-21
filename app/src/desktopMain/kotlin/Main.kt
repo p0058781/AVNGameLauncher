@@ -57,17 +57,19 @@ suspend fun main(args: Array<String>) {
     application {
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
-        // on desktop this is always Option.Some
+        // on desktop these are always Option.Some
         val minimizeToTrayOnClose by remember {
             (settingsRepository.minimizeToTrayOnClose as Option.Some).value
         }.collectAsState()
-        var minimized by remember { mutableStateOf(false) }
+        val startMinimized = (settingsRepository.startMinimized as Option.Some).value.value
+        var minimized by remember { mutableStateOf(minimizeToTrayOnClose && startMinimized) }
         var open by remember { mutableStateOf(true) }
 
         val onCloseRequest = {
             if (minimizeToTrayOnClose) {
                 minimized = true
             } else {
+                open = false
                 exitApplication()
             }
         }
@@ -90,7 +92,7 @@ suspend fun main(args: Array<String>) {
                     eventCenter.events.collect {
                         if (it is Event.UpdateCheckComplete) {
                             val count = it.updateCheckResult.updates.count { game -> game.updateAvailable }
-                            if (count > 0) {
+                            if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {
                                 trayState.sendNotification(
                                     Notification(
                                         title = getString(Res.string.systemNotificationTitleUpdateAvailable),

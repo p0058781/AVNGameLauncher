@@ -3,6 +3,8 @@ package org.skynetsoftware.avnlauncher.domain.repository
 import kotlinx.coroutines.flow.StateFlow
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
+import org.skynetsoftware.avnlauncher.domain.model.GridColumns
+import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.utils.Option
@@ -17,7 +19,15 @@ abstract class ISettingsDefaults {
     @Suppress("MagicNumber")
     open val updateCheckInterval: Long = 3_600_000L // 1 hour
     open val periodicUpdateChecks: Boolean = true
-    open val minimizeToTrayOnClose: Boolean = false
+    open val logLevel: LogLevel = LogLevel.Info
+    open val showGifs: Boolean = false
+    open val systemNotificationsEnabled: Boolean = true
+    open val dateFormat: String = "MMM dd, yyyy"
+    open val timeFormat: String = "HH:mm"
+    open val gridColumns: GridColumns = GridColumns.Auto
+
+    @Suppress("MagicNumber")
+    open val gridImageAspectRatio: Float = 3.5f
 }
 
 interface SettingsRepository {
@@ -31,6 +41,14 @@ interface SettingsRepository {
     val updateCheckInterval: StateFlow<Long>
     val lastUpdateCheck: StateFlow<Long>
     val minimizeToTrayOnClose: Option<out StateFlow<Boolean>>
+    val startMinimized: Option<out StateFlow<Boolean>>
+    val logLevel: StateFlow<LogLevel>
+    val showGifs: StateFlow<Boolean>
+    val dateFormat: StateFlow<String>
+    val timeFormat: StateFlow<String>
+    val gridColumns: StateFlow<GridColumns>
+    val systemNotificationsEnabled: StateFlow<Boolean>
+    val gridImageAspectRatio: StateFlow<Float>
 
     suspend fun setSelectedFilter(filter: Filter)
 
@@ -51,4 +69,20 @@ interface SettingsRepository {
     suspend fun setLastUpdateCheck(lastUpdateCheck: Long)
 
     suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean)
+
+    suspend fun setStartMinimized(startMinimized: Boolean)
+
+    suspend fun setLogLevel(logLevel: LogLevel)
+
+    suspend fun setShowGifs(showGifs: Boolean)
+
+    suspend fun setDateFormat(dateFormat: String)
+
+    suspend fun setTimeFormat(timeFormat: String)
+
+    suspend fun setGridColumns(gridColumns: GridColumns)
+
+    suspend fun setSystemNotificationsEnabled(systemNotificationsEnabled: Boolean)
+
+    suspend fun setGridImageAspectRatio(gridImageAspectRatio: Float)
 }

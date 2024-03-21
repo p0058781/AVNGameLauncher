@@ -45,6 +45,7 @@ private class F95ApiImpl(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun getGame(gameThreadId: Int): Result<F95Game> {
         return try {
             return f95Parser.parseGame(httpClient.get(gameThreadId.createF95ThreadUrl()), gameThreadId)
@@ -54,6 +55,7 @@ private class F95ApiImpl(
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun getVersions(gameThreadIds: List<Int>): Result<F95Versions> {
         return try {
             val versions: F95Versions =

@@ -15,6 +15,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":config"))
+                implementation(project(":domain"))
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.koin.core)
                 implementation(libs.kotlinx.datetime)
             }
@@ -26,19 +28,11 @@ kotlin {
                 implementation(libs.turbine)
             }
         }
-        val jvmMain = create("jvmMain") {
-            dependsOn(commonMain)
-            dependencies {
-
-            }
-        }
         val androidMain by getting {
-            dependsOn(jvmMain)
             dependencies {
             }
         }
         val desktopMain by getting {
-            dependsOn(jvmMain)
             dependencies {
                 implementation(libs.log4j.slf4j)
                 implementation(libs.log4j.core)

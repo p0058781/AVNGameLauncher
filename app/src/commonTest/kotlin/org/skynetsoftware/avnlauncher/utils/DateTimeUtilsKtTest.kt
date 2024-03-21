@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class TimeUtilsKtTest {
+class DateTimeUtilsKtTest {
     @Test
     fun `averagePlayTime correct result`() {
         val firstPlayedTime = System.currentTimeMillis() - 2 * 24 * 60 * 60 * 1000

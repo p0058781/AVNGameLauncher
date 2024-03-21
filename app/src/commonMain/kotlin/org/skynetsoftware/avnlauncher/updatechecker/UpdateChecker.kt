@@ -7,6 +7,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -22,6 +23,7 @@ import org.skynetsoftware.avnlauncher.state.EventCenter
 import kotlin.math.max
 
 private const val UPDATE_CHECK_MAX_GAMES_IN_SINGLE_REQUEST = 100
+private const val MIN_INTERVAL = 3_600_000L // 1h
 
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
@@ -53,10 +55,29 @@ private class UpdateCheckerImpl(
 
     private var updateCheckSchedulerJob: Job? = null
 
+    init {
+        scope.launch {
+            settingsRepository.updateCheckInterval.collect {
+                if (updateCheckSchedulerJob != null && updateCheckSchedulerJob?.isActive == true) {
+                    stopPeriodicUpdateChecks()
+                    startPeriodicUpdateChecks()
+                }
+            }
+        }
+    }
+
     override fun startPeriodicUpdateChecks() {
         updateCheckSchedulerJob?.cancel()
         updateCheckSchedulerJob = scope.launch {
-            val interval = settingsRepository.updateCheckInterval.value
+            val interval = settingsRepository.updateCheckInterval.value.run {
+                if (this < MIN_INTERVAL) {
+                    this
+                } else {
+                    logger.info("updateCheckInterval is smaller then minimum value: $MIN_INTERVAL, using $MIN_INTERVAL")
+                    MIN_INTERVAL
+                }
+            }
+            logger.info("startPeriodicUpdateChecks interval: $interval")
             while (isActive) {
                 val now = Clock.System.now().toEpochMilliseconds()
                 val lastUpdateCheck = settingsRepository.lastUpdateCheck.value
@@ -77,6 +98,7 @@ private class UpdateCheckerImpl(
 
     override fun stopPeriodicUpdateChecks() {
         updateCheckSchedulerJob?.cancel()
+        logger.info("stopPeriodicUpdateChecks")
     }
 
     override fun checkForUpdates() {

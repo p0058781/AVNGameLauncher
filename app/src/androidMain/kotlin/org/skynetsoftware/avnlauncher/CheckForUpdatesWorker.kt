@@ -21,6 +21,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotification
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationTitleUpdateAvailable
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationUpdatesChannelDescription
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationUpdatesChannelTitle
+import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 
@@ -54,13 +55,14 @@ class CheckForUpdatesWorker(private val context: Context, workerParameters: Work
 
     private val updateChecker by inject<UpdateChecker>()
     private val logger by inject<Logger>()
+    private val settingsRepository by inject<SettingsRepository>()
 
     override suspend fun doWork(): Result {
         logger.debug("doWork")
         return withContext(Dispatchers.IO) {
             val result = updateChecker.checkForUpdates(this)
             val count = result.updates.count { it.updateAvailable }
-            if (count > 0) {
+            if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {
                 sendNotification(count)
             }
             Result.success()
@@ -69,7 +71,6 @@ class CheckForUpdatesWorker(private val context: Context, workerParameters: Work
 
     @OptIn(ExperimentalResourceApi::class)
     private suspend fun sendNotification(count: Int) {
-        println(count)
         val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_avn)
             .setContentTitle(getString(Res.string.systemNotificationTitleUpdateAvailable))

@@ -33,12 +33,15 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelReleaseDa
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelVersion
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
+import java.text.SimpleDateFormat
 
 @Composable
 fun GamesList(
     games: List<Game>,
     sfwMode: Boolean,
     query: String?,
+    dateFormat: SimpleDateFormat,
+    timeFormat: SimpleDateFormat,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
@@ -55,6 +58,8 @@ fun GamesList(
                 sfwMode = sfwMode,
                 query = query,
                 editGame = editGame,
+                dateFormat = dateFormat,
+                timeFormat = timeFormat,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
@@ -70,6 +75,8 @@ private fun GameItem(
     game: Game,
     sfwMode: Boolean,
     query: String?,
+    dateFormat: SimpleDateFormat,
+    timeFormat: SimpleDateFormat,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
@@ -136,7 +143,7 @@ private fun GameItem(
                 Text(" | ")
                 InfoItem(
                     stringResource(Res.string.infoLabelFirstPlayed),
-                    playedDateTimeFormat.format(game.firstPlayed),
+                    "${dateFormat.format(game.firstPlayed)} ${timeFormat.format(game.firstPlayed)}",
                     labelStyle = MaterialTheme.typography.subtitle2,
                     valueStyle = MaterialTheme.typography.subtitle2,
                     maxLines = 1,
@@ -144,7 +151,7 @@ private fun GameItem(
                 Text(" | ")
                 InfoItem(
                     stringResource(Res.string.infoLabelLastPlayed),
-                    game.lastPlayedDisplayValue(),
+                    game.lastPlayedDisplayValue(dateFormat, timeFormat),
                     labelStyle = MaterialTheme.typography.subtitle2,
                     valueStyle = MaterialTheme.typography.subtitle2,
                     maxLines = 1,
@@ -160,7 +167,7 @@ private fun GameItem(
                 Text(" | ")
                 InfoItem(
                     stringResource(Res.string.infoLabelReleaseDate),
-                    game.releaseDateDisplayValue(),
+                    game.releaseDateDisplayValue(dateFormat),
                     labelStyle = MaterialTheme.typography.subtitle2,
                     valueStyle = MaterialTheme.typography.subtitle2,
                     maxLines = 1,
