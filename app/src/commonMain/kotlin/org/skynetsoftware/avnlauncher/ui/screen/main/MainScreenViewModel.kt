@@ -98,6 +98,12 @@ class MainScreenViewModel(
     private val _newUpdateAvailableIndicatorVisible = MutableStateFlow(false)
     val newUpdateAvailableIndicatorVisible: StateFlow<Boolean> get() = _newUpdateAvailableIndicatorVisible
 
+    val imageAspectRatio = settingsRepository.gridImageAspectRatio
+    val dateFormat = settingsRepository.dateFormat
+    val timeFormat = settingsRepository.timeFormat
+    val gridColumns = settingsRepository.gridColumns
+    val showGifs = settingsRepository.showGifs
+
     init {
         // check paths
         viewModelScope.launch {

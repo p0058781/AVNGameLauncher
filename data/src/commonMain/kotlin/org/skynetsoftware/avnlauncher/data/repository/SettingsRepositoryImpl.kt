@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
+import org.skynetsoftware.avnlauncher.domain.model.GridColumns
+import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
@@ -92,6 +94,73 @@ abstract class SettingsRepositoryShared internal constructor(
         }
     override val updateCheckInterval: StateFlow<Long> get() = _updateCheckInterval
 
+    private val _logLevel = MutableStateFlow {
+        val logLevelClassname =
+            settings.getString(
+                SettingsRepository::logLevel.name,
+                SettingsDefaults.logLevel.name,
+            )
+        LogLevel.entries.find { it.name == logLevelClassname }
+            ?: SettingsDefaults.logLevel
+    }
+    override val logLevel: StateFlow<LogLevel> get() = _logLevel
+
+    private val _showGifs =
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::showGifs.name,
+                SettingsDefaults.showGifs,
+            )
+        }
+    override val showGifs: StateFlow<Boolean> get() = _showGifs
+
+    private val _systemNotificationsEnabled =
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::systemNotificationsEnabled.name,
+                SettingsDefaults.systemNotificationsEnabled,
+            )
+        }
+    override val systemNotificationsEnabled: StateFlow<Boolean> get() = _systemNotificationsEnabled
+
+    private val _dateFormat =
+        MutableStateFlow {
+            settings.getString(
+                SettingsRepository::dateFormat.name,
+                SettingsDefaults.dateFormat,
+            )
+        }
+    override val dateFormat: StateFlow<String> get() = _dateFormat
+
+    private val _timeFormat =
+        MutableStateFlow {
+            settings.getString(
+                SettingsRepository::timeFormat.name,
+                SettingsDefaults.timeFormat,
+            )
+        }
+    override val timeFormat: StateFlow<String> get() = _timeFormat
+
+    private val _gridColumns = MutableStateFlow {
+        val gridColumnsClassname =
+            settings.getString(
+                SettingsRepository::gridColumns.name,
+                SettingsDefaults.gridColumns.name,
+            )
+        GridColumns.entries.find { it.name == gridColumnsClassname }
+            ?: SettingsDefaults.gridColumns
+    }
+    override val gridColumns: StateFlow<GridColumns> get() = _gridColumns
+
+    private val _gridImageAspectRatio =
+        MutableStateFlow {
+            settings.getFloat(
+                SettingsRepository::gridImageAspectRatio.name,
+                SettingsDefaults.gridImageAspectRatio,
+            )
+        }
+    override val gridImageAspectRatio: StateFlow<Float> get() = _gridImageAspectRatio
+
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
         settings[SettingsRepository::selectedFilter.name] = filter::class.simpleName
@@ -130,6 +199,41 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setUpdateCheckInterval(updateCheckInterval: Long) {
         _updateCheckInterval.emit(updateCheckInterval)
         settings[SettingsRepository::updateCheckInterval.name] = updateCheckInterval
+    }
+
+    override suspend fun setLogLevel(logLevel: LogLevel) {
+        _logLevel.emit(logLevel)
+        settings[SettingsRepository::logLevel.name] = logLevel.name
+    }
+
+    override suspend fun setShowGifs(showGifs: Boolean) {
+        _showGifs.emit(showGifs)
+        settings[SettingsRepository::showGifs.name] = showGifs
+    }
+
+    override suspend fun setSystemNotificationsEnabled(systemNotificationsEnabled: Boolean) {
+        _systemNotificationsEnabled.emit(systemNotificationsEnabled)
+        settings[SettingsRepository::systemNotificationsEnabled.name] = systemNotificationsEnabled
+    }
+
+    override suspend fun setDateFormat(dateFormat: String) {
+        _dateFormat.emit(dateFormat)
+        settings[SettingsRepository::dateFormat.name] = dateFormat
+    }
+
+    override suspend fun setTimeFormat(timeFormat: String) {
+        _timeFormat.emit(timeFormat)
+        settings[SettingsRepository::timeFormat.name] = timeFormat
+    }
+
+    override suspend fun setGridColumns(gridColumns: GridColumns) {
+        _gridColumns.emit(gridColumns)
+        settings[SettingsRepository::gridColumns.name] = gridColumns.name
+    }
+
+    override suspend fun setGridImageAspectRatio(gridImageAspectRatio: Float) {
+        _gridImageAspectRatio.emit(gridImageAspectRatio)
+        settings[SettingsRepository::gridImageAspectRatio.name] = gridImageAspectRatio
     }
 }
 

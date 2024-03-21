@@ -35,6 +35,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.toolbarActionSfw
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
+import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.state.State
@@ -43,6 +44,7 @@ import org.skynetsoftware.avnlauncher.ui.component.IconAction
 import org.skynetsoftware.avnlauncher.ui.component.Search
 import org.skynetsoftware.avnlauncher.ui.component.TextAction
 import org.skynetsoftware.avnlauncher.ui.screen.main.games.Games
+import java.text.SimpleDateFormat
 
 @Composable
 private fun Toolbar(
@@ -130,13 +132,13 @@ private fun ToolbarInternal(
                 onSfwModeClicked()
             }
             IconAction(Res.drawable.import) {
-                navigator?.navigateToImportGame?.invoke()
+                navigator?.navigateToImportGame()
             }
             IconAction(Res.drawable.refresh) {
                 startUpdateCheck()
             }
             IconAction(Res.drawable.settings) {
-                navigator?.navigateToSettings?.invoke()
+                navigator?.navigateToSettings()
             }
             IconAction(if (maximized) Res.drawable.minimize else Res.drawable.maximize) {
                 maximized = !maximized
@@ -166,6 +168,10 @@ actual fun MainScreenContent(
     totalPlayTime: Long,
     averagePlayTime: Float,
     searchQuery: String,
+    imageAspectRatio: Float,
+    dateFormat: SimpleDateFormat,
+    timeFormat: SimpleDateFormat,
+    gridColumns: GridColumns,
     setSearchQuery: (searchQuery: String) -> Unit,
     startUpdateCheck: () -> Unit,
     toggleSfwMode: () -> Unit,
@@ -207,9 +213,13 @@ actual fun MainScreenContent(
             games = games,
             sfwMode = sfwMode,
             query = searchQuery,
+            imageAspectRatio = imageAspectRatio,
+            dateFormat = dateFormat,
+            timeFormat = timeFormat,
+            gridColumns = gridColumns,
             gamesDisplayMode = currentGamesDisplayMode,
             editGame = {
-                navigator?.navigateToEditGame?.invoke(it)
+                navigator?.navigateToEditGame(it)
             },
             launchGame = launchGame,
             resetUpdateAvailable = resetUpdateAvailable,

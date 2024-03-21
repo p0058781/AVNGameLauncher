@@ -1,8 +1,14 @@
 package org.skynetsoftware.avnlauncher.logger
 
 import org.koin.core.module.Module
+import kotlin.system.exitProcess
 
-expect fun logUncaughtExceptions(logger: Logger)
+fun logUncaughtExceptions(logger: Logger) {
+    Thread.setDefaultUncaughtExceptionHandler { _, e ->
+        logger.error(e)
+        exitProcess(-1)
+    }
+}
 
 expect val loggerKoinModule: Module
 
@@ -18,14 +24,6 @@ interface Logger {
     fun error(message: String)
 
     fun error(throwable: Throwable)
-
-    enum class Level {
-        Verbose,
-        Debug,
-        Info,
-        Warning,
-        Error,
-    }
 }
 
 internal fun Logger.getLoggerName(): String {

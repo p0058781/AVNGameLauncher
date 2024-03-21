@@ -15,7 +15,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsViewModel
 actual val viewModelsKoinModule = module {
     factory { MainScreenViewModel(get(), get(), get(), get(), get(), get(), get()) }
     factory { parameters -> EditGameViewModel(parameters.get(), get(), get(), get()) }
-    factory { SettingsViewModel(get()) }
+    factory { SettingsViewModel(get(), get()) }
     factory { ImportGameViewModel(get(), get(), get()) }
 }
 

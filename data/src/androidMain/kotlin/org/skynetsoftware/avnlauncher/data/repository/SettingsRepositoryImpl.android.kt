@@ -25,6 +25,12 @@ internal actual class SettingsRepositoryImpl(settings: Settings) :
     override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
         // no-op on android
     }
+
+    override val startMinimized = Option.None<StateFlow<Boolean>>()
+
+    override suspend fun setStartMinimized(startMinimized: Boolean) {
+        // no-op on android
+    }
 }
 
 actual object SettingsDefaults : ISettingsDefaults() {

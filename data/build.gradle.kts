@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -34,6 +32,9 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
+
+                implementation(libs.jsoup)
+                implementation(libs.ktor.client.okhttp)
             }
         }
         val commonTest by getting {
@@ -45,21 +46,12 @@ kotlin {
                 implementation(libs.mockk)
             }
         }
-        val jvmMain = create("jvmMain") {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(libs.jsoup)
-                implementation(libs.ktor.client.okhttp)
-            }
-        }
         val androidMain by getting {
-            dependsOn(jvmMain)
             dependencies {
                 implementation(libs.sqdelight.androiddriver)
             }
         }
         val desktopMain by getting {
-            dependsOn(jvmMain)
             dependencies {
                 implementation(libs.sqdelight.sqlitedriver)
             }

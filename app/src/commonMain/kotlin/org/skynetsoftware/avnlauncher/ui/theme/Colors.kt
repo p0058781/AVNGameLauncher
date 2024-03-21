@@ -9,6 +9,7 @@ private val Red = Color(186, 69, 69)
 
 val darkColors = darkColors(
     primary = Red,
+    secondary = Red,
     background = DarkGrey,
     surface = LightGrey,
     onPrimary = Color.White,

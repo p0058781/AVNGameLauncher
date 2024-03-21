@@ -9,6 +9,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.nHours
 import org.skynetsoftware.avnlauncher.app.generated.resources.nMinutes
 import org.skynetsoftware.avnlauncher.app.generated.resources.nSeconds
 import org.skynetsoftware.avnlauncher.app.generated.resources.noValue
+import java.text.SimpleDateFormat
 
 private const val ONE_SECOND_MILLIS = 1000L
 private const val ONE_HOUR_SECONDS = 3600L
@@ -37,9 +38,12 @@ fun formatPlayTime(playTime: Long?): String {
     }
 }
 
-fun Int?.hoursToMilliseconds(): Long? {
-    this ?: return null
+fun Int.hoursToMilliseconds(): Long {
     return this * ONE_HOUR_SECONDS * ONE_SECOND_MILLIS
+}
+
+fun Long.millisecondsToHours(): Int {
+    return (this / (ONE_HOUR_SECONDS * ONE_SECOND_MILLIS)).toInt()
 }
 
 fun calculateAveragePlayTime(
@@ -51,4 +55,14 @@ fun calculateAveragePlayTime(
     val totalPlayTimeDays = totalPlayTime / ONE_DAY_MS
     val dailyPlayTimeHours = (totalPlayTimeDays / totalTimeDays) * HOURS_IN_DAY
     return if (dailyPlayTimeHours > HOURS_IN_DAY) HOURS_IN_DAY else dailyPlayTimeHours
+}
+
+@Suppress("SwallowedException")
+fun String.isValidDateTimeFormat(): Boolean {
+    return try {
+        SimpleDateFormat(this)
+        true
+    } catch (e: IllegalArgumentException) {
+        false
+    }
 }

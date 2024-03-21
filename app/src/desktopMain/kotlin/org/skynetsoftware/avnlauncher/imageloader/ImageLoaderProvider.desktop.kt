@@ -11,28 +11,32 @@ import org.skynetsoftware.avnlauncher.logger.Logger
 
 actual fun imageLoaderKoinModule(coroutineDispatcher: CoroutineDispatcher) =
     module {
-        single<ImageLoader> { imageLoader(get(), get(), coroutineDispatcher) }
+        single<ImageLoaderFactory> { ImageLoaderFactoryImpl(get(), get(), coroutineDispatcher) }
     }
 
-private fun imageLoader(
-    config: Config,
-    avnLauncherLogger: Logger,
-    coroutineDispatcher: CoroutineDispatcher,
-) = ImageLoader(requestCoroutineContext = coroutineDispatcher) {
-    options {
-        playAnimate = false
-    }
-    logger = ImageLoaderLogger(avnLauncherLogger)
-    components {
-        setupDefaultComponents()
-    }
-    interceptor {
-        memoryCacheConfig {
-            maxSizePercent(MEMORY_CACHE_MAX_SIZE_PERCENT)
-        }
-        diskCacheConfig {
-            directory(config.cacheDir.toPath().resolve("images"))
-            maxSizeBytes(DISK_CACHE_MAX_SIZE_BYTES)
+private class ImageLoaderFactoryImpl(
+    private val config: Config,
+    private val avnLauncherLogger: Logger,
+    private val coroutineDispatcher: CoroutineDispatcher,
+) : ImageLoaderFactory {
+    override fun createImageLoader(animateGifs: Boolean): ImageLoader {
+        return ImageLoader(requestCoroutineContext = coroutineDispatcher) {
+            options {
+                playAnimate = animateGifs
+            }
+            logger = ImageLoaderLogger(avnLauncherLogger)
+            components {
+                setupDefaultComponents()
+            }
+            interceptor {
+                memoryCacheConfig {
+                    maxSizePercent(MEMORY_CACHE_MAX_SIZE_PERCENT)
+                }
+                diskCacheConfig {
+                    directory(config.cacheDir.toPath().resolve("images"))
+                    maxSizeBytes(DISK_CACHE_MAX_SIZE_BYTES)
+                }
+            }
         }
     }
 }

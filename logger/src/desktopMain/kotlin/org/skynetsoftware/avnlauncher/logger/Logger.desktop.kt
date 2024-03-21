@@ -1,21 +1,31 @@
 package org.skynetsoftware.avnlauncher.logger
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.Config
+import org.skynetsoftware.avnlauncher.domain.model.LogLevel
+import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.slf4j.LoggerFactory
 import java.io.File
 
 actual val loggerKoinModule = module {
-    single<Logger> { LoggerImpl(Logger.Level.Info, get()) }
+    single<Logger> { LoggerImpl(get(), get()) }
 }
 
 private class LoggerImpl(
-    level: Logger.Level,
     config: Config,
+    settingsRepository: SettingsRepository,
+    coroutineDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) : Logger {
+    private val coroutineScope = CoroutineScope(SupervisorJob() + coroutineDispatcher)
+
     init {
         val builder = ConfigurationBuilderFactory.newConfigurationBuilder()
 
@@ -35,7 +45,7 @@ private class LoggerImpl(
             )
         fileAppender.addComponent(triggeringPolicies)
 
-        val rootLogger = builder.newRootLogger(level.toLog4JLevel())
+        val rootLogger = builder.newRootLogger()
         rootLogger.add(builder.newAppenderRef("stdout"))
         rootLogger.add(builder.newAppenderRef("rolling"))
 
@@ -49,6 +59,12 @@ private class LoggerImpl(
         builder.add(rootLogger)
 
         Configurator.initialize(builder.build())
+
+        coroutineScope.launch {
+            settingsRepository.logLevel.collect {
+                Configurator.setRootLevel(it.toLog4JLevel())
+            }
+        }
     }
 
     override fun verbose(message: String) {
@@ -82,12 +98,12 @@ private class LoggerImpl(
     }
 }
 
-private fun Logger.Level.toLog4JLevel(): Level {
+private fun LogLevel.toLog4JLevel(): Level {
     return when (this) {
-        Logger.Level.Verbose -> Level.TRACE
-        Logger.Level.Debug -> Level.DEBUG
-        Logger.Level.Info -> Level.INFO
-        Logger.Level.Warning -> Level.WARN
-        Logger.Level.Error -> Level.ERROR
+        LogLevel.Verbose -> Level.TRACE
+        LogLevel.Debug -> Level.DEBUG
+        LogLevel.Info -> Level.INFO
+        LogLevel.Warning -> Level.WARN
+        LogLevel.Error -> Level.ERROR
     }
 }

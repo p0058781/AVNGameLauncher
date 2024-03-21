@@ -7,11 +7,21 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 
 val LocalNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLocalOf { null }
 
-class Navigator(
-    val navigateToSettings: () -> Unit,
-    val navigateToEditGame: (game: Game) -> Unit,
-    val navigateToImportGame: () -> Unit,
-)
+interface Navigator {
+    fun navigateToSettings()
+
+    fun navigateToEditGame(game: Game)
+
+    fun navigateToImportGame()
+
+    fun navigateToImportExport()
+
+    fun navigateToCustomLists()
+
+    fun navigateToCustomStatuses()
+
+    fun navigateToCardValues()
+}
 
 @Composable
 expect fun App()

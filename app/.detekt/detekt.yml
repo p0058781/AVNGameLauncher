@@ -4,6 +4,8 @@ complexity:
     ignoreAnnotated: ['Composable']
   LongMethod:
     ignoreAnnotated: ['Composable']
+  TooManyFunctions:
+    thresholdInClasses: 20
 
 exceptions:
   TooGenericExceptionCaught:

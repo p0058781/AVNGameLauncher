@@ -55,15 +55,13 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.warning
 import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
+import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 import kotlin.random.Random
-
-val releaseDateFormat = SimpleDateFormat("MMM dd, yyyy")
-val playedDateTimeFormat = SimpleDateFormat("MMM dd, yyyy HH:mm")
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -72,6 +70,10 @@ fun Games(
     sfwMode: Boolean,
     query: String?,
     gamesDisplayMode: GamesDisplayMode,
+    imageAspectRatio: Float,
+    dateFormat: SimpleDateFormat,
+    timeFormat: SimpleDateFormat,
+    gridColumns: GridColumns,
     editGame: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
@@ -120,6 +122,10 @@ fun Games(
                 games = games,
                 sfwMode = sfwMode,
                 query = query,
+                imageAspectRatio = imageAspectRatio,
+                dateFormat = dateFormat,
+                timeFormat = timeFormat,
+                gridColumns = gridColumns,
                 editGame = editGame,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
@@ -131,6 +137,8 @@ fun Games(
                 games = games,
                 sfwMode = sfwMode,
                 query = query,
+                dateFormat = dateFormat,
+                timeFormat = timeFormat,
                 editGame = editGame,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
@@ -396,20 +404,18 @@ fun Game.titleWithSfwFilterAndSearchMatchHighlight(
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Game.releaseDateDisplayValue() =
+fun Game.releaseDateDisplayValue(dateFormat: SimpleDateFormat) =
     buildString {
         append(
             if (releaseDate <= 0L) {
                 stringResource(Res.string.noValue)
             } else {
-                releaseDateFormat.format(
-                    releaseDate,
-                )
+                dateFormat.format(releaseDate)
             },
         )
         if (firstReleaseDate > 0L) {
             append(" (")
-            append(releaseDateFormat.format(firstReleaseDate))
+            append(dateFormat.format(firstReleaseDate))
             append(")")
         }
     }
@@ -426,9 +432,12 @@ fun Game.versionDisplayValue() =
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun Game.lastPlayedDisplayValue(): String {
+fun Game.lastPlayedDisplayValue(
+    dateFormat: SimpleDateFormat,
+    timeFormat: SimpleDateFormat,
+): String {
     return if (lastPlayed > 0L) {
-        playedDateTimeFormat.format(lastPlayed)
+        "${dateFormat.format(lastPlayed)} ${timeFormat.format(lastPlayed)}"
     } else {
         stringResource(Res.string.noValue)
     }
