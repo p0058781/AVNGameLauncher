@@ -33,9 +33,23 @@ interface GamesRepository {
     @Suppress("LongParameterList")
     suspend fun updateGame(
         id: Int,
-        title: String,
         executablePaths: Set<String>,
-        customImageUrl: String,
+        checkForUpdates: Boolean,
+        playState: PlayState,
+        hidden: Boolean,
+        notes: String?,
+    )
+
+    @Suppress("LongParameterList")
+    suspend fun updateGame(
+        id: Int,
+        title: String,
+        imageUrl: String,
+        version: String,
+        releaseDate: Long,
+        firstReleaseDate: Long,
+        tags: Set<String>,
+        executablePaths: Set<String>,
         checkForUpdates: Boolean,
         playState: PlayState,
         hidden: Boolean,

@@ -3,7 +3,6 @@ package org.skynetsoftware.avnlauncher.domain.model
 data class Game(
     val title: String,
     val imageUrl: String,
-    val customImageUrl: String?,
     val f95ZoneThreadId: Int,
     val executablePaths: Set<String>,
     val version: String,

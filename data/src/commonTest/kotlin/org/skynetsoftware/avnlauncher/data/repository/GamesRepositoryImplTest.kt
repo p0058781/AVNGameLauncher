@@ -242,8 +242,6 @@ class GamesRepositoryImplTest : KoinTest {
         runTest {
             val expected = createRandomGameEntity()
 
-            var actualTitle: String? = null
-            var customImageUrl: String? = null
             var executablePaths: Set<String>? = null
             var hidden: Boolean? = null
             var playState: PlayState? = null
@@ -252,9 +250,7 @@ class GamesRepositoryImplTest : KoinTest {
             var f95ZoneThreadId: Int? = null
 
             every {
-                gameEntityQueries.updateGame2(
-                    title = capture(gameEntitySlots.title),
-                    customImageUrl = captureNullable(gameEntitySlots.customImageUrl),
+                gameEntityQueries.updateGameF95(
                     executablePaths = capture(gameEntitySlots.executablePaths),
                     hidden = capture(gameEntitySlots.hidden),
                     playState = capture(gameEntitySlots.playState),
@@ -263,8 +259,6 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = capture(gameEntitySlots.f95ZoneThreadId),
                 )
             } answers {
-                actualTitle = gameEntitySlots.title.captured
-                customImageUrl = gameEntitySlots.customImageUrl.captured
                 executablePaths = gameEntitySlots.executablePaths.captured
                 hidden = gameEntitySlots.hidden.captured
                 playState = gameEntitySlots.playState.captured
@@ -276,8 +270,6 @@ class GamesRepositoryImplTest : KoinTest {
             gamesRepository.updateGame(
                 id = expected.f95ZoneThreadId,
                 executablePaths = expected.executablePaths,
-                title = expected.title,
-                customImageUrl = expected.customImageUrl ?: "",
                 checkForUpdates = expected.checkForUpdates,
                 playState = expected.playState,
                 hidden = expected.hidden,
@@ -285,9 +277,7 @@ class GamesRepositoryImplTest : KoinTest {
             )
 
             verify {
-                gameEntityQueries.updateGame2(
-                    title = expected.title,
-                    customImageUrl = expected.customImageUrl,
+                gameEntityQueries.updateGameF95(
                     executablePaths = expected.executablePaths,
                     hidden = expected.hidden,
                     playState = expected.playState,
@@ -300,8 +290,6 @@ class GamesRepositoryImplTest : KoinTest {
 
             confirmVerified(gameEntityQueries)
 
-            assertEquals(expected.title, actualTitle)
-            assertEquals(expected.customImageUrl, customImageUrl)
             assertEquals(expected.executablePaths, executablePaths)
             assertEquals(expected.hidden, hidden)
             assertEquals(expected.playState, playState)
@@ -312,6 +300,103 @@ class GamesRepositoryImplTest : KoinTest {
 
     @Test
     fun `updateGame3 writes correct value`() =
+        runTest {
+            val expected = createRandomGameEntity()
+
+            var title: String? = null
+            var imageUrl: String? = null
+            var version: String? = null
+            var releaseDate: Long? = null
+            var firstReleaseDate: Long? = null
+            var tags: Set<String>? = null
+            var executablePaths: Set<String>? = null
+            var hidden: Boolean? = null
+            var playState: PlayState? = null
+            var checkForUpdates: Boolean? = null
+            var notes: String? = null
+            var f95ZoneThreadId: Int? = null
+
+            every {
+                gameEntityQueries.updateGameNonF95(
+                    title = capture(gameEntitySlots.title),
+                    imageUrl = capture(gameEntitySlots.imageUrl),
+                    version = capture(gameEntitySlots.version),
+                    releaseDate = capture(gameEntitySlots.releaseDate),
+                    firstReleaseDate = capture(gameEntitySlots.firstReleaseDate),
+                    tags = capture(gameEntitySlots.tags),
+                    executablePaths = capture(gameEntitySlots.executablePaths),
+                    hidden = capture(gameEntitySlots.hidden),
+                    playState = capture(gameEntitySlots.playState),
+                    checkForUpdates = capture(gameEntitySlots.checkForUpdates),
+                    notes = captureNullable(gameEntitySlots.notes),
+                    f95ZoneThreadId = capture(gameEntitySlots.f95ZoneThreadId),
+                )
+            } answers {
+                title = gameEntitySlots.title.captured
+                imageUrl = gameEntitySlots.imageUrl.captured
+                version = gameEntitySlots.version.captured
+                releaseDate = gameEntitySlots.releaseDate.captured
+                firstReleaseDate = gameEntitySlots.firstReleaseDate.captured
+                tags = gameEntitySlots.tags.captured
+                executablePaths = gameEntitySlots.executablePaths.captured
+                hidden = gameEntitySlots.hidden.captured
+                playState = gameEntitySlots.playState.captured
+                checkForUpdates = gameEntitySlots.checkForUpdates.captured
+                notes = gameEntitySlots.notes.captured
+                f95ZoneThreadId = gameEntitySlots.f95ZoneThreadId.captured
+            }
+
+            gamesRepository.updateGame(
+                id = expected.f95ZoneThreadId,
+                title = expected.title,
+                imageUrl = expected.imageUrl,
+                version = expected.version,
+                releaseDate = expected.releaseDate,
+                firstReleaseDate = expected.firstReleaseDate,
+                tags = expected.tags,
+                executablePaths = expected.executablePaths,
+                checkForUpdates = expected.checkForUpdates,
+                playState = expected.playState,
+                hidden = expected.hidden,
+                notes = expected.notes,
+            )
+
+            verify {
+                gameEntityQueries.updateGameNonF95(
+                    title = expected.title,
+                    imageUrl = expected.imageUrl,
+                    version = expected.version,
+                    releaseDate = expected.releaseDate,
+                    firstReleaseDate = expected.firstReleaseDate,
+                    tags = expected.tags,
+                    executablePaths = expected.executablePaths,
+                    hidden = expected.hidden,
+                    playState = expected.playState,
+                    checkForUpdates = expected.checkForUpdates,
+                    notes = expected.notes,
+                    f95ZoneThreadId = expected.f95ZoneThreadId,
+                )
+            }
+            verify { gameEntityQueries.all() }
+
+            confirmVerified(gameEntityQueries)
+
+            assertEquals(expected.title, title)
+            assertEquals(expected.imageUrl, imageUrl)
+            assertEquals(expected.releaseDate, releaseDate)
+            assertEquals(expected.firstReleaseDate, firstReleaseDate)
+            assertEquals(expected.version, version)
+            assertEquals(expected.tags, tags)
+            assertEquals(expected.executablePaths, executablePaths)
+            assertEquals(expected.hidden, hidden)
+            assertEquals(expected.playState, playState)
+            assertEquals(expected.checkForUpdates, checkForUpdates)
+            assertEquals(expected.notes, notes)
+            assertEquals(expected.f95ZoneThreadId, f95ZoneThreadId)
+        }
+
+    @Test
+    fun `updateGame4 writes correct value`() =
         runTest {
             val expected = createRandomGameEntity()
 
@@ -402,7 +487,7 @@ class GamesRepositoryImplTest : KoinTest {
         }
 
     @Test
-    fun `updateGame4 writes correct value`() =
+    fun `updateGame5 writes correct value`() =
         runTest {
             val expected = createRandomGameEntity()
 
@@ -474,7 +559,7 @@ class GamesRepositoryImplTest : KoinTest {
             availableVersion = getRandomString(5),
             tags = setOf(getRandomString(4), getRandomString(3)),
             checkForUpdates = (0..1).random() == 1,
-            customImageUrl = getRandomString(33),
+            customImageUrl = null,
             firstPlayed = System.currentTimeMillis(),
             notes = getRandomString(55),
             favorite = (0..1).random() == 1,

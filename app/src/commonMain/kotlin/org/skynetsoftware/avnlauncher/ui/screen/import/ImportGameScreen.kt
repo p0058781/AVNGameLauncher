@@ -33,7 +33,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogBu
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogErrorToast
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogFirstPlayedHint
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogFirstPlayedInvalid
-import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogFirstPlayedPlaceholder
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogGameExists
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogInvalidUrl
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogPlayTimeHint
@@ -44,10 +43,6 @@ import org.skynetsoftware.avnlauncher.data.GameImport
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
-
-const val FIRST_PLAYED_DATE_FORMAT = "dd/MM/yyyy"
-const val FIRST_PLAYED_DIVIDER = '/'
-const val FIRST_PLAYED_DATE_CHAR_COUNT = 8
 
 @OptIn(ExperimentalResourceApi::class)
 @Suppress("LongMethod")
@@ -96,14 +91,13 @@ fun ImportGameScreen(
                         modifier = Modifier.fillMaxWidth(),
                         value = firstPlayed ?: "",
                         onValueChange = {
-                            firstPlayed = it.filter { it.isDigit() }.take(FIRST_PLAYED_DATE_CHAR_COUNT)
+                            firstPlayed = it
+                                .filter { it.isDigit() }
+                                .take(DateVisualTransformation.CHAR_COUNT_WITHOUT_DIVIDER)
                         },
                         label = { Text(stringResource(Res.string.importGameDialogFirstPlayedHint)) },
-                        placeholder = { Text(stringResource(Res.string.importGameDialogFirstPlayedPlaceholder)) },
-                        visualTransformation = DateVisualTransformation(
-                            FIRST_PLAYED_DATE_FORMAT,
-                            FIRST_PLAYED_DIVIDER,
-                        ),
+                        placeholder = { Text(DateVisualTransformation.MASK) },
+                        visualTransformation = DateVisualTransformation,
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Button(
