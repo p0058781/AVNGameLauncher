@@ -159,7 +159,7 @@ class SortOrderTest {
         releaseDate: Long = 0L,
     ): Game {
         return Game(
-            title, "", "", 0, emptySet(), "", playTime, rating, 0f,
+            title, "", 0, emptySet(), "", playTime, rating, 0f,
             updateAvailable, added, lastPlayed, false, releaseDate, 0L,
             PlayState.Playing, null, emptySet(), false, 0L, null, false,
         )

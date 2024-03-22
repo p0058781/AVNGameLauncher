@@ -71,7 +71,7 @@ private class GamesRepositoryImpl(
                     title = game.title,
                     executablePaths = game.executablePaths,
                     imageUrl = game.imageUrl,
-                    customImageUrl = game.customImageUrl,
+                    customImageUrl = null,
                     checkForUpdates = game.checkForUpdates,
                     version = game.version,
                     playTime = game.playTime,
@@ -97,19 +97,47 @@ private class GamesRepositoryImpl(
 
     override suspend fun updateGame(
         id: Int,
-        title: String,
         executablePaths: Set<String>,
-        customImageUrl: String,
         checkForUpdates: Boolean,
         playState: PlayState,
         hidden: Boolean,
         notes: String?,
     ) {
         withContext(coroutineDispatcher) {
-            database.gameEntityQueries.updateGame2(
-                title,
+            database.gameEntityQueries.updateGameF95(
                 executablePaths,
-                customImageUrl,
+                checkForUpdates,
+                playState,
+                hidden,
+                notes,
+                id,
+            )
+        }
+    }
+
+    override suspend fun updateGame(
+        id: Int,
+        title: String,
+        imageUrl: String,
+        version: String,
+        releaseDate: Long,
+        firstReleaseDate: Long,
+        tags: Set<String>,
+        executablePaths: Set<String>,
+        checkForUpdates: Boolean,
+        playState: PlayState,
+        hidden: Boolean,
+        notes: String?,
+    ) {
+        withContext(coroutineDispatcher) {
+            database.gameEntityQueries.updateGameNonF95(
+                title,
+                imageUrl,
+                version,
+                releaseDate,
+                firstReleaseDate,
+                tags,
+                executablePaths,
                 checkForUpdates,
                 playState,
                 hidden,

@@ -52,6 +52,9 @@ private const val MAIN_WINDOW_DEFAULT_HEIGHT_PERCENT = 0.72f
 private const val SETTINGS_WINDOW_WIDTH_PERCENT = 0.4f
 private const val SETTINGS_WINDOW_HEIGHT_PERCENT = 0.5f
 
+private const val EDIT_GAME_WINDOW_WIDTH_PERCENT = 0.4f
+private const val EDIT_GAME_WINDOW_HEIGHT_PERCENT = 0.5f
+
 typealias DraggableArea = @Composable (content: @Composable () -> Unit) -> Unit
 typealias MaximizeWindow = () -> Unit
 typealias FloatingWindow = () -> Unit
@@ -71,7 +74,7 @@ class WindowControl(
 actual fun App() {
     val windowState = rememberWindowState(
         position = WindowPosition.Aligned(Alignment.Center),
-        size = getMainWindowSize(),
+        size = getPercentageWindowSize(MAIN_WINDOW_DEFAULT_WIDTH_PERCENT, MAIN_WINDOW_DEFAULT_HEIGHT_PERCENT),
     )
     var showSettingsScreen by remember { mutableStateOf(false) }
     var showImportGameScreen by remember { mutableStateOf(false) }
@@ -144,7 +147,9 @@ actual fun App() {
             }
             if (showSettingsScreen) {
                 DialogWindow(
-                    state = rememberDialogState(size = getSettingsWindowSize()),
+                    state = rememberDialogState(
+                        size = getPercentageWindowSize(SETTINGS_WINDOW_WIDTH_PERCENT, SETTINGS_WINDOW_HEIGHT_PERCENT),
+                    ),
                     resizable = false,
                     title = stringResource(Res.string.settingsTitle),
                     icon = painterResource(WINDOW_ICON),
@@ -163,6 +168,7 @@ actual fun App() {
                 DialogWindow(
                     title = stringResource(Res.string.importGameDialogTitle),
                     icon = painterResource(WINDOW_ICON),
+                    resizable = false,
                     onCloseRequest = {
                         showImportGameScreen = false
                     },
@@ -178,8 +184,12 @@ actual fun App() {
             }
             showEditGameScreen?.let {
                 DialogWindow(
+                    state = rememberDialogState(
+                        size = getPercentageWindowSize(EDIT_GAME_WINDOW_WIDTH_PERCENT, EDIT_GAME_WINDOW_HEIGHT_PERCENT),
+                    ),
                     title = stringResource(Res.string.editGameDialogTitle, it.title),
                     icon = painterResource(WINDOW_ICON),
+                    resizable = false,
                     onCloseRequest = {
                         showEditGameScreen = null
                     },
@@ -264,16 +274,12 @@ actual fun App() {
     }
 }
 
-private fun getMainWindowSize(): DpSize {
+private fun getPercentageWindowSize(
+    widthPercent: Float,
+    heightPercent: Float,
+): DpSize {
     val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
-    val width: Int = (screenSize.width * MAIN_WINDOW_DEFAULT_WIDTH_PERCENT).toInt()
-    val height: Int = (screenSize.height * MAIN_WINDOW_DEFAULT_HEIGHT_PERCENT).toInt()
-    return DpSize(width.dp, height.dp)
-}
-
-private fun getSettingsWindowSize(): DpSize {
-    val screenSize: Dimension = Toolkit.getDefaultToolkit().screenSize
-    val width: Int = (screenSize.width * SETTINGS_WINDOW_WIDTH_PERCENT).toInt()
-    val height: Int = (screenSize.height * SETTINGS_WINDOW_HEIGHT_PERCENT).toInt()
+    val width: Int = (screenSize.width * widthPercent).toInt()
+    val height: Int = (screenSize.height * heightPercent).toInt()
     return DpSize(width.dp, height.dp)
 }

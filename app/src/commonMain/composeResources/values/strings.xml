@@ -4,23 +4,40 @@
 
     <!--Edit Game Screen-->
     <string name="editGameDialogTitle">Edit '%1$s'</string>
-    <string name="editGameDialogTitleNoGameTitle">Edit Game</string><string name="editGameInputLabelTitle">Title</string>
+    <string name="editGameDialogTitleNoGameTitle">Edit Game</string>
+    <string name="editGameInputLabelTitle">Title</string>
     <string name="editGameInputLabelImageUrl">Image URL</string>
     <string name="editGameInputLabelExecutablePath">Executable Path</string>
     <string name="editGameInputLabelNotes">Personal Notes</string>
+    <string name="editGameInputLabelVersion">Version</string>
+    <string name="editGameInputLabelReleaseDate">Release Date</string>
+    <string name="editGameInputLabelFirstReleaseDate">First Release Date</string>
     <string name="editGameToastGameUpdated">Game Updated</string>
     <string name="editGameButtonSave">Save</string>
     <string name="editGameDialogCheckForUpdates">Check for Updates</string>
     <string name="editGameDialogArchived">Archived</string>
     <string name="editDialogButtonDetectPaths">Detect Game Executables</string>
     <string name="editGameInputLabelExecutablePathAndroid">Game Package Name</string>
+    <string name="editGameInputLabelTags">Tags</string>
+    <string name="editGameScreenSectionTitleGameDetails">Game Details</string>
+    <string name="editGameScreenSectionTitleExecutablePaths">Executable Paths</string>
+    <string name="editGameScreenSectionTitleOptions">Options</string>
+    <string name="editGameScreenItemTitlePlayState">Play State</string>
+    <string name="editGameScreenItemDescriptionPlayState">Playing, Waiting for Update, Completed, etc</string>
+    <string name="editGameScreenItemTitleCheckForUpdates">Check for Updates</string>
+    <string name="editGameScreenItemDescriptionCheckForUpdates">Include game in update checks</string>
+    <string name="editGameScreenItemTitleArchived">Archived</string>
+    <string name="editGameScreenItemDescriptionArchived">Archived games don't show up under any filter except 'Archived Games'</string>
+    <string name="editGameScreenNoExecutablePaths1">No executable paths set\nClick</string>
+    <string name="editGameScreenNoExecutablePaths2">to add, or</string>
+    <string name="editGameScreenNoExecutablePaths3">to search automatically.</string>
+    <string name="editGameInputError">Invalid value</string>
 
     <!--Import Game Screen-->
     <string name="importGameDialogTitle">Import Game</string>
     <string name="importGameDialogThreadIdHint">F95 Game Thread URL or ID</string>
     <string name="importGameDialogPlayTimeHint">Play Time Hours (Optional)</string>
     <string name="importGameDialogFirstPlayedHint">First Played (Optional)</string>
-    <string name="importGameDialogFirstPlayedPlaceholder">dd/MM/yyyy</string>
     <string name="importGameDialogSuccessToast">Game Imported: '%1$s'</string>
     <string name="importGameDialogErrorToast">Error Importing Game: '%1$s'</string>
     <string name="importGameDialogButtonImport">Import</string>

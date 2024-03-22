@@ -70,11 +70,24 @@ SET title = ?,
     favorite = ?
 WHERE f95ZoneThreadId = ?;
 
-updateGame2:
+updateGameF95:
+UPDATE GameEntity
+SET executablePaths = ?,
+    checkForUpdates = ?,
+    playState = ?,
+    hidden = ?,
+    notes = ?
+WHERE f95ZoneThreadId = ?;
+
+updateGameNonF95:
 UPDATE GameEntity
 SET title = ?,
+    imageUrl = ?,
+    version = ?,
+    releaseDate = ?,
+    firstReleaseDate = ?,
+    tags = ?,
     executablePaths = ?,
-    customImageUrl = ?,
     checkForUpdates = ?,
     playState = ?,
     hidden = ?,

@@ -9,6 +9,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.nHours
 import org.skynetsoftware.avnlauncher.app.generated.resources.nMinutes
 import org.skynetsoftware.avnlauncher.app.generated.resources.nSeconds
 import org.skynetsoftware.avnlauncher.app.generated.resources.noValue
+import java.text.ParseException
 import java.text.SimpleDateFormat
 
 private const val ONE_SECOND_MILLIS = 1000L
@@ -58,11 +59,21 @@ fun calculateAveragePlayTime(
 }
 
 @Suppress("SwallowedException")
-fun String.isValidDateTimeFormat(): Boolean {
+fun String.isValidDateTimePattern(): Boolean {
     return try {
         SimpleDateFormat(this)
         true
     } catch (e: IllegalArgumentException) {
+        false
+    }
+}
+
+@Suppress("SwallowedException")
+fun String.isValidDateTimeFormat(dateFormat: SimpleDateFormat): Boolean {
+    return try {
+        dateFormat.parse(this)
+        true
+    } catch (e: ParseException) {
         false
     }
 }

@@ -5,7 +5,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DateVisualTransformationTest {
-    private val transformation = DateVisualTransformation("dd/MM/yyyy", '/')
+    private val transformation = DateVisualTransformation
 
     @Test
     fun `filter full input`() {

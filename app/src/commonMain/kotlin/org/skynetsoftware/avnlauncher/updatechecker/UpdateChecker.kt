@@ -214,7 +214,6 @@ private fun Game.mergeWith(f95Game: Game) =
     Game(
         title = f95Game.title,
         imageUrl = f95Game.imageUrl,
-        customImageUrl = customImageUrl,
         f95ZoneThreadId = f95Game.f95ZoneThreadId,
         executablePaths = executablePaths,
         version = version,

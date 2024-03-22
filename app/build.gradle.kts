@@ -38,6 +38,9 @@ kotlin {
                 implementation(libs.mvvm.flow.compose)
 
                 implementation(libs.image.loader)
+
+                implementation(libs.dokar3.chiptextfield)
+
             }
         }
         val commonTest by getting {

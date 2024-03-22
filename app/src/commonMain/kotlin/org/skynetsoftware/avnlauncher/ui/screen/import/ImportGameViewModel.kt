@@ -8,9 +8,9 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.EventCenter
+import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
 import org.skynetsoftware.avnlauncher.utils.hoursToMilliseconds
-import java.text.SimpleDateFormat
 
 class ImportGameViewModel(
     private val gameImport: GameImport,
@@ -37,9 +37,7 @@ class ImportGameViewModel(
                 }
 
                 val firstPlayed: Long? = firstPlayed.value?.let { firstPlayed ->
-                    val dateFormat = SimpleDateFormat(
-                        FIRST_PLAYED_DATE_FORMAT.replace(FIRST_PLAYED_DIVIDER.toString(), ""),
-                    )
+                    val dateFormat = DateVisualTransformation.getUnmaskedDateFormat()
                     try {
                         dateFormat.parse(firstPlayed)!!.time
                     } catch (e: Exception) {
