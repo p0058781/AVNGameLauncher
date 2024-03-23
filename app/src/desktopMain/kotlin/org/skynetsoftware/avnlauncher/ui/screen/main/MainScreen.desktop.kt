@@ -25,9 +25,9 @@ import org.skynetsoftware.avnlauncher.LocalNavigator
 import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.close
+import org.skynetsoftware.avnlauncher.app.generated.resources.fullscreen
+import org.skynetsoftware.avnlauncher.app.generated.resources.fullscreen_exit
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
-import org.skynetsoftware.avnlauncher.app.generated.resources.maximize
-import org.skynetsoftware.avnlauncher.app.generated.resources.minimize
 import org.skynetsoftware.avnlauncher.app.generated.resources.refresh
 import org.skynetsoftware.avnlauncher.app.generated.resources.settings
 import org.skynetsoftware.avnlauncher.app.generated.resources.toolbarActionNsfw
@@ -140,7 +140,7 @@ private fun ToolbarInternal(
             IconAction(Res.drawable.settings) {
                 navigator?.navigateToSettings()
             }
-            IconAction(if (maximized) Res.drawable.minimize else Res.drawable.maximize) {
+            IconAction(if (maximized) Res.drawable.fullscreen_exit else Res.drawable.fullscreen) {
                 maximized = !maximized
                 if (maximized) {
                     windowControl?.maximizeWindow?.invoke()
