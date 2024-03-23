@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
@@ -30,7 +29,7 @@ fun IconAction(
         Image(
             painter = painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(20.dp).clickable {
+            modifier = Modifier.clickable {
                 action()
             },
             colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary),
@@ -70,7 +69,7 @@ fun DropdownItemAction(
             Image(
                 painter = painterResource(icon),
                 contentDescription = null,
-                modifier = Modifier.size(20.dp).clickable {
+                modifier = Modifier.clickable {
                     action()
                 },
                 colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary),

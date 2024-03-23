@@ -43,14 +43,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.edit
-import org.skynetsoftware.avnlauncher.app.generated.resources.heart
-import org.skynetsoftware.avnlauncher.app.generated.resources.heart_filled
+import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_filled
+import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_outlined
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
 import org.skynetsoftware.avnlauncher.app.generated.resources.link
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart1
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart2
 import org.skynetsoftware.avnlauncher.app.generated.resources.noValue
-import org.skynetsoftware.avnlauncher.app.generated.resources.update
+import org.skynetsoftware.avnlauncher.app.generated.resources.refresh
 import org.skynetsoftware.avnlauncher.app.generated.resources.warning
 import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -174,7 +174,7 @@ fun AddToFavoritesIcon(
     updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     Image(
-        painter = painterResource(if (game.favorite) Res.drawable.heart_filled else Res.drawable.heart),
+        painter = painterResource(if (game.favorite) Res.drawable.favorite_filled else Res.drawable.favorite_outlined),
         contentDescription = null,
         modifier = modifier.height(30.dp).padding(5.dp)
             .clickable {
@@ -215,7 +215,7 @@ fun UpdateAvailableIcon(
 ) {
     if (game.updateAvailable) {
         Image(
-            painter = painterResource(Res.drawable.update),
+            painter = painterResource(Res.drawable.refresh),
             contentDescription = null,
             modifier = modifier.size(30.dp).padding(5.dp).clickable {
                 game.availableVersion?.let {

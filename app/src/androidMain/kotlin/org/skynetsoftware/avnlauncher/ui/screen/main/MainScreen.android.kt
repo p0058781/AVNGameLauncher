@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.skynetsoftware.avnlauncher.LocalNavigator
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
-import org.skynetsoftware.avnlauncher.app.generated.resources.dots
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
+import org.skynetsoftware.avnlauncher.app.generated.resources.more_vert
 import org.skynetsoftware.avnlauncher.app.generated.resources.refresh
 import org.skynetsoftware.avnlauncher.app.generated.resources.search
 import org.skynetsoftware.avnlauncher.app.generated.resources.settings
-import org.skynetsoftware.avnlauncher.app.generated.resources.switch_off
-import org.skynetsoftware.avnlauncher.app.generated.resources.switch_on
+import org.skynetsoftware.avnlauncher.app.generated.resources.toggle_off
+import org.skynetsoftware.avnlauncher.app.generated.resources.toggle_on
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
@@ -81,7 +81,7 @@ private fun Toolbar(
             var showDropdownMenu by remember { mutableStateOf(false) }
             val navigator = LocalNavigator.current
 
-            IconAction(Res.drawable.dots) {
+            IconAction(Res.drawable.more_vert) {
                 showDropdownMenu = true
             }
             DropdownMenu(
@@ -99,7 +99,7 @@ private fun Toolbar(
                 }
                 DropdownItemAction(
                     text = "SFW Mode",
-                    icon = if (sfwMode) Res.drawable.switch_on else Res.drawable.switch_off,
+                    icon = if (sfwMode) Res.drawable.toggle_on else Res.drawable.toggle_off,
                 ) {
                     onSfwModeClicked()
                     showDropdownMenu = false
