@@ -17,10 +17,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -44,13 +40,10 @@ actual fun GamePicker(
             it.activityInfo.name == "org.renpy.android.PythonSDLActivity"
         }
 
-    var visible by remember { mutableStateOf(show) }
-
-    if (visible) {
+    if (show) {
         Dialog(
             title = stringResource(Res.string.gamePickerPickGame),
             onDismiss = {
-                visible = false
                 onGamePicked(null)
             },
         ) {
