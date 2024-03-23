@@ -1,10 +1,10 @@
 package org.skynetsoftware.avnlauncher.ui.screen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,17 +27,17 @@ fun PickExecutableDialog(
         onDismiss = onCloseRequest,
     ) {
         Surface(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier.verticalScroll(rememberScrollState()),
         ) {
-            LazyColumn(
+            Column(
                 modifier = Modifier,
             ) {
-                items(executablePaths.toList()) {
+                executablePaths.forEach {
                     Text(
                         modifier = Modifier.padding(10.dp).clickable {
                             onExecutablePicked(it)
                         },
-                        text = it,
+                        text = "...${it.takeLast(50)}",
                     )
                 }
             }
