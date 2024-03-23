@@ -19,6 +19,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.back
 import org.skynetsoftware.avnlauncher.app.generated.resources.cardValuesScreenTitle
+import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameDialogTitleNoGameTitle
@@ -29,6 +30,7 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.ui.screen.cardvalues.CardValuesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesScreen
+import org.skynetsoftware.avnlauncher.ui.screen.editgame.CreateCustomGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportScreen
@@ -38,6 +40,7 @@ import org.skynetsoftware.avnlauncher.ui.theme.darkColors
 
 private const val MAIN_SCREEN_ROUTE = "mainScreen"
 private const val SETTINGS_SCREEN_ROUTE = "settingsScreen"
+private const val CREATE_CUSTOM_GAME_SCREEN_ROUTE = "createCustomGameScreen"
 private const val IMPORT_GAME_SCREEN_ROUTE = "importGameScreen"
 private const val EDIT_GAME_SCREEN_ROUTE = "editGameScreen"
 private const val EDIT_GAME_SCREEN_PARAM_ID = "id"
@@ -88,6 +91,16 @@ actual fun App() {
                             EditGameScreen(it) {
                                 navController.popBackStack()
                             }
+                        }
+                    }
+                }
+                composable(CREATE_CUSTOM_GAME_SCREEN_ROUTE) {
+                    WithToolbar(
+                        title = stringResource(Res.string.createCustomGameTitle),
+                        navController = navController,
+                    ) {
+                        CreateCustomGameScreen {
+                            navController.popBackStack()
                         }
                     }
                 }
@@ -167,6 +180,10 @@ private class AndroidNavigator(private val navController: NavController) : Navig
 
     override fun navigateToEditGame(game: Game) {
         navController.navigate("$EDIT_GAME_SCREEN_ROUTE/${game.f95ZoneThreadId}")
+    }
+
+    override fun navigateToCreateCustomGame() {
+        navController.navigate(CREATE_CUSTOM_GAME_SCREEN_ROUTE)
     }
 
     override fun navigateToImportGame() {

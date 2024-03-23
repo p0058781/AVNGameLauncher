@@ -222,7 +222,7 @@ private fun GameItem(
                 )
                 F95LinkIcon(
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    f95ZoneThreadId = game.f95ZoneThreadId,
+                    game = game,
                 )
                 UpdateAvailableIcon(
                     modifier = Modifier.align(Alignment.CenterVertically),

@@ -12,6 +12,8 @@ interface Navigator {
 
     fun navigateToEditGame(game: Game)
 
+    fun navigateToCreateCustomGame()
+
     fun navigateToImportGame()
 
     fun navigateToImportExport()

@@ -32,6 +32,8 @@
     <string name="editGameScreenNoExecutablePaths2">to add, or</string>
     <string name="editGameScreenNoExecutablePaths3">to search automatically.</string>
     <string name="editGameInputError">Invalid value</string>
+    <string name="createCustomGameTitle">Create Custom Game</string>
+    <string name="editGameToastGameCreated">Game Created</string>
 
     <!--Import Game Screen-->
     <string name="importGameDialogTitle">Import Game</string>
@@ -45,6 +47,7 @@
     <string name="importGameDialogInvalidUrl">URL is not valid</string>
     <string name="importGameDialogFirstPlayedInvalid">First Played is not valid</string>
     <string name="importGameDialogPlayTimeInvalid">Play Time is not valid</string>
+    <string name="importGameScreenButtonAddCustomGame">Add Custom Game</string>
 
     <!--Settings Screen-->
     <string name="settingsTitle">Settings</string>

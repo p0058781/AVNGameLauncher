@@ -56,8 +56,11 @@ import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
+import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
+import org.skynetsoftware.avnlauncher.ui.theme.UpdateAvailable
+import org.skynetsoftware.avnlauncher.ui.theme.Warning
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
@@ -188,17 +191,17 @@ fun AddToFavoritesIcon(
 @Composable
 fun F95LinkIcon(
     modifier: Modifier = Modifier,
-    f95ZoneThreadId: Int,
+    game: Game,
     externalLinkUtils: ExternalLinkUtils = koinInject(),
 ) {
-    if (f95ZoneThreadId > 0) {
+    if (game.isF95Game()) {
         Image(
             painter = painterResource(Res.drawable.link),
             contentDescription = null,
             modifier = modifier.height(30.dp).padding(5.dp)
                 .clickable {
                     externalLinkUtils.openInBrowser(
-                        URI.create(f95ZoneThreadId.createF95ThreadUrl()),
+                        URI.create(game.f95ZoneThreadId.createF95ThreadUrl()),
                     )
                 },
             colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
@@ -216,6 +219,7 @@ fun UpdateAvailableIcon(
     if (game.updateAvailable) {
         Image(
             painter = painterResource(Res.drawable.refresh),
+            colorFilter = ColorFilter.tint(UpdateAvailable),
             contentDescription = null,
             modifier = modifier.size(30.dp).padding(5.dp).clickable {
                 game.availableVersion?.let {
@@ -235,6 +239,7 @@ fun ExecutablePathMissingIcon(
     if (game.executablePaths.isEmpty()) {
         Image(
             painter = painterResource(Res.drawable.warning),
+            colorFilter = ColorFilter.tint(Warning),
             contentDescription = null,
             modifier = modifier.size(30.dp).padding(5.dp),
         )
@@ -257,14 +262,16 @@ fun Rating(
                 updateRating(if (game.rating == rating) 0 else rating, game)
             },
         )
-        Spacer(
-            modifier = Modifier.width(10.dp),
-        )
-        Text(
-            text = "(${game.f95Rating})",
-            modifier = Modifier.align(Alignment.CenterVertically),
-            style = MaterialTheme.typography.body2,
-        )
+        if (game.isF95Game()) {
+            Spacer(
+                modifier = Modifier.width(10.dp),
+            )
+            Text(
+                text = "(${game.f95Rating})",
+                modifier = Modifier.align(Alignment.CenterVertically),
+                style = MaterialTheme.typography.body2,
+            )
+        }
     }
 }
 

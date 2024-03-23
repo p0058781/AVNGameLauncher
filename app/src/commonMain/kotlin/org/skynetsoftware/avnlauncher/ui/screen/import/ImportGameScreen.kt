@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.ui.screen.import
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,24 +10,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
+import org.skynetsoftware.avnlauncher.LocalNavigator
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
+import org.skynetsoftware.avnlauncher.app.generated.resources.import
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogButtonImport
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogErrorToast
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogFirstPlayedHint
@@ -39,6 +38,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogPl
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogPlayTimeInvalid
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogSuccessToast
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogThreadIdHint
+import org.skynetsoftware.avnlauncher.app.generated.resources.importGameScreenButtonAddCustomGame
 import org.skynetsoftware.avnlauncher.data.GameImport
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
@@ -63,21 +63,22 @@ fun ImportGameScreen(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
         when (val stateCopy = state) {
-            ImportGameViewModel.State.Idle -> {
+            ImportGameViewModel.State.Idle,
+            ImportGameViewModel.State.Importing,
+            -> {
                 Column(
                     modifier = Modifier.padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    TextField(
+                    OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = threadId ?: "",
+                        value = threadId.orEmpty(),
                         onValueChange = {
                             threadId = it
                         },
                         label = { Text(stringResource(Res.string.importGameDialogThreadIdHint)) },
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    TextField(
+                    OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = playTime ?: "",
                         onValueChange = {
@@ -87,7 +88,7 @@ fun ImportGameScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
                     Spacer(modifier = Modifier.height(10.dp))
-                    TextField(
+                    OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = firstPlayed ?: "",
                         onValueChange = {
@@ -100,9 +101,22 @@ fun ImportGameScreen(
                         visualTransformation = DateVisualTransformation,
                     )
                     Spacer(modifier = Modifier.height(10.dp))
+                    val navigator = LocalNavigator.current
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = threadId.isNullOrBlank().not(),
+                        onClick = {
+                            navigator?.navigateToCreateCustomGame()
+                            onCloseRequest()
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.importGameScreenButtonAddCustomGame),
+                        )
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = threadId.isNullOrBlank().not() && state is ImportGameViewModel.State.Idle,
                         onClick = {
                             importGameViewModel.import()
                         },
@@ -122,15 +136,6 @@ fun ImportGameScreen(
                 onCloseRequest()
             }
 
-            ImportGameViewModel.State.Importing -> {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
             is ImportGameViewModel.State.Error -> {
                 val message = when (stateCopy.error) {
                     is GameImport.GameExistsException -> stringResource(Res.string.importGameDialogGameExists)
@@ -138,9 +143,11 @@ fun ImportGameScreen(
                     is ImportGameViewModel.ValidationFirstPlayedInvalidException -> stringResource(
                         Res.string.importGameDialogFirstPlayedInvalid,
                     )
+
                     is ImportGameViewModel.ValidationPlayTimeInvalidException -> stringResource(
                         Res.string.importGameDialogPlayTimeInvalid,
                     )
+
                     else -> stateCopy.error.message.orEmpty()
                 }
                 importGameViewModel.showToast(

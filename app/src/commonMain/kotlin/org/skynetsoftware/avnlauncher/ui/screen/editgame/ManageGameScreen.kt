@@ -76,6 +76,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenNoEx
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenSectionTitleExecutablePaths
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenSectionTitleGameDetails
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenSectionTitleOptions
+import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameCreated
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameUpdated
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.logger.Logger
@@ -88,48 +89,72 @@ import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 
-@OptIn(ExperimentalResourceApi::class)
-@Suppress("LongMethod")
 @Composable
 fun EditGameScreen(
     gameId: Int,
-    editGameViewModel: EditGameViewModel = viewModel { parametersOf(gameId) },
     onCloseRequest: () -> Unit,
 ) {
-    var title by remember { editGameViewModel.title }.collectAsMutableState(context = Dispatchers.Main.immediate)
-    var imageUrl by remember { editGameViewModel.imageUrl }
+    ManageGameScreen(
+        mode = ManageGameViewModel.Mode.EditGame(gameId),
+        onCloseRequest = onCloseRequest,
+    )
+}
+
+@Composable
+fun CreateCustomGameScreen(onCloseRequest: () -> Unit) {
+    ManageGameScreen(
+        mode = ManageGameViewModel.Mode.CreateCustomGame,
+        onCloseRequest = onCloseRequest,
+    )
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Suppress("LongMethod")
+@Composable
+private fun ManageGameScreen(
+    mode: ManageGameViewModel.Mode,
+    manageGameViewModel: ManageGameViewModel = viewModel { parametersOf(mode) },
+    onCloseRequest: () -> Unit,
+) {
+    var title by remember { manageGameViewModel.title }.collectAsMutableState(context = Dispatchers.Main.immediate)
+    var imageUrl by remember { manageGameViewModel.imageUrl }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
-    var notes by remember { editGameViewModel.notes }
+    var notes by remember { manageGameViewModel.notes }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
-    var version by remember { editGameViewModel.version }
+    var version by remember { manageGameViewModel.version }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
-    var releaseDate by remember { editGameViewModel.releaseDate }
+    var releaseDate by remember { manageGameViewModel.releaseDate }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
-    var firstReleaseDate by remember { editGameViewModel.firstReleaseDate }
+    var firstReleaseDate by remember { manageGameViewModel.firstReleaseDate }
         .collectAsMutableState(context = Dispatchers.Main.immediate)
-    val executablePaths by remember { editGameViewModel.executablePaths }.collectAsState()
-    val findingExecutablePathsInProgress by remember { editGameViewModel.findingExecutablePathsInProgress }
+    val executablePaths by remember { manageGameViewModel.executablePaths }.collectAsState()
+    val findingExecutablePathsInProgress by remember { manageGameViewModel.findingExecutablePathsInProgress }
         .collectAsState()
-    var checkForUpdates by remember { editGameViewModel.checkForUpdates }.collectAsMutableState()
-    var currentPlayState by remember { editGameViewModel.currentPlayState }.collectAsMutableState()
-    var hidden by remember { editGameViewModel.hidden }.collectAsMutableState()
-    val tags by remember { editGameViewModel.tags }.collectAsState()
-    val isF95Game by remember { editGameViewModel.isF95Game }.collectAsState()
-    val saveInProgress by remember { editGameViewModel.saveInProgress }.collectAsState()
-    val titleError by remember { editGameViewModel.titleError }.collectAsState()
-    val releaseDateError by remember { editGameViewModel.releaseDateError }.collectAsState()
-    val firstReleaseDateError by remember { editGameViewModel.firstReleaseDateError }.collectAsState()
+    var checkForUpdates by remember { manageGameViewModel.checkForUpdates }.collectAsMutableState()
+    var currentPlayState by remember { manageGameViewModel.currentPlayState }.collectAsMutableState()
+    var hidden by remember { manageGameViewModel.hidden }.collectAsMutableState()
+    val tags by remember { manageGameViewModel.tags }.collectAsState()
+    val isF95Game by remember { manageGameViewModel.isF95Game }.collectAsState()
+    val saveInProgress by remember { manageGameViewModel.saveInProgress }.collectAsState()
+    val titleError by remember { manageGameViewModel.titleError }.collectAsState()
+    val releaseDateError by remember { manageGameViewModel.releaseDateError }.collectAsState()
+    val firstReleaseDateError by remember { manageGameViewModel.firstReleaseDateError }.collectAsState()
 
     LaunchedEffect(null) {
-        editGameViewModel.gameNotFound.collect {
+        manageGameViewModel.gameNotFound.collect {
             onCloseRequest()
         }
     }
 
     LaunchedEffect(null) {
-        editGameViewModel.onGameSaved.collect {
+        manageGameViewModel.onGameSaved.collect {
             onCloseRequest()
-            editGameViewModel.showToast(Res.string.editGameToastGameUpdated)
+            when (mode) {
+                ManageGameViewModel.Mode.CreateCustomGame ->
+                    manageGameViewModel.showToast(Res.string.editGameToastGameCreated)
+                is ManageGameViewModel.Mode.EditGame ->
+                    manageGameViewModel.showToast(Res.string.editGameToastGameUpdated)
+            }
         }
     }
 
@@ -228,7 +253,7 @@ fun EditGameScreen(
 
                     LaunchedEffect(state) {
                         snapshotFlow { state.chips.map { it.text } }
-                            .collect { editGameViewModel.setTags(it) }
+                            .collect { manageGameViewModel.setTags(it) }
                     }
                     OutlinedChipTextField(
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp).fillMaxWidth(),
@@ -255,10 +280,10 @@ fun EditGameScreen(
                 ExecutablePaths(
                     executablePaths = executablePaths,
                     findingExecutablePathsInProgress = findingExecutablePathsInProgress,
-                    addExecutablePath = editGameViewModel::addExecutablePath,
-                    deleteExecutablePath = editGameViewModel::deleteExecutablePath,
-                    setExecutablePath = editGameViewModel::setExecutablePath,
-                    findExecutables = editGameViewModel::findExecutablePaths,
+                    addExecutablePath = manageGameViewModel::addExecutablePath,
+                    deleteExecutablePath = manageGameViewModel::deleteExecutablePath,
+                    setExecutablePath = manageGameViewModel::setExecutablePath,
+                    findExecutables = manageGameViewModel::findExecutablePaths,
                 )
             }
             Spacer(
@@ -281,16 +306,18 @@ fun EditGameScreen(
                     },
                 )
                 Divider()
-                Item(
-                    title = stringResource(Res.string.editGameScreenItemTitleCheckForUpdates),
-                    subtitle = stringResource(Res.string.editGameScreenItemDescriptionCheckForUpdates),
-                    endContent = {
-                        Toggle(checkForUpdates) {
-                            checkForUpdates = it
-                        }
-                    },
-                )
-                Divider()
+                if (isF95Game) {
+                    Item(
+                        title = stringResource(Res.string.editGameScreenItemTitleCheckForUpdates),
+                        subtitle = stringResource(Res.string.editGameScreenItemDescriptionCheckForUpdates),
+                        endContent = {
+                            Toggle(checkForUpdates) {
+                                checkForUpdates = it
+                            }
+                        },
+                    )
+                    Divider()
+                }
                 Item(
                     title = stringResource(Res.string.editGameScreenItemTitleArchived),
                     subtitle = stringResource(Res.string.editGameScreenItemDescriptionArchived),
@@ -308,7 +335,7 @@ fun EditGameScreen(
                 enabled = !saveInProgress,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    editGameViewModel.save()
+                    manageGameViewModel.save()
                 },
                 shape = MaterialTheme.shapes.medium,
             ) {
