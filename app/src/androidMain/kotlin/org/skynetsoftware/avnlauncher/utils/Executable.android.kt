@@ -5,7 +5,6 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.logger.Logger
-import java.io.File
 
 actual val executableFinderKoinModule = module {
     single<ExecutableFinder> { ExecutableFinderAndroid(androidApplication(), get()) }

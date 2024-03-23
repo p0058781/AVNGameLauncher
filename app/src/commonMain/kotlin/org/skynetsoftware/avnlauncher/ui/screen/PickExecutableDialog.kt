@@ -15,6 +15,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.pickeExecutablePathDialogTitle
 
+private const val EXECUTABLE_PATH_MAX_LENGTH = 50
+
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PickExecutableDialog(
@@ -37,7 +39,7 @@ fun PickExecutableDialog(
                         modifier = Modifier.padding(10.dp).clickable {
                             onExecutablePicked(it)
                         },
-                        text = "...${it.takeLast(50)}",
+                        text = "...${it.takeLast(EXECUTABLE_PATH_MAX_LENGTH)}",
                     )
                 }
             }
