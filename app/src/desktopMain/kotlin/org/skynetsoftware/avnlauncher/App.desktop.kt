@@ -25,6 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
 import org.skynetsoftware.avnlauncher.app.generated.resources.cardValuesScreenTitle
+import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameDialogTitle
@@ -35,6 +36,7 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.ui.screen.cardvalues.CardValuesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesScreen
+import org.skynetsoftware.avnlauncher.ui.screen.editgame.CreateCustomGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportScreen
@@ -54,6 +56,9 @@ private const val SETTINGS_WINDOW_HEIGHT_PERCENT = 0.5f
 
 private const val EDIT_GAME_WINDOW_WIDTH_PERCENT = 0.4f
 private const val EDIT_GAME_WINDOW_HEIGHT_PERCENT = 0.5f
+
+private val IMPORT_WINDOW_WIDTH = 500.dp
+private val IMPORT_WINDOW_HEIGHT = 350.dp
 
 typealias DraggableArea = @Composable (content: @Composable () -> Unit) -> Unit
 typealias MaximizeWindow = () -> Unit
@@ -83,6 +88,7 @@ actual fun App() {
     var showCustomListsScreen by remember { mutableStateOf(false) }
     var showCustomStatusesScreen by remember { mutableStateOf(false) }
     var showCardValuesScreen by remember { mutableStateOf(false) }
+    var showCreateCustomGameScreen by remember { mutableStateOf(false) }
 
     val exitApplication = LocalExitApplication.current
 
@@ -94,6 +100,10 @@ actual fun App() {
 
             override fun navigateToEditGame(game: Game) {
                 showEditGameScreen = game
+            }
+
+            override fun navigateToCreateCustomGame() {
+                showCreateCustomGameScreen = true
             }
 
             override fun navigateToImportGame() {
@@ -166,6 +176,9 @@ actual fun App() {
             }
             if (showImportGameScreen) {
                 DialogWindow(
+                    state = rememberDialogState(
+                        size = DpSize(width = IMPORT_WINDOW_WIDTH, height = IMPORT_WINDOW_HEIGHT),
+                    ),
                     title = stringResource(Res.string.importGameDialogTitle),
                     icon = painterResource(WINDOW_ICON),
                     resizable = false,
@@ -201,6 +214,29 @@ actual fun App() {
                             gameId = it.f95ZoneThreadId,
                             onCloseRequest = {
                                 showEditGameScreen = null
+                            },
+                        )
+                    }
+                }
+            }
+            if (showCreateCustomGameScreen) {
+                DialogWindow(
+                    state = rememberDialogState(
+                        size = getPercentageWindowSize(EDIT_GAME_WINDOW_WIDTH_PERCENT, EDIT_GAME_WINDOW_HEIGHT_PERCENT),
+                    ),
+                    title = stringResource(Res.string.createCustomGameTitle),
+                    icon = painterResource(WINDOW_ICON),
+                    resizable = false,
+                    onCloseRequest = {
+                        showCreateCustomGameScreen = false
+                    },
+                ) {
+                    MaterialTheme(
+                        colors = darkColors,
+                    ) {
+                        CreateCustomGameScreen(
+                            onCloseRequest = {
+                                showCreateCustomGameScreen = false
                             },
                         )
                     }
