@@ -26,6 +26,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionCustomLists
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionCustomStatuses
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionDateFormat
+import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionDisableUpdateChecksForArchivedGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridCardValues
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridColumns
@@ -46,6 +47,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemHintUp
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleCustomLists
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleCustomStatuses
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleDateFormat
+import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleDisableUpdateChecksForArchivedGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleF95Thread
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGameCardValues
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGamesDir
@@ -101,6 +103,9 @@ fun SettingsScreen(
     val dateFormat by remember { settingsViewModel.dateFormat }.collectAsState()
     val timeFormat by remember { settingsViewModel.timeFormat }.collectAsState()
     val systemNotificationsEnabled by remember { settingsViewModel.systemNotificationsEnabled }.collectAsState()
+    val archivedGamesDisableUpdateChecks by remember {
+        settingsViewModel.archivedGamesDisableUpdateChecks
+    }.collectAsState()
     val gridColumns by remember { settingsViewModel.gridColumns }.collectAsState()
     val updateCheckInterval by remember { settingsViewModel.updateCheckInterval }.collectAsState()
     val gridImageAspectRatio by remember { settingsViewModel.gridImageAspectRatio }.collectAsState()
@@ -226,6 +231,16 @@ fun SettingsScreen(
                     endContent = {
                         Toggle(systemNotificationsEnabled) {
                             settingsViewModel.setSystemNotificationsEnabled(it)
+                        }
+                    },
+                )
+                Divider()
+                Item(
+                    title = stringResource(Res.string.settingsItemTitleDisableUpdateChecksForArchivedGames),
+                    subtitle = stringResource(Res.string.settingsItemDescriptionDisableUpdateChecksForArchivedGames),
+                    endContent = {
+                        Toggle(archivedGamesDisableUpdateChecks) {
+                            settingsViewModel.setArchivedGamesDisableUpdateChecks(it)
                         }
                     },
                 )

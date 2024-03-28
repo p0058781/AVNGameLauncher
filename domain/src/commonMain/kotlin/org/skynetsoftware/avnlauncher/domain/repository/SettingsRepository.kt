@@ -28,6 +28,7 @@ abstract class ISettingsDefaults {
 
     @Suppress("MagicNumber")
     open val gridImageAspectRatio: Float = 3.5f
+    open val archivedGamesDisableUpdateChecks: Boolean = false
 }
 
 interface SettingsRepository {
@@ -48,6 +49,7 @@ interface SettingsRepository {
     val timeFormat: StateFlow<String>
     val gridColumns: StateFlow<GridColumns>
     val systemNotificationsEnabled: StateFlow<Boolean>
+    val archivedGamesDisableUpdateChecks: StateFlow<Boolean>
     val gridImageAspectRatio: StateFlow<Float>
 
     suspend fun setSelectedFilter(filter: Filter)
@@ -83,6 +85,8 @@ interface SettingsRepository {
     suspend fun setGridColumns(gridColumns: GridColumns)
 
     suspend fun setSystemNotificationsEnabled(systemNotificationsEnabled: Boolean)
+
+    suspend fun setArchivedGamesDisableUpdateChecks(archivedGamesDisableUpdateChecks: Boolean)
 
     suspend fun setGridImageAspectRatio(gridImageAspectRatio: Float)
 }

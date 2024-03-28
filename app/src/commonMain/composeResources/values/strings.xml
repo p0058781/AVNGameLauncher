@@ -71,6 +71,8 @@
     <string name="settingsItemHintUpdateCheckInterval">Hours</string>
     <string name="settingsItemTitleUpdateNotifications">Update Notifications</string>
     <string name="settingsItemDescriptionUpdateNotifications">Show system notification when there are new game updates.</string>
+    <string name="settingsItemTitleDisableUpdateChecksForArchivedGames">Disable Update Checks for 'Archived' Games</string>
+    <string name="settingsItemDescriptionDisableUpdateChecksForArchivedGames">If enabled 'Archived' games will not be checked for updates.</string>
     <string name="settingsItemTitleCustomLists">Custom Lists</string>
     <string name="settingsItemDescriptionCustomLists">Custom Game Lists</string>
     <string name="settingsItemTitleCustomStatuses">Custom Statuses</string>
