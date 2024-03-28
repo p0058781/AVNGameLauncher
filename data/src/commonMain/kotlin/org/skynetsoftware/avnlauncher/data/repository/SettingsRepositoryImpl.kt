@@ -123,6 +123,15 @@ abstract class SettingsRepositoryShared internal constructor(
         }
     override val systemNotificationsEnabled: StateFlow<Boolean> get() = _systemNotificationsEnabled
 
+    private val _archivedGamesDisableUpdateChecks =
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::archivedGamesDisableUpdateChecks.name,
+                SettingsDefaults.archivedGamesDisableUpdateChecks,
+            )
+        }
+    override val archivedGamesDisableUpdateChecks: StateFlow<Boolean> get() = _archivedGamesDisableUpdateChecks
+
     private val _dateFormat =
         MutableStateFlow {
             settings.getString(
@@ -214,6 +223,11 @@ abstract class SettingsRepositoryShared internal constructor(
     override suspend fun setSystemNotificationsEnabled(systemNotificationsEnabled: Boolean) {
         _systemNotificationsEnabled.emit(systemNotificationsEnabled)
         settings[SettingsRepository::systemNotificationsEnabled.name] = systemNotificationsEnabled
+    }
+
+    override suspend fun setArchivedGamesDisableUpdateChecks(archivedGamesDisableUpdateChecks: Boolean) {
+        _archivedGamesDisableUpdateChecks.emit(archivedGamesDisableUpdateChecks)
+        settings[SettingsRepository::archivedGamesDisableUpdateChecks.name] = archivedGamesDisableUpdateChecks
     }
 
     override suspend fun setDateFormat(dateFormat: String) {

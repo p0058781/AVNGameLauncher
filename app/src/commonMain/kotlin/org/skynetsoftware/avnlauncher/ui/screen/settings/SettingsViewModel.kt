@@ -22,6 +22,7 @@ class SettingsViewModel(
     val timeFormat = settingsRepository.timeFormat
     val gridColumns = settingsRepository.gridColumns
     val systemNotificationsEnabled = settingsRepository.systemNotificationsEnabled
+    val archivedGamesDisableUpdateChecks = settingsRepository.archivedGamesDisableUpdateChecks
     val gridImageAspectRatio = settingsRepository.gridImageAspectRatio
 
     fun setPeriodicUpdateChecks(periodicUpdateChecks: Boolean) =
@@ -77,6 +78,11 @@ class SettingsViewModel(
     fun setSystemNotificationsEnabled(systemNotificationsEnabled: Boolean) =
         viewModelScope.launch {
             settingsRepository.setSystemNotificationsEnabled(systemNotificationsEnabled)
+        }
+
+    fun setArchivedGamesDisableUpdateChecks(archivedGamesDisableUpdateChecks: Boolean) =
+        viewModelScope.launch {
+            settingsRepository.setArchivedGamesDisableUpdateChecks(archivedGamesDisableUpdateChecks)
         }
 
     fun setGridImageAspectRatio(gridImageAspectRatio: Float) =

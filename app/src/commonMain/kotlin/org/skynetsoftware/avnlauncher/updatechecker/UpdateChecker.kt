@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
@@ -111,7 +112,10 @@ private class UpdateCheckerImpl(
         return runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
             val start = Clock.System.now().toEpochMilliseconds()
-            val allGames = gamesRepository.all().filter { it.checkForUpdates }
+            val allGames = gamesRepository.all()
+                .filter { it.checkForUpdates }
+                .filter { it.isF95Game() }
+                .filter { !(settingsRepository.archivedGamesDisableUpdateChecks.value && it.hidden) }
             logger.info("Checking ${allGames.size} games for updates")
             val updateCheckResults = checkForUpdates(allGames)
             logger.info(
