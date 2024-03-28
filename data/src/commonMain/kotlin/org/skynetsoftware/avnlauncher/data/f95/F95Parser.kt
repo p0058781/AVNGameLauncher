@@ -8,12 +8,13 @@ import org.jsoup.nodes.Document
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
 import org.skynetsoftware.avnlauncher.domain.utils.Result
+import org.skynetsoftware.avnlauncher.logger.Logger
 import java.text.SimpleDateFormat
 
 private const val ONE_SECOND_MILLIS = 1000L
 
 internal fun Module.f95ParserKoinModule() {
-    single<F95Parser> { F95ParserJsoup() }
+    single<F95Parser> { F95ParserJsoup(get()) }
 }
 
 internal interface F95Parser {
@@ -23,7 +24,9 @@ internal interface F95Parser {
     ): Result<F95Game>
 }
 
-private class F95ParserJsoup : F95Parser {
+private class F95ParserJsoup(
+    private val logger: Logger,
+) : F95Parser {
     private val titleRegex = Regex("(.+)\\s*\\[(.+)\\]\\s*\\[(.+)\\]")
     private val releaseDateRegex = Regex("<b>Release Date.*:.+?(\\d{4}-\\d{2}-\\d{2})")
     private val ratingRegex = Regex("[+-]?([0-9]*[.])?[0-9]+")
@@ -48,6 +51,7 @@ private class F95ParserJsoup : F95Parser {
             val game = F95Game(gameThreadId, title, imageUrl, version, rating, firstReleaseDate, releaseDate, tags)
             Result.Ok(game)
         } catch (t: Throwable) {
+            logger.error(t)
             Result.Error(t)
         }
     }
@@ -72,12 +76,16 @@ private class F95ParserJsoup : F95Parser {
 
     @Throws(IllegalStateException::class)
     private fun parseRating(document: Document): Float {
-        val ratingRaw =
-            document.select("div.p-title-pageAction:nth-child(1) > span:nth-child(1) > span:nth-child(1)").first()
-                ?.attr("title")
-                ?: error("cant get rating")
-        return ratingRegex.find(ratingRaw)?.groups?.get(0)?.value?.trim()?.toFloatOrNull()
-            ?: error("cant parse rating")
+        val rating =
+            document.select("div.p-title-pageAction:nth-child(1) > span:nth-child(1) > span:nth-child(1)")
+                .first()?.attr("title")?.let {
+                    ratingRegex.find(it)?.groups?.get(0)?.value?.trim()?.toFloatOrNull()
+                }
+        if (rating == null) {
+            logger.warning("can't get rating")
+            return 0f
+        }
+        return rating
     }
 
     @Throws(IllegalStateException::class)
