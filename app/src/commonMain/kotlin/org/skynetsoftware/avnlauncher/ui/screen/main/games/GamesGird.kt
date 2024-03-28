@@ -46,6 +46,7 @@ import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.label
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
+import org.skynetsoftware.avnlauncher.utils.highlightRegions
 import java.text.SimpleDateFormat
 
 @Composable
@@ -188,7 +189,7 @@ private fun GameItem(
                                 onClick = {},
                             ) {
                                 Text(
-                                    text = it,
+                                    text = it.highlightRegions(query),
                                     style = MaterialTheme.typography.overline,
                                 )
                             }

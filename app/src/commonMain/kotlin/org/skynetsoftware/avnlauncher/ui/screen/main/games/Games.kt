@@ -30,11 +30,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -61,9 +59,9 @@ import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.theme.UpdateAvailable
 import org.skynetsoftware.avnlauncher.ui.theme.Warning
+import org.skynetsoftware.avnlauncher.utils.highlightRegions
 import java.net.URI
 import java.text.SimpleDateFormat
-import java.util.regex.Pattern
 import kotlin.random.Random
 
 @OptIn(ExperimentalResourceApi::class)
@@ -381,27 +379,7 @@ fun Game.titleWithSfwFilterAndSearchMatchHighlight(
             append(randomPhrases.random(Random(f95ZoneThreadId)))
         } else {
             if (!query.isNullOrBlank()) {
-                val highlightRanges = Regex(Pattern.quote(query.lowercase()))
-                    .findAll(title.lowercase())
-                    .map { it.range.first to it.range.first + query.length }.toList()
-                if (highlightRanges.isEmpty()) {
-                    append(title)
-                } else {
-                    var start = 0
-                    var highlightRangeIndex = 0
-                    while (start < title.length && highlightRangeIndex < highlightRanges.size) {
-                        val highlightRange = highlightRanges[highlightRangeIndex]
-                        append(title.substring(start, highlightRange.first))
-                        withStyle(SpanStyle(color = Color.Yellow)) {
-                            append(title.substring(highlightRange.first, highlightRange.second))
-                        }
-                        start = highlightRange.second
-                        highlightRangeIndex++
-                    }
-                    if (start < title.length) {
-                        append(title.substring(start, title.length))
-                    }
-                }
+                append(title.highlightRegions(query))
             } else {
                 append(title)
             }
