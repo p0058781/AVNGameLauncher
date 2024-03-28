@@ -22,6 +22,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +44,12 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.edit
 import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_filled
 import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_outlined
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationEditGame
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationExecutablePathMissing
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationF95Link
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationFavorites
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationRating
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationUpdateAvailable
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
 import org.skynetsoftware.avnlauncher.app.generated.resources.link
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart1
@@ -56,9 +63,11 @@ import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
+import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.theme.UpdateAvailable
 import org.skynetsoftware.avnlauncher.ui.theme.Warning
+import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 import org.skynetsoftware.avnlauncher.utils.highlightRegions
 import java.net.URI
 import java.text.SimpleDateFormat
@@ -157,14 +166,19 @@ fun EditIcon(
     modifier: Modifier = Modifier,
     editGame: (game: Game) -> Unit,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
     Image(
         painter = painterResource(Res.drawable.edit),
         contentDescription = null,
         modifier = modifier.size(30.dp).padding(5.dp).clickable {
             editGame(game)
-        },
+        }.hoverable(interactionSource),
         colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
     )
+    if (isHovered) {
+        HoverExplanation(stringResource(Res.string.hoverExplanationEditGame))
+    }
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -174,15 +188,20 @@ fun AddToFavoritesIcon(
     game: Game,
     updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
     Image(
         painter = painterResource(if (game.favorite) Res.drawable.favorite_filled else Res.drawable.favorite_outlined),
         contentDescription = null,
         modifier = modifier.height(30.dp).padding(5.dp)
             .clickable {
                 updateFavorite(!game.favorite, game)
-            },
+            }.hoverable(interactionSource),
         colorFilter = ColorFilter.tint(Color.Red),
     )
+    if (isHovered) {
+        HoverExplanation(stringResource(Res.string.hoverExplanationFavorites))
+    }
 }
 
 @OptIn(ExperimentalResourceApi::class)
@@ -193,6 +212,8 @@ fun F95LinkIcon(
     externalLinkUtils: ExternalLinkUtils = koinInject(),
 ) {
     if (game.isF95Game()) {
+        val interactionSource = remember { MutableInteractionSource() }
+        val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
         Image(
             painter = painterResource(Res.drawable.link),
             contentDescription = null,
@@ -201,9 +222,12 @@ fun F95LinkIcon(
                     externalLinkUtils.openInBrowser(
                         URI.create(game.f95ZoneThreadId.createF95ThreadUrl()),
                     )
-                },
+                }.hoverable(interactionSource),
             colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
         )
+        if (isHovered) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationF95Link))
+        }
     }
 }
 
@@ -215,6 +239,8 @@ fun UpdateAvailableIcon(
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
 ) {
     if (game.updateAvailable) {
+        val interactionSource = remember { MutableInteractionSource() }
+        val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
         Image(
             painter = painterResource(Res.drawable.refresh),
             colorFilter = ColorFilter.tint(UpdateAvailable),
@@ -223,8 +249,11 @@ fun UpdateAvailableIcon(
                 game.availableVersion?.let {
                     resetUpdateAvailable(it, game)
                 }
-            },
+            }.hoverable(interactionSource),
         )
+        if (isHovered) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationUpdateAvailable))
+        }
     }
 }
 
@@ -235,23 +264,31 @@ fun ExecutablePathMissingIcon(
     game: Game,
 ) {
     if (game.executablePaths.isEmpty()) {
+        val interactionSource = remember { MutableInteractionSource() }
+        val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
         Image(
             painter = painterResource(Res.drawable.warning),
             colorFilter = ColorFilter.tint(Warning),
             contentDescription = null,
-            modifier = modifier.size(30.dp).padding(5.dp),
+            modifier = modifier.size(30.dp).padding(5.dp).hoverable(interactionSource),
         )
+        if (isHovered) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationExecutablePathMissing))
+        }
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Rating(
     modifier: Modifier = Modifier,
     game: Game,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
     Row(
-        modifier = modifier,
+        modifier = modifier.hoverable(interactionSource),
     ) {
         RatingBar(
             rating = game.rating,
@@ -269,6 +306,9 @@ fun Rating(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 style = MaterialTheme.typography.body2,
             )
+        }
+        if (isHovered) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationRating))
         }
     }
 }

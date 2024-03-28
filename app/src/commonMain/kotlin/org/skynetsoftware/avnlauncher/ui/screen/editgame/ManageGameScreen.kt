@@ -1,6 +1,8 @@
 package org.skynetsoftware.avnlauncher.ui.screen.editgame
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -78,9 +80,12 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenSect
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenSectionTitleOptions
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameCreated
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameUpdated
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationAddExecutable
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSearchExecutable
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.ui.component.Dropdown
+import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.Item
 import org.skynetsoftware.avnlauncher.ui.component.Section
 import org.skynetsoftware.avnlauncher.ui.component.Toggle
@@ -88,6 +93,7 @@ import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
+import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 
 @Composable
 fun EditGameScreen(
@@ -450,13 +456,18 @@ fun ColumnScope.ExecutablePaths(
         modifier = Modifier.align(Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val interactionSourceAdd = remember { MutableInteractionSource() }
+        val isHoveredAdd by interactionSourceAdd.collectIsHoveredAsStateDelayed()
         Icon(
             modifier = Modifier.padding(10.dp).clickable {
                 showFilePicker = ShowFilePicker.AddPath
-            },
+            }.hoverable(interactionSourceAdd),
             imageVector = Icons.Outlined.Add,
             contentDescription = null,
         )
+        if (isHoveredAdd) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationAddExecutable))
+        }
         Box(
             modifier = Modifier.padding(10.dp),
         ) {
@@ -465,13 +476,18 @@ fun ColumnScope.ExecutablePaths(
                     modifier = Modifier.size(24.dp),
                 )
             } else {
+                val interactionSourceSearch = remember { MutableInteractionSource() }
+                val isHoveredSearch by interactionSourceSearch.collectIsHoveredAsStateDelayed()
                 Icon(
                     modifier = Modifier.clickable {
                         findExecutables()
-                    },
+                    }.hoverable(interactionSourceSearch),
                     imageVector = Icons.Outlined.Search,
                     contentDescription = null,
                 )
+                if (isHoveredSearch) {
+                    HoverExplanation(stringResource(Res.string.hoverExplanationSearchExecutable))
+                }
             }
         }
     }

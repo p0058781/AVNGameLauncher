@@ -3,6 +3,8 @@ package org.skynetsoftware.avnlauncher.ui.screen.main
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,13 +31,17 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.filterLabel
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSortDirection
 import org.skynetsoftware.avnlauncher.app.generated.resources.sortLabel
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
+import org.skynetsoftware.avnlauncher.domain.model.hoverExplanation
 import org.skynetsoftware.avnlauncher.domain.model.iconRes
+import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
+import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -66,13 +72,16 @@ fun SortFilter(
             Spacer(modifier = Modifier.width(5.dp))
             Text("|")
             GamesDisplayMode.entries.forEach {
+                val interactionSource = remember { MutableInteractionSource() }
+                val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
+
                 Spacer(modifier = Modifier.width(5.dp))
                 Image(
                     painter = painterResource(it.iconRes()),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp).clickable {
                         setGamesDisplayMode(it)
-                    },
+                    }.hoverable(interactionSource),
                     colorFilter = ColorFilter.tint(
                         if (it == currentGamesDisplayMode) {
                             MaterialTheme.colors.primary
@@ -81,6 +90,9 @@ fun SortFilter(
                         },
                     ),
                 )
+                if (isHovered) {
+                    HoverExplanation(stringResource(it.hoverExplanation()))
+                }
             }
         }
     }
@@ -95,10 +107,14 @@ fun Sort(
     setSortDirection: (sortDirection: SortDirection) -> Unit,
 ) {
     var showSortOrderDropdown by remember { mutableStateOf(false) }
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
+
     Row(
         modifier = Modifier.clickable {
             showSortOrderDropdown = true
-        },
+        }.hoverable(interactionSource),
     ) {
         Text(stringResource(Res.string.sortLabel))
         Spacer(modifier = Modifier.width(5.dp))
@@ -133,6 +149,9 @@ fun Sort(
                     Text(it.label)
                 }
             }
+        }
+        if (isHovered) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationSortDirection))
         }
     }
 }
