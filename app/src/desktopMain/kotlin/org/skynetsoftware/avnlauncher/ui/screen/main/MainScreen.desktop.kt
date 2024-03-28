@@ -27,6 +27,12 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.close
 import org.skynetsoftware.avnlauncher.app.generated.resources.fullscreen
 import org.skynetsoftware.avnlauncher.app.generated.resources.fullscreen_exit
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationCheckForUpdates
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationExit
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationImport
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationMaximizeFloating
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSettings
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSfw
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
 import org.skynetsoftware.avnlauncher.app.generated.resources.refresh
 import org.skynetsoftware.avnlauncher.app.generated.resources.settings
@@ -128,19 +134,34 @@ private fun ToolbarInternal(
         ) {
             val exitApplication = LocalExitApplication.current
             val navigator = LocalNavigator.current
-            TextAction(stringResource(if (sfwMode) Res.string.toolbarActionSfw else Res.string.toolbarActionNsfw)) {
+            TextAction(
+                text = stringResource(if (sfwMode) Res.string.toolbarActionSfw else Res.string.toolbarActionNsfw),
+                hoverExplanation = stringResource(Res.string.hoverExplanationSfw),
+            ) {
                 onSfwModeClicked()
             }
-            IconAction(Res.drawable.import) {
+            IconAction(
+                icon = Res.drawable.import,
+                hoverExplanation = stringResource(Res.string.hoverExplanationImport),
+            ) {
                 navigator?.navigateToImportGame()
             }
-            IconAction(Res.drawable.refresh) {
+            IconAction(
+                icon = Res.drawable.refresh,
+                hoverExplanation = stringResource(Res.string.hoverExplanationCheckForUpdates),
+            ) {
                 startUpdateCheck()
             }
-            IconAction(Res.drawable.settings) {
+            IconAction(
+                icon = Res.drawable.settings,
+                hoverExplanation = stringResource(Res.string.hoverExplanationSettings),
+            ) {
                 navigator?.navigateToSettings()
             }
-            IconAction(if (maximized) Res.drawable.fullscreen_exit else Res.drawable.fullscreen) {
+            IconAction(
+                icon = if (maximized) Res.drawable.fullscreen_exit else Res.drawable.fullscreen,
+                hoverExplanation = stringResource(Res.string.hoverExplanationMaximizeFloating),
+            ) {
                 maximized = !maximized
                 if (maximized) {
                     windowControl?.maximizeWindow?.invoke()
@@ -148,7 +169,10 @@ private fun ToolbarInternal(
                     windowControl?.floatingWindow?.invoke()
                 }
             }
-            IconAction(Res.drawable.close) {
+            IconAction(
+                icon = Res.drawable.close,
+                hoverExplanation = stringResource(Res.string.hoverExplanationExit),
+            ) {
                 exitApplication?.invoke()
             }
         }

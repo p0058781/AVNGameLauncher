@@ -147,4 +147,23 @@
     <string name="systemNotificationUpdatesChannelDescription">Notifications for new Game Versions</string>
     <string name="noGamesTextPart1">You don't have any games currently\nChange filter or click</string>
     <string name="noGamesTextPart2">in the top bar to import game.</string>
+
+    <!--Hover Explanations-->
+    <string name="hoverExplanationGridDisplayMode">Grid View</string>
+    <string name="hoverExplanationListDisplayMode">List View</string>
+    <string name="hoverExplanationRating">Personal Rating, click to set. F95 rating is in the brackets.</string>
+    <string name="hoverExplanationExecutablePathMissing">Executable path is missing for this game.</string>
+    <string name="hoverExplanationUpdateAvailable">Update available for this game. Click to reset (set current version to available version).</string>
+    <string name="hoverExplanationF95Link">Open F95 Game thread in Browser.</string>
+    <string name="hoverExplanationFavorites">Add or Remove from Favorites.</string>
+    <string name="hoverExplanationEditGame">Edit Game</string>
+    <string name="hoverExplanationAddExecutable">Manually add Game Executable</string>
+    <string name="hoverExplanationSearchExecutable">Automatically search for Game executables</string>
+    <string name="hoverExplanationSortDirection">Tip: Click same item again in the dropdown to reverse order. Order is indicated by the error in the brackets.</string>
+    <string name="hoverExplanationSfw">Replace all images with random SFW images, and replace all titles with random SFW phrase</string>
+    <string name="hoverExplanationImport">Import or Create Game</string>
+    <string name="hoverExplanationCheckForUpdates">Check for Updates</string>
+    <string name="hoverExplanationSettings">Settings</string>
+    <string name="hoverExplanationMaximizeFloating">Toggle between Maximized and Floating Window</string>
+    <string name="hoverExplanationExit">Exit Application if \"Minimize to Tray\" is disabled, close window otherwise.</string>
 </resources>
