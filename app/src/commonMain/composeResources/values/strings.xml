@@ -102,6 +102,24 @@
 
     <!--Import Export Screen-->
     <string name="importExportScreenTitle">Import/Export</string>
+    <string name="importExportSectionTitleImport">Import</string>
+    <string name="importExportSectionTitleExport">Export</string>
+    <string name="importExportItemTitleImportFilePath">Import File Path</string>
+    <string name="importExportItemTitleExportDir">Export Dir</string>
+    <string name="importExportItemDescriptionClickToChange">(click to change)</string>
+    <string name="importExportItemTitleImportGames">Import Games</string>
+    <string name="importExportItemDescriptionImportGames">Existing Games will be skipped. Non-F95 games will be imported unconditionally</string>
+    <string name="importExportItemTitleImportSettings">Import Settings</string>
+    <string name="importExportItemDescriptionImportSettings">If Settings/Preferences should be imported from file</string>
+    <string name="importExportButtonImport">Import</string>
+    <string name="importExportItemTitleExportFileName">Export File Name</string>
+    <string name="importExportItemDescriptionExportFileName">Name of the file</string>
+    <string name="importExportItemHintExportFileName">File name</string>
+    <string name="importExportItemTitleExportGames">Export Games</string>
+    <string name="importExportItemDescriptionExportGames">Exported file will contain all games from database</string>
+    <string name="importExportItemTitleExportSettings">Export Settings</string>
+    <string name="importExportItemDescriptionExportSettings">Exported file will contain Settings/Preferences</string>
+    <string name="importExportButtonExport">Export</string>
 
     <!--Custom Lists Screen-->
     <string name="customListsScreenTitle">Custom Lists</string>
@@ -161,7 +179,7 @@
     <string name="hoverExplanationEditGame">Edit Game</string>
     <string name="hoverExplanationAddExecutable">Manually add Game Executable</string>
     <string name="hoverExplanationSearchExecutable">Automatically search for Game executables</string>
-    <string name="hoverExplanationSortDirection">Tip: Click same item again in the dropdown to reverse order. Order is indicated by the error in the brackets.</string>
+    <string name="hoverExplanationSortDirection">Tip: Click same item again in the dropdown to reverse order. Order is indicated by the arrow in the brackets.</string>
     <string name="hoverExplanationSfw">Replace all images with random SFW images, and replace all titles with random SFW phrase</string>
     <string name="hoverExplanationImport">Import or Create Game</string>
     <string name="hoverExplanationCheckForUpdates">Check for Updates</string>

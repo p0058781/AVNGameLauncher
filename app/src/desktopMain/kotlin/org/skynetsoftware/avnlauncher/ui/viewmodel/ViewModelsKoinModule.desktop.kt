@@ -9,6 +9,7 @@ import org.koin.core.parameter.ParametersDefinition
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.ManageGameViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameViewModel
+import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreenViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsViewModel
 
@@ -17,6 +18,7 @@ actual val viewModelsKoinModule = module {
     factory { parameters -> ManageGameViewModel(parameters.get(), get(), get(), get()) }
     factory { SettingsViewModel(get(), get()) }
     factory { ImportGameViewModel(get(), get(), get()) }
+    factory { ImportExportViewModel() }
 }
 
 @Composable

@@ -41,6 +41,8 @@ kotlin {
 
                 implementation(libs.dokar3.chiptextfield)
 
+                implementation(libs.mpfilepicker)
+
             }
         }
         val commonTest by getting {
@@ -67,7 +69,6 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.cli)
-                implementation(libs.mpfilepicker)
             }
         }
     }

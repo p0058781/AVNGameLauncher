@@ -10,6 +10,7 @@ koin-compose = "1.1.2"
 kotlinx-coroutines-core = "1.7.3"
 kotlinx-datetime = "0.4.1"
 kotlinx-cli = "0.3.6"
+kotlinx-serialization = "1.6.3"
 ktor = "2.3.7"
 mpfilepicker = "2.1.0"
 multiplatform-settings-no-arg = "1.1.0"
@@ -19,7 +20,6 @@ agp = "8.2.1"
 jetbrains-compose = "1.6.0"
 ktlint-plugin = "12.0.3"
 accompanist = "0.28.0"
-moko = "0.23.0"
 kover = "0.7.5"
 detekt = "1.23.3"
 sqldelight = "2.0.1"
@@ -48,6 +48,8 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinx-cli" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }

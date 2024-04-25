@@ -8,6 +8,7 @@ import org.koin.core.parameter.ParametersDefinition
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.ManageGameViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameViewModel
+import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreenViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsViewModel
 
@@ -16,6 +17,7 @@ actual val viewModelsKoinModule = module {
     viewModel<ManageGameViewModel> { ManageGameViewModel(get(), get(), get(), get()) }
     viewModel<SettingsViewModel> { SettingsViewModel(get(), get()) }
     viewModel<ImportGameViewModel> { ImportGameViewModel(get(), get(), get()) }
+    viewModel<ImportExportViewModel> { ImportExportViewModel() }
 }
 
 @Suppress("MaxLineLength") // conflict between ktlint and detekt

@@ -57,6 +57,9 @@ private const val SETTINGS_WINDOW_HEIGHT_PERCENT = 0.5f
 private const val EDIT_GAME_WINDOW_WIDTH_PERCENT = 0.4f
 private const val EDIT_GAME_WINDOW_HEIGHT_PERCENT = 0.5f
 
+private const val IMPORT_EXPORT_WINDOW_WIDTH_PERCENT = 0.4f
+private const val IMPORT_EXPORT_WINDOW_HEIGHT_PERCENT = 0.5f
+
 private val IMPORT_WINDOW_WIDTH = 500.dp
 private val IMPORT_WINDOW_HEIGHT = 350.dp
 
@@ -244,6 +247,7 @@ actual fun App() {
             }
             if (showImportExportScreen) {
                 DialogWindow(
+                    state = rememberDialogState(size = getPercentageWindowSize(IMPORT_EXPORT_WINDOW_WIDTH_PERCENT, IMPORT_EXPORT_WINDOW_HEIGHT_PERCENT)),
                     resizable = false,
                     title = stringResource(Res.string.importExportScreenTitle),
                     icon = painterResource(WINDOW_ICON),
