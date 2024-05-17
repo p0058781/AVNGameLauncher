@@ -6,7 +6,8 @@ import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.gameLauncherAnotherGameRunning
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.domain.model.PlaySession
+import org.skynetsoftware.avnlauncher.domain.repository.PlaySessionRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
 import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.logger.Logger
@@ -20,7 +21,7 @@ actual val gameLauncherKoinModule = module {
 }
 
 private class GameLauncherDesktop(
-    private val repository: GamesRepository,
+    private val playSessionRepository: PlaySessionRepository,
     private val logger: Logger,
     private val eventCenter: EventCenter,
 ) : GameLauncher {
@@ -42,14 +43,14 @@ private class GameLauncherDesktop(
             return
         }
 
-        processStarterThread = ProcessStarterThread(game, executablePath, repository, logger, eventCenter)
+        processStarterThread = ProcessStarterThread(game, executablePath, playSessionRepository, logger, eventCenter)
         processStarterThread?.start()
     }
 
     private class ProcessStarterThread(
         val game: Game,
         private val executablePath: String,
-        private val repository: GamesRepository,
+        private val playSessionRepository: PlaySessionRepository,
         private val logger: Logger,
         private val eventCenter: EventCenter,
     ) : Thread() {
@@ -74,14 +75,20 @@ private class GameLauncherDesktop(
                         process.waitFor()
                     }
                 }
-                val elapsedTime = System.currentTimeMillis() - startTime
-                val totalTime = game.playTime + elapsedTime
+                val endTime = System.currentTimeMillis()
                 runBlocking {
-                    repository.updateGame(game.f95ZoneThreadId, totalTime, System.currentTimeMillis())
+                    playSessionRepository.insertPlaySession(
+                        PlaySession(
+                            gameId = game.f95ZoneThreadId,
+                            startTime = startTime,
+                            endTime = endTime,
+                            version = executablePath,
+                        ),
+                    )
                 }
                 logger.info(
                     "game exited: ${game.title}, " +
-                        "exit code: ${process.exitValue()} elapsedTime: $elapsedTime, totalTime: $totalTime",
+                        "exit code: ${process.exitValue()} elapsedTime: ${endTime - startTime}",
                 )
             } catch (t: Throwable) {
                 logger.error(t)

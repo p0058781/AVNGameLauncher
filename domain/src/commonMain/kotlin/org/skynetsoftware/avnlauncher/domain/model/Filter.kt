@@ -19,7 +19,7 @@ sealed class Filter(val label: String) {
     }
 
     object UnplayedGames : Filter("Unplayed Games") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.playTime < ONE_HOUR_MILLIS }
+        override fun filter(input: List<Game>) = All.filter(input).filter { it.totalPlayTime < ONE_HOUR_MILLIS }
     }
 
     object Playing : Filter("Playing") {

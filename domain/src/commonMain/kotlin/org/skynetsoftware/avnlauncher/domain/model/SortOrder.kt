@@ -24,8 +24,8 @@ sealed class SortOrder(val label: String) {
             sortDirection: SortDirection,
         ): List<Game> {
             return when (sortDirection) {
-                SortDirection.Ascending -> input.sortedBy { it.lastPlayed }
-                SortDirection.Descending -> input.sortedByDescending { it.lastPlayed }
+                SortDirection.Ascending -> input.sortedBy { it.lastPlayedTime }
+                SortDirection.Descending -> input.sortedByDescending { it.lastPlayedTime }
             }
         }
     }
@@ -60,8 +60,8 @@ sealed class SortOrder(val label: String) {
             sortDirection: SortDirection,
         ): List<Game> {
             return when (sortDirection) {
-                SortDirection.Ascending -> input.sortedBy { it.playTime }
-                SortDirection.Descending -> input.sortedByDescending { it.playTime }
+                SortDirection.Ascending -> input.sortedBy { it.totalPlayTime }
+                SortDirection.Descending -> input.sortedByDescending { it.totalPlayTime }
             }
         }
     }

@@ -10,6 +10,7 @@ import org.jetbrains.annotations.VisibleForTesting
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.Database
 import org.skynetsoftware.avnlauncher.data.GameEntity
+import org.skynetsoftware.avnlauncher.data.PlaySessionEntity
 
 @VisibleForTesting
 internal object StringSetAdapter : ColumnAdapter<Set<String>, String> {
@@ -36,6 +37,9 @@ internal fun Module.databaseKoinModule() {
                 tagsAdapter = StringSetAdapter,
                 executablePathsAdapter = StringSetAdapter,
                 playStateAdapter = EnumColumnAdapter(),
+            ),
+            PlaySessionEntityAdapter = PlaySessionEntity.Adapter(
+                gameIdAdapter = IntColumnAdapter,
             ),
         )
     }

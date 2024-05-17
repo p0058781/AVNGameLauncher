@@ -159,9 +159,28 @@ class SortOrderTest {
         releaseDate: Long = 0L,
     ): Game {
         return Game(
-            title, "", 0, emptySet(), "", playTime, rating, 0f,
-            updateAvailable, added, lastPlayed, false, releaseDate, 0L,
-            PlayState.Playing, null, emptySet(), false, 0L, null, false,
+            title = title,
+            imageUrl = "",
+            f95ZoneThreadId = 0,
+            executablePaths = emptySet(),
+            version = "",
+            rating = rating,
+            f95Rating = 0f,
+            updateAvailable = updateAvailable,
+            added = added,
+            hidden = false,
+            releaseDate = releaseDate,
+            firstReleaseDate = 0L,
+            playState = PlayState.Playing,
+            availableVersion = null,
+            tags = emptySet(),
+            checkForUpdates = false,
+            notes = null,
+            favorite = false,
+            playSessions = emptyList(),
+            totalPlayTime = playTime,
+            firstPlayedTime = 0L,
+            lastPlayedTime = lastPlayed,
         )
     }
 }

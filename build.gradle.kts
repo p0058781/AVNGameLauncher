@@ -49,6 +49,8 @@ subprojects {
     tasks.withType<Detekt>().configureEach {
         exclude("**/MR.kt")
         exclude("**/GameEntityQueries.kt")
+        exclude("**/PlaySessionEntityQueries.kt")
+        exclude("**/TotalPlayTime.kt")
         exclude("**/Database.kt")
         exclude("**/DatabaseImpl.kt")
         exclude("**/BuildKonfig.kt")
@@ -76,6 +78,9 @@ subprojects {
                     "org.skynetsoftware.avnlauncher.data.data.DatabaseImpl*",
                     "org.skynetsoftware.avnlauncher.data.GameEntityQueries*",
                     "org.skynetsoftware.avnlauncher.data.GameEntity*",
+                    "org.skynetsoftware.avnlauncher.data.TotalPlayTime",
+                    "org.skynetsoftware.avnlauncher.data.PlaySessionEntityQueries*",
+                    "org.skynetsoftware.avnlauncher.data.PlaySessionEntity*",
                 )
             }
         }

@@ -76,15 +76,23 @@ class MainScreenViewModel(
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     private val firstPlayedTime = repoGames.map { games ->
-        games.minOfOrNull { it.firstPlayed } ?: 0L
+        games.filter { it.firstPlayedTime > 0 }.minOfOrNull { it.firstPlayedTime } ?: 0L
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0L)
+
+    private val lastPlayedTime = repoGames.map { games ->
+        games.maxOfOrNull { it.lastPlayedTime } ?: 0L
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0L)
 
     val totalPlayTime = repoGames.map { games ->
-        games.sumOf { it.playTime }
+        games.sumOf { it.totalPlayTime }
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0L)
 
-    val averagePlayTime: StateFlow<Float> = combine(firstPlayedTime, totalPlayTime) { firstPlayedTime, totalPlayTime ->
-        calculateAveragePlayTime(firstPlayedTime, totalPlayTime)
+    val averagePlayTime: StateFlow<Float> = combine(
+        firstPlayedTime,
+        lastPlayedTime,
+        totalPlayTime,
+    ) { firstPlayedTime, lastPlayedTime, totalPlayTime ->
+        calculateAveragePlayTime(firstPlayedTime, lastPlayedTime, totalPlayTime)
     }.stateIn(viewModelScope, SharingStarted.Lazily, 0f)
 
     val showExecutablePathPicker = MutableStateFlow<Game?>(null)

@@ -182,12 +182,12 @@ class ManageGameViewModel(
                 f95ZoneThreadId = id,
                 executablePaths = executablePath,
                 version = version,
-                playTime = 0L,
+                totalPlayTime = 0L,
                 rating = 0,
                 f95Rating = 0f,
                 updateAvailable = false,
                 added = Clock.System.now().toEpochMilliseconds(),
-                lastPlayed = 0L,
+                lastPlayedTime = 0L,
                 hidden = hidden,
                 releaseDate = dateFormat.parse(releaseDate)!!.time,
                 firstReleaseDate = dateFormat.parse(firstReleaseDate)!!.time,
@@ -195,9 +195,10 @@ class ManageGameViewModel(
                 availableVersion = null,
                 tags = tags.toSet(),
                 checkForUpdates = checkForUpdates,
-                firstPlayed = Clock.System.now().toEpochMilliseconds(),
+                firstPlayedTime = 0L,
                 notes = notes,
                 favorite = false,
+                playSessions = emptyList(),
             )
             gamesRepository.insertGame(game)
         }

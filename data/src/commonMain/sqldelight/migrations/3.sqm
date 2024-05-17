@@ -1,0 +1,8 @@
+CREATE TABLE PlaySessionEntity (
+    id INTEGER PRIMARY KEY,
+    gameId INTEGER AS Int NOT NULL,
+    startTime INTEGER NOT NULL,
+    endTime INTEGER NOT NULL,
+    version TEXT
+);
+

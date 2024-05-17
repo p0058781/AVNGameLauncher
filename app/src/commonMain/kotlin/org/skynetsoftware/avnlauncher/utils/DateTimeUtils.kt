@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.utils
 
 import androidx.compose.runtime.Composable
-import kotlinx.datetime.Clock
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
@@ -49,10 +48,10 @@ fun Long.millisecondsToHours(): Int {
 
 fun calculateAveragePlayTime(
     firstPlayedTime: Long,
+    lastPlayedTime: Long,
     totalPlayTime: Long,
 ): Float {
-    val now = Clock.System.now().toEpochMilliseconds()
-    val totalTimeDays = ((now - firstPlayedTime) / ONE_DAY_MS).let { if (it < 1f) 1f else it }
+    val totalTimeDays = ((lastPlayedTime - firstPlayedTime) / ONE_DAY_MS).let { if (it < 1f) 1f else it }
     val totalPlayTimeDays = totalPlayTime / ONE_DAY_MS
     val dailyPlayTimeHours = (totalPlayTimeDays / totalTimeDays) * HOURS_IN_DAY
     return if (dailyPlayTimeHours > HOURS_IN_DAY) HOURS_IN_DAY else dailyPlayTimeHours
