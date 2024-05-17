@@ -7,9 +7,28 @@ import kotlin.test.assertEquals
 
 class StateHandlerTest {
     private val game = Game(
-        "", "", 0, emptySet(), "", 0L, 0,
-        0f, false, 0L, 0L, false, 0L, 0L,
-        PlayState.Playing, null, emptySet(), false, 0, null, false,
+        title = "",
+        imageUrl = "",
+        f95ZoneThreadId = 0,
+        executablePaths = emptySet(),
+        version = "",
+        rating = 0,
+        f95Rating = 0f,
+        updateAvailable = false,
+        added = 0L,
+        hidden = false,
+        releaseDate = 0L,
+        firstReleaseDate = 0L,
+        playState = PlayState.Playing,
+        availableVersion = null,
+        tags = emptySet(),
+        checkForUpdates = false,
+        notes = null,
+        favorite = false,
+        playSessions = emptyList(),
+        totalPlayTime = 0L,
+        firstPlayedTime = 0L,
+        lastPlayedTime = 0,
     )
 
     @Test

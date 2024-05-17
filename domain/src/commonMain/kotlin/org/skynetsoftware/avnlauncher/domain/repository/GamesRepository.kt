@@ -62,10 +62,4 @@ interface GamesRepository {
         version: String,
         availableVersion: String?,
     )
-
-    suspend fun updateGame(
-        id: Int,
-        playTime: Long,
-        lastPlayed: Long,
-    )
 }

@@ -461,8 +461,8 @@ fun Game.lastPlayedDisplayValue(
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
 ): String {
-    return if (lastPlayed > 0L) {
-        "${dateFormat.format(lastPlayed)} ${timeFormat.format(lastPlayed)}"
+    return if (lastPlayedTime > 0L) {
+        "${dateFormat.format(lastPlayedTime)} ${timeFormat.format(lastPlayedTime)}"
     } else {
         stringResource(Res.string.noValue)
     }

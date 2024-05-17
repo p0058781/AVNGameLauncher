@@ -1,0 +1,15 @@
+import kotlin.Int;
+
+CREATE TABLE PlaySessionEntity (
+    id INTEGER PRIMARY KEY,
+    gameId INTEGER AS Int NOT NULL,
+    startTime INTEGER NOT NULL,
+    endTime INTEGER NOT NULL,
+    version TEXT
+);
+
+totalPlayTime:
+SELECT SUM(endTime-startTime) FROM PlaySessionEntity;
+
+insert:
+INSERT INTO PlaySessionEntity(gameId, startTime, endTime, version) VALUES (?, ?, ?, ?);

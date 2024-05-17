@@ -18,7 +18,10 @@ import org.skynetsoftware.avnlauncher.data.Database
 import org.skynetsoftware.avnlauncher.data.GameEntity
 import org.skynetsoftware.avnlauncher.data.GameEntityQueries
 import org.skynetsoftware.avnlauncher.data.GameEntitySlots
+import org.skynetsoftware.avnlauncher.data.GameWithPlaySessions
+import org.skynetsoftware.avnlauncher.data.GamesWithPlaySessions
 import org.skynetsoftware.avnlauncher.data.mapper.toGame
+import org.skynetsoftware.avnlauncher.data.mapper.toGames
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import kotlin.test.AfterTest
@@ -32,7 +35,7 @@ class GamesRepositoryImplTest : KoinTest {
 
     private val database = mockk<Database>()
     private val gameEntityQueries = mockk<GameEntityQueries>()
-    private val allQuery = mockk<Query<GameEntity>>()
+    private val allQuery = mockk<Query<GamesWithPlaySessions>>()
 
     private lateinit var gameEntitySlots: GameEntitySlots
 
@@ -43,7 +46,7 @@ class GamesRepositoryImplTest : KoinTest {
         gameEntitySlots = GameEntitySlots()
 
         every { database.gameEntityQueries } returns gameEntityQueries
-        every { gameEntityQueries.all() } returns allQuery
+        every { gameEntityQueries.gamesWithPlaySessions() } returns allQuery
 
         startKoin {
             modules(
@@ -63,19 +66,19 @@ class GamesRepositoryImplTest : KoinTest {
     @Test
     fun `all returns correct value`() =
         runTest {
-            val expected = listOf(createRandomGameEntity(), createRandomGameEntity())
+            val expected = listOf(createRandomGamesWithPlaySessions(), createRandomGamesWithPlaySessions())
             setupGameListMock(expected)
             val games = gamesRepository.all()
 
-            assertEquals(expected.map { it.toGame() }, games)
+            assertEquals(expected.toGames(), games)
         }
 
     @Test
     fun `get returns correct value`() =
         runTest {
-            val expected = createRandomGameEntity()
-            setupGetMock(expected.f95ZoneThreadId, expected)
-            val game = gamesRepository.get(expected.f95ZoneThreadId)
+            val expected = listOf(createRandomGameWithPlaySessions())
+            setupGetMock(expected[0].f95ZoneThreadId, expected)
+            val game = gamesRepository.get(expected[0].f95ZoneThreadId)
 
             assertEquals(expected.toGame(), game)
         }
@@ -83,11 +86,11 @@ class GamesRepositoryImplTest : KoinTest {
     @Test
     fun `get returns null if game doesnt exist`() =
         runTest {
-            val expected = null
+            val expected = emptyList<GameWithPlaySessions>()
             setupGetMock(12345676, expected)
             val game = gamesRepository.get(12345676)
 
-            assertEquals(expected, game)
+            assertEquals(expected.toGame(), game)
         }
 
     @Test
@@ -112,7 +115,7 @@ class GamesRepositoryImplTest : KoinTest {
             gamesRepository.updateRating(expectedId, expectedRating)
 
             verify { gameEntityQueries.updateRating(expectedRating, expectedId) }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
@@ -129,14 +132,14 @@ class GamesRepositoryImplTest : KoinTest {
 
             var actualGame: GameEntity? = null
 
-            every { gameEntityQueries.insert(capture(gameSlot)) } answers {
+            every { gameEntityQueries.insertGame(capture(gameSlot)) } answers {
                 actualGame = gameSlot.captured
             }
 
             gamesRepository.insertGame(expectedGame.toGame())
 
-            verify { gameEntityQueries.insert(expectedGame) }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.insertGame(expectedGame) }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
@@ -157,12 +160,10 @@ class GamesRepositoryImplTest : KoinTest {
                     customImageUrl = captureNullable(gameEntitySlots.customImageUrl),
                     executablePaths = capture(gameEntitySlots.executablePaths),
                     version = capture(gameEntitySlots.version),
-                    playTime = capture(gameEntitySlots.playTime),
                     rating = capture(gameEntitySlots.rating),
                     f95Rating = capture(gameEntitySlots.f95Rating),
                     updateAvailable = capture(gameEntitySlots.updateAvailable),
                     added = capture(gameEntitySlots.added),
-                    lastPlayed = capture(gameEntitySlots.lastPlayed),
                     hidden = capture(gameEntitySlots.hidden),
                     releaseDate = capture(gameEntitySlots.releaseDate),
                     firstReleaseDate = capture(gameEntitySlots.firstReleaseDate),
@@ -170,7 +171,6 @@ class GamesRepositoryImplTest : KoinTest {
                     availableVersion = captureNullable(gameEntitySlots.availableVersion),
                     tags = capture(gameEntitySlots.tags),
                     checkForUpdates = capture(gameEntitySlots.checkForUpdates),
-                    firstPlayed = capture(gameEntitySlots.firstPlayed),
                     notes = captureNullable(gameEntitySlots.notes),
                     favorite = capture(gameEntitySlots.favorite),
                     f95ZoneThreadId = capture(gameEntitySlots.f95ZoneThreadId),
@@ -182,12 +182,12 @@ class GamesRepositoryImplTest : KoinTest {
                     customImageUrl = gameEntitySlots.customImageUrl.captured,
                     executablePaths = gameEntitySlots.executablePaths.captured,
                     version = gameEntitySlots.version.captured,
-                    playTime = gameEntitySlots.playTime.captured,
+                    playTime = 0L,
                     rating = gameEntitySlots.rating.captured,
                     f95Rating = gameEntitySlots.f95Rating.captured,
                     updateAvailable = gameEntitySlots.updateAvailable.captured,
                     added = gameEntitySlots.added.captured,
-                    lastPlayed = gameEntitySlots.lastPlayed.captured,
+                    lastPlayed = 0L,
                     hidden = gameEntitySlots.hidden.captured,
                     releaseDate = gameEntitySlots.releaseDate.captured,
                     firstReleaseDate = gameEntitySlots.firstReleaseDate.captured,
@@ -195,7 +195,7 @@ class GamesRepositoryImplTest : KoinTest {
                     availableVersion = gameEntitySlots.availableVersion.captured,
                     tags = gameEntitySlots.tags.captured,
                     checkForUpdates = gameEntitySlots.checkForUpdates.captured,
-                    firstPlayed = gameEntitySlots.firstPlayed.captured,
+                    firstPlayed = 0L,
                     notes = gameEntitySlots.notes.captured,
                     favorite = gameEntitySlots.favorite.captured,
                     f95ZoneThreadId = gameEntitySlots.f95ZoneThreadId.captured,
@@ -211,12 +211,10 @@ class GamesRepositoryImplTest : KoinTest {
                     customImageUrl = expected.customImageUrl,
                     executablePaths = expected.executablePaths,
                     version = expected.version,
-                    playTime = expected.playTime,
                     rating = expected.rating,
                     f95Rating = expected.f95Rating,
                     updateAvailable = expected.updateAvailable,
                     added = expected.added,
-                    lastPlayed = expected.lastPlayed,
                     hidden = expected.hidden,
                     releaseDate = expected.releaseDate,
                     firstReleaseDate = expected.firstReleaseDate,
@@ -224,13 +222,12 @@ class GamesRepositoryImplTest : KoinTest {
                     availableVersion = expected.availableVersion,
                     tags = expected.tags,
                     checkForUpdates = expected.checkForUpdates,
-                    firstPlayed = expected.firstPlayed,
                     notes = expected.notes,
                     favorite = expected.favorite,
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
@@ -286,7 +283,7 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
@@ -377,7 +374,7 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
@@ -434,7 +431,7 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
@@ -479,68 +476,28 @@ class GamesRepositoryImplTest : KoinTest {
                     )
                 }
             }
-            verify { gameEntityQueries.all() }
+            verify { gameEntityQueries.gamesWithPlaySessions() }
 
             confirmVerified(gameEntityQueries)
 
             assertEquals(expected, actual)
         }
 
-    @Test
-    fun `updateGame5 writes correct value`() =
-        runTest {
-            val expected = createRandomGameEntity()
-
-            var playTime: Long? = null
-            var lastPlayed: Long? = null
-
-            every {
-                gameEntityQueries.updatePlayTime(
-                    playTime = capture(gameEntitySlots.playTime),
-                    lastPlayed = capture(gameEntitySlots.lastPlayed),
-                    f95ZoneThreadId = capture(gameEntitySlots.f95ZoneThreadId),
-                )
-            } answers {
-                playTime = gameEntitySlots.playTime.captured
-                lastPlayed = gameEntitySlots.lastPlayed.captured
-            }
-
-            gamesRepository.updateGame(
-                id = expected.f95ZoneThreadId,
-                playTime = expected.playTime,
-                lastPlayed = expected.lastPlayed,
-            )
-
-            verify {
-                gameEntityQueries.updatePlayTime(
-                    playTime = expected.playTime,
-                    lastPlayed = expected.lastPlayed,
-                    f95ZoneThreadId = expected.f95ZoneThreadId,
-                )
-            }
-            verify { gameEntityQueries.all() }
-
-            confirmVerified(gameEntityQueries)
-
-            assertEquals(expected.playTime, playTime)
-            assertEquals(expected.lastPlayed, lastPlayed)
-        }
-
-    private fun setupGameListMock(games: List<GameEntity>) {
+    private fun setupGameListMock(games: List<GamesWithPlaySessions>) {
         every { allQuery.executeAsList() } returns games
     }
 
     private fun setupGetMock(
         id: Int,
-        gameEntity: GameEntity?,
+        gameEntity: List<GameWithPlaySessions>,
     ) {
-        val getQuery = mockk<Query<GameEntity>>()
-        every { gameEntityQueries.get(id) } returns getQuery
-        every { getQuery.executeAsOneOrNull() } returns gameEntity
+        val getQuery = mockk<Query<GameWithPlaySessions>>()
+        every { gameEntityQueries.gameWithPlaySessions(id) } returns getQuery
+        every { getQuery.executeAsList() } returns gameEntity
     }
 
-    private fun createRandomGameEntity(): GameEntity {
-        return GameEntity(
+    private fun createRandomGamesWithPlaySessions(): GamesWithPlaySessions {
+        return GamesWithPlaySessions(
             f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
             title = getRandomString(10),
             imageUrl = getRandomString(10),
@@ -561,6 +518,66 @@ class GamesRepositoryImplTest : KoinTest {
             checkForUpdates = (0..1).random() == 1,
             customImageUrl = null,
             firstPlayed = System.currentTimeMillis(),
+            notes = getRandomString(55),
+            favorite = (0..1).random() == 1,
+            playSessionStartTime = System.currentTimeMillis(),
+            playSessionEndTime = System.currentTimeMillis(),
+            playSessionVersion = getRandomString(5),
+        )
+    }
+
+    private fun createRandomGameWithPlaySessions(): GameWithPlaySessions {
+        return GameWithPlaySessions(
+            f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
+            title = getRandomString(10),
+            imageUrl = getRandomString(10),
+            executablePaths = setOf(getRandomString(3), getRandomString(4)),
+            version = getRandomString(5),
+            playTime = System.currentTimeMillis(),
+            rating = (0..5).random(),
+            f95Rating = (0..5).random().toFloat(),
+            updateAvailable = (0..1).random() == 1,
+            added = System.currentTimeMillis(),
+            lastPlayed = System.currentTimeMillis(),
+            hidden = (0..1).random() == 1,
+            releaseDate = System.currentTimeMillis(),
+            firstReleaseDate = System.currentTimeMillis(),
+            playState = PlayState.entries[(0 until PlayState.entries.size).random()],
+            availableVersion = getRandomString(5),
+            tags = setOf(getRandomString(4), getRandomString(3)),
+            checkForUpdates = (0..1).random() == 1,
+            customImageUrl = null,
+            firstPlayed = System.currentTimeMillis(),
+            notes = getRandomString(55),
+            favorite = (0..1).random() == 1,
+            playSessionStartTime = System.currentTimeMillis(),
+            playSessionEndTime = System.currentTimeMillis(),
+            playSessionVersion = getRandomString(5),
+        )
+    }
+
+    private fun createRandomGameEntity(): GameEntity {
+        return GameEntity(
+            f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
+            title = getRandomString(10),
+            imageUrl = getRandomString(10),
+            executablePaths = setOf(getRandomString(3), getRandomString(4)),
+            version = getRandomString(5),
+            playTime = 0L,
+            rating = (0..5).random(),
+            f95Rating = (0..5).random().toFloat(),
+            updateAvailable = (0..1).random() == 1,
+            added = System.currentTimeMillis(),
+            lastPlayed = 0L,
+            hidden = (0..1).random() == 1,
+            releaseDate = System.currentTimeMillis(),
+            firstReleaseDate = System.currentTimeMillis(),
+            playState = PlayState.entries[(0 until PlayState.entries.size).random()],
+            availableVersion = getRandomString(5),
+            tags = setOf(getRandomString(4), getRandomString(3)),
+            checkForUpdates = (0..1).random() == 1,
+            customImageUrl = null,
+            firstPlayed = 0L,
             notes = getRandomString(55),
             favorite = (0..1).random() == 1,
         )

@@ -30,13 +30,18 @@ CREATE TABLE GameEntity (
     favorite INTEGER AS Boolean NOT NULL
 );
 
-all:
-SELECT * FROM GameEntity;
+gamesWithPlaySessions:
+SELECT GameEntity.*, PlaySessionEntity.startTime AS playSessionStartTime, PlaySessionEntity.endTime AS playSessionEndTime, PlaySessionEntity.version AS playSessionVersion
+FROM GameEntity
+LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId;
 
-get:
-SELECT * FROM GameEntity WHERE f95ZoneThreadId = ?;
+gameWithPlaySessions:
+SELECT GameEntity.*, PlaySessionEntity.startTime AS playSessionStartTime, PlaySessionEntity.endTime AS playSessionEndTime, PlaySessionEntity.version AS playSessionVersion
+FROM GameEntity
+LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId
+WHERE f95ZoneThreadId = ?;
 
-insert:
+insertGame:
 INSERT INTO GameEntity VALUES ?;
 
 updateRating:
@@ -52,12 +57,10 @@ SET title = ?,
     customImageUrl = ?,
     executablePaths = ?,
     version = ?,
-    playTime = ?,
     rating = ?,
     f95Rating = ?,
     updateAvailable = ?,
     added = ?,
-    lastPlayed = ?,
     hidden = ?,
     releaseDate = ?,
     firstReleaseDate = ?,
@@ -65,7 +68,6 @@ SET title = ?,
     availableVersion = ?,
     tags = ?,
     checkForUpdates = ?,
-    firstPlayed = ?,
     notes = ?,
     favorite = ?
 WHERE f95ZoneThreadId = ?;
@@ -99,12 +101,6 @@ UPDATE GameEntity
 SET updateAvailable = ?,
     version = ?,
     availableVersion = ?
-WHERE f95ZoneThreadId = ?;
-
-updatePlayTime:
-UPDATE GameEntity
-SET playTime = ?,
-    lastPlayed = ?
 WHERE f95ZoneThreadId = ?;
 
 updateFavorite:

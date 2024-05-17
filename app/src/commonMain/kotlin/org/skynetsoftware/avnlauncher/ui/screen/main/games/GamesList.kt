@@ -135,7 +135,7 @@ private fun GameItem(
             Row {
                 InfoItem(
                     label = stringResource(Res.string.infoLabelPlayTime),
-                    value = formatPlayTime(game.playTime),
+                    value = formatPlayTime(game.totalPlayTime),
                     labelStyle = MaterialTheme.typography.subtitle2,
                     valueStyle = MaterialTheme.typography.subtitle2,
                     maxLines = 1,
@@ -143,7 +143,7 @@ private fun GameItem(
                 Text(" | ")
                 InfoItem(
                     stringResource(Res.string.infoLabelFirstPlayed),
-                    "${dateFormat.format(game.firstPlayed)} ${timeFormat.format(game.firstPlayed)}",
+                    "${dateFormat.format(game.firstPlayedTime)} ${timeFormat.format(game.firstPlayedTime)}",
                     labelStyle = MaterialTheme.typography.subtitle2,
                     valueStyle = MaterialTheme.typography.subtitle2,
                     maxLines = 1,

@@ -77,9 +77,28 @@ class FilterTest {
         playTime: Long,
     ): Game {
         return Game(
-            "", "", 0, emptySet(), "", playTime, 0, 0f,
-            updateAvailable, 0L, 0L, hidden, 0L, 0L,
-            playState, null, emptySet(), false, 0L, null, false,
+            title = "",
+            imageUrl = "",
+            f95ZoneThreadId = 0,
+            executablePaths = emptySet(),
+            version = "",
+            rating = 0,
+            f95Rating = 0f,
+            updateAvailable = updateAvailable,
+            added = 0L,
+            hidden = hidden,
+            releaseDate = 0L,
+            firstReleaseDate = 0L,
+            playState = playState,
+            availableVersion = null,
+            tags = emptySet(),
+            checkForUpdates = false,
+            notes = null,
+            favorite = false,
+            playSessions = emptyList(),
+            totalPlayTime = playTime,
+            firstPlayedTime = 0L,
+            lastPlayedTime = 0L,
         )
     }
 }

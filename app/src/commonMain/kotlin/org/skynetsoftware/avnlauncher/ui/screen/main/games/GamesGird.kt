@@ -164,10 +164,10 @@ private fun GameItem(
             Column(
                 modifier = Modifier.padding(horizontal = 10.dp).fillMaxWidth(),
             ) {
-                InfoItem(stringResource(Res.string.infoLabelPlayTime), formatPlayTime(game.playTime))
+                InfoItem(stringResource(Res.string.infoLabelPlayTime), formatPlayTime(game.totalPlayTime))
                 InfoItem(
                     stringResource(Res.string.infoLabelFirstPlayed),
-                    "${dateFormat.format(game.firstPlayed)} ${timeFormat.format(game.firstPlayed)}",
+                    "${dateFormat.format(game.firstPlayedTime)} ${timeFormat.format(game.firstPlayedTime)}",
                 )
                 InfoItem(
                     stringResource(Res.string.infoLabelLastPlayed),
