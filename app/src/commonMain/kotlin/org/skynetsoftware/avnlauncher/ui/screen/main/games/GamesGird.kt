@@ -44,6 +44,10 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelVersion
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.label
+import org.skynetsoftware.avnlauncher.ui.ext.lastPlayedDisplayValue
+import org.skynetsoftware.avnlauncher.ui.ext.releaseDateDisplayValue
+import org.skynetsoftware.avnlauncher.ui.ext.titleWithSfwFilterAndSearchMatchHighlight
+import org.skynetsoftware.avnlauncher.ui.ext.versionDisplayValue
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import org.skynetsoftware.avnlauncher.utils.gamesGridCellMinSizeDp
 import org.skynetsoftware.avnlauncher.utils.highlightRegions
@@ -58,7 +62,7 @@ fun GamesGrid(
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
     gridColumns: GridColumns,
-    editGame: (game: Game) -> Unit,
+    gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
@@ -87,7 +91,7 @@ fun GamesGrid(
                 imageAspectRatio = imageAspectRatio,
                 dateFormat = dateFormat,
                 timeFormat = timeFormat,
-                editGame = editGame,
+                gameDetails = gameDetails,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
@@ -107,7 +111,7 @@ private fun GameItem(
     imageAspectRatio: Float,
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
-    editGame: (game: Game) -> Unit,
+    gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
@@ -154,10 +158,10 @@ private fun GameItem(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f),
                 )
-                EditIcon(
+                DetailsIcon(
                     game = game,
                     modifier = Modifier.align(Alignment.CenterVertically),
-                    editGame = editGame,
+                    gameDetails = gameDetails,
                 )
             }
 

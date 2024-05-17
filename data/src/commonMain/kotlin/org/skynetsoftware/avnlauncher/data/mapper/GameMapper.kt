@@ -12,6 +12,8 @@ import org.skynetsoftware.avnlauncher.domain.model.PlayState
 internal fun Game.toGameEntity() =
     GameEntity(
         title = title,
+        description = description,
+        developer = developer,
         imageUrl = imageUrl,
         customImageUrl = null,
         f95ZoneThreadId = f95ZoneThreadId,
@@ -38,6 +40,8 @@ internal fun Game.toGameEntity() =
 internal fun GameEntity.toGame() =
     Game(
         title = this.title,
+        description = this.description,
+        developer = this.developer,
         imageUrl = this.imageUrl,
         f95ZoneThreadId = f95ZoneThreadId,
         executablePaths = this.executablePaths,
@@ -85,6 +89,8 @@ internal fun List<GamesWithPlaySessions>.toGames(): List<Game> {
             }
             Game(
                 title = first.title,
+                description = first.description,
+                developer = first.developer,
                 imageUrl = first.imageUrl,
                 f95ZoneThreadId = f95ZoneThreadId,
                 executablePaths = first.executablePaths,
@@ -132,6 +138,8 @@ internal fun List<GameWithPlaySessions>.toGame(): Game? {
     }
     return Game(
         title = first.title,
+        description = first.description,
+        developer = first.developer,
         imageUrl = first.imageUrl,
         f95ZoneThreadId = first.f95ZoneThreadId,
         executablePaths = first.executablePaths,
@@ -159,6 +167,8 @@ internal fun List<GameWithPlaySessions>.toGame(): Game? {
 internal fun F95Game.toGame() =
     Game(
         title = title,
+        description = description,
+        developer = developer,
         imageUrl = imageUrl,
         f95ZoneThreadId = threadId,
         executablePaths = emptySet(),

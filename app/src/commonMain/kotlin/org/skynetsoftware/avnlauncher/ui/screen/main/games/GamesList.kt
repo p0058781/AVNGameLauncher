@@ -32,6 +32,10 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelPlayTime
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelReleaseDate
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelVersion
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.ui.ext.lastPlayedDisplayValue
+import org.skynetsoftware.avnlauncher.ui.ext.releaseDateDisplayValue
+import org.skynetsoftware.avnlauncher.ui.ext.titleWithSfwFilterAndSearchMatchHighlight
+import org.skynetsoftware.avnlauncher.ui.ext.versionDisplayValue
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 import java.text.SimpleDateFormat
 
@@ -42,7 +46,7 @@ fun GamesList(
     query: String?,
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
-    editGame: (game: Game) -> Unit,
+    gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
@@ -57,9 +61,9 @@ fun GamesList(
                 game = game,
                 sfwMode = sfwMode,
                 query = query,
-                editGame = editGame,
                 dateFormat = dateFormat,
                 timeFormat = timeFormat,
+                gameDetails = gameDetails,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
@@ -77,7 +81,7 @@ private fun GameItem(
     query: String?,
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
-    editGame: (game: Game) -> Unit,
+    gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
@@ -126,10 +130,10 @@ private fun GameItem(
                     modifier = Modifier,
                     game = game,
                 )
-                EditIcon(
+                DetailsIcon(
                     game = game,
                     modifier = Modifier,
-                    editGame = editGame,
+                    gameDetails = gameDetails,
                 )
             }
             Row {

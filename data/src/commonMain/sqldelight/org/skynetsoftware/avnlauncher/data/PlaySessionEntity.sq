@@ -11,5 +11,8 @@ CREATE TABLE PlaySessionEntity (
 totalPlayTime:
 SELECT SUM(endTime-startTime) FROM PlaySessionEntity;
 
+all:
+SELECT * FROM PlaySessionEntity WHERE gameId = ?;
+
 insert:
 INSERT INTO PlaySessionEntity(gameId, startTime, endTime, version) VALUES (?, ?, ?, ?);

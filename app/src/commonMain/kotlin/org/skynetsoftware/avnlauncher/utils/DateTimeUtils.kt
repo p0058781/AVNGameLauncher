@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package org.skynetsoftware.avnlauncher.utils
 
 import androidx.compose.runtime.Composable
@@ -10,12 +12,14 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.nSeconds
 import org.skynetsoftware.avnlauncher.app.generated.resources.noValue
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
 
 private const val ONE_SECOND_MILLIS = 1000L
 private const val ONE_HOUR_SECONDS = 3600L
 private const val ONE_MINUTE_SECONDS = 60L
 private const val HOURS_IN_DAY = 24f
 private const val ONE_DAY_MS = 86400000f
+private const val WEEK_NUMBER_OF_DAYS = 7L
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -75,4 +79,48 @@ fun String.isValidDateTimeFormat(dateFormat: SimpleDateFormat): Boolean {
     } catch (e: ParseException) {
         false
     }
+}
+
+/**
+ * @return true if range start..end is between range rangeStart..rangeEnd
+ * */
+fun isTimeRangeBetween(
+    rangeStart: Long,
+    rangeEnd: Long,
+    start: Long,
+    end: Long,
+): Boolean {
+    return start in rangeStart..rangeEnd && end in rangeStart..rangeEnd
+}
+
+/**
+ * @return true if time is between range rangeStart..rangeEnd
+ * */
+fun isTimeBetween(
+    rangeStart: Long,
+    rangeEnd: Long,
+    time: Long,
+): Boolean {
+    return time in rangeStart..rangeEnd
+}
+
+fun ZonedDateTime.toMidnightMillis(): Long {
+    return withHour(0)
+        .withMinute(0)
+        .withSecond(0)
+        .withNano(0)
+        .toInstant()
+        .toEpochMilli()
+}
+
+fun ZonedDateTime.minus7DaysMillis(): Long {
+    return minusDays(WEEK_NUMBER_OF_DAYS).toInstant().toEpochMilli()
+}
+
+fun ZonedDateTime.minus1MonthMillis(): Long {
+    return minusMonths(1).toInstant().toEpochMilli()
+}
+
+fun ZonedDateTime.minus1YearMillis(): Long {
+    return minusYears(1).toInstant().toEpochMilli()
 }

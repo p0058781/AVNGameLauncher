@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.TextStyle
@@ -48,13 +47,14 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationEd
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationExecutablePathMissing
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationF95Link
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationFavorites
+import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationGameDetails
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationRating
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationUpdateAvailable
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
+import org.skynetsoftware.avnlauncher.app.generated.resources.info
 import org.skynetsoftware.avnlauncher.app.generated.resources.link
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart1
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart2
-import org.skynetsoftware.avnlauncher.app.generated.resources.noValue
 import org.skynetsoftware.avnlauncher.app.generated.resources.refresh
 import org.skynetsoftware.avnlauncher.app.generated.resources.warning
 import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
@@ -68,10 +68,8 @@ import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.theme.UpdateAvailable
 import org.skynetsoftware.avnlauncher.ui.theme.Warning
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
-import org.skynetsoftware.avnlauncher.utils.highlightRegions
 import java.net.URI
 import java.text.SimpleDateFormat
-import kotlin.random.Random
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -84,7 +82,7 @@ fun Games(
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
     gridColumns: GridColumns,
-    editGame: (game: Game) -> Unit,
+    gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
@@ -136,7 +134,7 @@ fun Games(
                 dateFormat = dateFormat,
                 timeFormat = timeFormat,
                 gridColumns = gridColumns,
-                editGame = editGame,
+                gameDetails = gameDetails,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
@@ -149,7 +147,7 @@ fun Games(
                 query = query,
                 dateFormat = dateFormat,
                 timeFormat = timeFormat,
-                editGame = editGame,
+                gameDetails = gameDetails,
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
@@ -178,6 +176,28 @@ fun EditIcon(
     )
     if (isHovered) {
         HoverExplanation(stringResource(Res.string.hoverExplanationEditGame))
+    }
+}
+
+@OptIn(ExperimentalResourceApi::class)
+@Composable
+fun DetailsIcon(
+    game: Game,
+    modifier: Modifier = Modifier,
+    gameDetails: (game: Game) -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
+    Image(
+        painter = painterResource(Res.drawable.info),
+        contentDescription = null,
+        modifier = modifier.size(30.dp).padding(5.dp).clickable {
+            gameDetails(game)
+        }.hoverable(interactionSource),
+        colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
+    )
+    if (isHovered) {
+        HoverExplanation(stringResource(Res.string.hoverExplanationGameDetails))
     }
 }
 
@@ -353,117 +373,5 @@ fun InfoItem(
             style = valueStyle,
             maxLines = maxLines,
         )
-    }
-}
-
-private val randomPhrases = arrayOf(
-    "Wouldn't Harm a Fly",
-    "A Cold Fish",
-    "Wake Up Call",
-    "Between a Rock and a Hard Place",
-    "Playing Possum",
-    "Top Drawer",
-    "Flea Market",
-    "Don't Look a Gift Horse In The Mouth",
-    "A Day Late and a Dollar Short",
-    "Cup Of Joe",
-    "Break The Ice",
-    "Eat My Hat",
-    "Barking Up The Wrong Tree",
-    "Short End of the Stick",
-    "Under the Weather",
-    "Right Out of the Gate",
-    "Drawing a Blank",
-    "Scot-free",
-    "Jaws of Death",
-    "Fish Out Of Water",
-    "Quick On the Draw",
-    "Go For Broke",
-    "Hands Down",
-    "No-Brainer",
-    "Playing For Keeps",
-    "Elephant in the Room",
-    "Cry Over Spilt Milk",
-    "What Goes Up Must Come Down",
-    "Mouth-watering",
-    "A Hair’s Breadth",
-    "Money Doesn't Grow On Trees",
-    "Up In Arms",
-    "All Greek To Me",
-    "A Dime a Dozen",
-    "Burst Your Bubble",
-    "Tough It Out",
-    "Ugly Duckling",
-    "Under Your Nose",
-    "Not the Sharpest Tool in the Shed",
-    "A Busy Bee",
-    "Quick and Dirty",
-    "Foaming At The Mouth",
-    "Fit as a Fiddle",
-    "Tug of War",
-    "Plot Thickens - The",
-    "Everything But The Kitchen Sink",
-    "A Dog in the Manger",
-    "Keep Your Eyes Peeled",
-    "Man of Few Words",
-    "A Cut Below",
-    "A Lemon",
-)
-
-fun Game.titleWithSfwFilterAndSearchMatchHighlight(
-    sfwMode: Boolean,
-    query: String?,
-): AnnotatedString {
-    return buildAnnotatedString {
-        if (sfwMode) {
-            append(randomPhrases.random(Random(f95ZoneThreadId)))
-        } else {
-            if (!query.isNullOrBlank()) {
-                append(title.highlightRegions(query))
-            } else {
-                append(title)
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun Game.releaseDateDisplayValue(dateFormat: SimpleDateFormat) =
-    buildString {
-        append(
-            if (releaseDate <= 0L) {
-                stringResource(Res.string.noValue)
-            } else {
-                dateFormat.format(releaseDate)
-            },
-        )
-        if (firstReleaseDate > 0L) {
-            append(" (")
-            append(dateFormat.format(firstReleaseDate))
-            append(")")
-        }
-    }
-
-fun Game.versionDisplayValue() =
-    buildString {
-        append(version)
-        if (availableVersion.isNullOrBlank().not()) {
-            append(" (")
-            append(availableVersion)
-            append(")")
-        }
-    }
-
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun Game.lastPlayedDisplayValue(
-    dateFormat: SimpleDateFormat,
-    timeFormat: SimpleDateFormat,
-): String {
-    return if (lastPlayedTime > 0L) {
-        "${dateFormat.format(lastPlayedTime)} ${timeFormat.format(lastPlayedTime)}"
-    } else {
-        stringResource(Res.string.noValue)
     }
 }

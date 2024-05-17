@@ -6,8 +6,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -20,8 +18,10 @@ import org.skynetsoftware.avnlauncher.data.GameEntityQueries
 import org.skynetsoftware.avnlauncher.data.GameEntitySlots
 import org.skynetsoftware.avnlauncher.data.GameWithPlaySessions
 import org.skynetsoftware.avnlauncher.data.GamesWithPlaySessions
+import org.skynetsoftware.avnlauncher.data.TestCoroutineDispatchers
 import org.skynetsoftware.avnlauncher.data.mapper.toGame
 import org.skynetsoftware.avnlauncher.data.mapper.toGames
+import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import kotlin.test.AfterTest
@@ -30,9 +30,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class GamesRepositoryImplTest : KoinTest {
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     private val database = mockk<Database>()
     private val gameEntityQueries = mockk<GameEntityQueries>()
     private val allQuery = mockk<Query<GamesWithPlaySessions>>()
@@ -52,7 +49,8 @@ class GamesRepositoryImplTest : KoinTest {
             modules(
                 module {
                     single { database }
-                    gamesRepositoryKoinModule(testDispatcher)
+                    gamesRepositoryKoinModule()
+                    single<CoroutineDispatchers> { TestCoroutineDispatchers() }
                 },
             )
         }
@@ -156,6 +154,8 @@ class GamesRepositoryImplTest : KoinTest {
             every {
                 gameEntityQueries.updateGame(
                     title = capture(gameEntitySlots.title),
+                    description = capture(gameEntitySlots.description),
+                    developer = capture(gameEntitySlots.developer),
                     imageUrl = capture(gameEntitySlots.imageUrl),
                     customImageUrl = captureNullable(gameEntitySlots.customImageUrl),
                     executablePaths = capture(gameEntitySlots.executablePaths),
@@ -178,6 +178,8 @@ class GamesRepositoryImplTest : KoinTest {
             } answers {
                 actual = GameEntity(
                     title = gameEntitySlots.title.captured,
+                    description = gameEntitySlots.description.captured,
+                    developer = gameEntitySlots.developer.captured,
                     imageUrl = gameEntitySlots.imageUrl.captured,
                     customImageUrl = gameEntitySlots.customImageUrl.captured,
                     executablePaths = gameEntitySlots.executablePaths.captured,
@@ -207,6 +209,8 @@ class GamesRepositoryImplTest : KoinTest {
             verify {
                 gameEntityQueries.updateGame(
                     title = expected.title,
+                    description = expected.description,
+                    developer = expected.developer,
                     imageUrl = expected.imageUrl,
                     customImageUrl = expected.customImageUrl,
                     executablePaths = expected.executablePaths,
@@ -301,6 +305,8 @@ class GamesRepositoryImplTest : KoinTest {
             val expected = createRandomGameEntity()
 
             var title: String? = null
+            var description: String? = null
+            var developer: String? = null
             var imageUrl: String? = null
             var version: String? = null
             var releaseDate: Long? = null
@@ -316,6 +322,8 @@ class GamesRepositoryImplTest : KoinTest {
             every {
                 gameEntityQueries.updateGameNonF95(
                     title = capture(gameEntitySlots.title),
+                    description = capture(gameEntitySlots.description),
+                    developer = capture(gameEntitySlots.developer),
                     imageUrl = capture(gameEntitySlots.imageUrl),
                     version = capture(gameEntitySlots.version),
                     releaseDate = capture(gameEntitySlots.releaseDate),
@@ -330,6 +338,8 @@ class GamesRepositoryImplTest : KoinTest {
                 )
             } answers {
                 title = gameEntitySlots.title.captured
+                description = gameEntitySlots.description.captured
+                developer = gameEntitySlots.developer.captured
                 imageUrl = gameEntitySlots.imageUrl.captured
                 version = gameEntitySlots.version.captured
                 releaseDate = gameEntitySlots.releaseDate.captured
@@ -346,6 +356,8 @@ class GamesRepositoryImplTest : KoinTest {
             gamesRepository.updateGame(
                 id = expected.f95ZoneThreadId,
                 title = expected.title,
+                description = expected.description,
+                developer = expected.developer,
                 imageUrl = expected.imageUrl,
                 version = expected.version,
                 releaseDate = expected.releaseDate,
@@ -361,6 +373,8 @@ class GamesRepositoryImplTest : KoinTest {
             verify {
                 gameEntityQueries.updateGameNonF95(
                     title = expected.title,
+                    description = expected.description,
+                    developer = expected.developer,
                     imageUrl = expected.imageUrl,
                     version = expected.version,
                     releaseDate = expected.releaseDate,
@@ -379,6 +393,8 @@ class GamesRepositoryImplTest : KoinTest {
             confirmVerified(gameEntityQueries)
 
             assertEquals(expected.title, title)
+            assertEquals(expected.description, description)
+            assertEquals(expected.developer, developer)
             assertEquals(expected.imageUrl, imageUrl)
             assertEquals(expected.releaseDate, releaseDate)
             assertEquals(expected.firstReleaseDate, firstReleaseDate)
@@ -500,6 +516,8 @@ class GamesRepositoryImplTest : KoinTest {
         return GamesWithPlaySessions(
             f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
             title = getRandomString(10),
+            description = getRandomString(10),
+            developer = getRandomString(10),
             imageUrl = getRandomString(10),
             executablePaths = setOf(getRandomString(3), getRandomString(4)),
             version = getRandomString(5),
@@ -530,6 +548,8 @@ class GamesRepositoryImplTest : KoinTest {
         return GameWithPlaySessions(
             f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
             title = getRandomString(10),
+            description = getRandomString(10),
+            developer = getRandomString(10),
             imageUrl = getRandomString(10),
             executablePaths = setOf(getRandomString(3), getRandomString(4)),
             version = getRandomString(5),
@@ -560,6 +580,8 @@ class GamesRepositoryImplTest : KoinTest {
         return GameEntity(
             f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
             title = getRandomString(10),
+            description = getRandomString(10),
+            developer = getRandomString(10),
             imageUrl = getRandomString(10),
             executablePaths = setOf(getRandomString(3), getRandomString(4)),
             version = getRandomString(5),

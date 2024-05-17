@@ -9,7 +9,6 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -21,15 +20,20 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotification
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationTitleUpdateAvailable
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationUpdatesChannelDescription
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationUpdatesChannelTitle
+import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 
 @OptIn(ExperimentalResourceApi::class)
 @Suppress("InjectDispatcher")
-class CheckForUpdatesWorker(private val context: Context, workerParameters: WorkerParameters) :
+class CheckForUpdatesWorker(
+    private val context: Context,
+    workerParameters: WorkerParameters,
+    private val coroutineDispatchers: CoroutineDispatchers,
+) :
     CoroutineWorker(context, workerParameters),
-    KoinComponent {
+        KoinComponent {
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "game_updates"
         private const val UPDATES_AVAILABLE_NOTIFICATION_ID = 1
@@ -39,7 +43,7 @@ class CheckForUpdatesWorker(private val context: Context, workerParameters: Work
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CoroutineScope(Dispatchers.Main).launch {
+            CoroutineScope(coroutineDispatchers.main).launch {
                 val name = getString(Res.string.systemNotificationUpdatesChannelTitle)
                 val descriptionText = getString(Res.string.systemNotificationUpdatesChannelDescription)
                 val mChannel = NotificationChannel(
@@ -59,7 +63,7 @@ class CheckForUpdatesWorker(private val context: Context, workerParameters: Work
 
     override suspend fun doWork(): Result {
         logger.debug("doWork")
-        return withContext(Dispatchers.IO) {
+        return withContext(coroutineDispatchers.io) {
             val result = updateChecker.checkForUpdates(this)
             val count = result.updates.count { it.updateAvailable }
             if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {

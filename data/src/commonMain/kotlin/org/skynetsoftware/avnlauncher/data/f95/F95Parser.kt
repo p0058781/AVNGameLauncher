@@ -28,7 +28,7 @@ private class F95ParserJsoup(
     private val logger: Logger,
 ) : F95Parser {
     private val titleRegex = Regex("(.+)\\s*\\[(.+)\\]\\s*\\[(.+)\\]")
-    private val releaseDateRegex = Regex("<b>Release Date.*:.+?(\\d{4}-\\d{2}-\\d{2})")
+    private val releaseDateRegex = Regex("<b>Release Date.*:.+?(\\d{4}-\\d{1,2}-\\d{1,2})")
     private val ratingRegex = Regex("[+-]?([0-9]*[.])?[0-9]+")
     private val releaseDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -43,12 +43,24 @@ private class F95ParserJsoup(
         return try {
             val document = Jsoup.parse(httpResponse.bodyAsText())
             val imageUrl = parseImageUrl(document)
-            val (title, version) = parseTitleVersion(document)
+            val (title, version, developer) = parseTitleVersionDeveloper(document)
+            val description = parseDescription(document)
             val releaseDate = parseReleaseDate(document)
             val rating = parseRating(document)
             val firstReleaseDate = parseFirstReleaseDate(document)
             val tags = parseTags(document)
-            val game = F95Game(gameThreadId, title, imageUrl, version, rating, firstReleaseDate, releaseDate, tags)
+            val game = F95Game(
+                threadId = gameThreadId,
+                title = title,
+                description = description,
+                developer = developer,
+                imageUrl = imageUrl,
+                version = version,
+                rating = rating,
+                firstReleaseDate = firstReleaseDate,
+                releaseDate = releaseDate,
+                tags = tags,
+            )
             Result.Ok(game)
         } catch (t: Throwable) {
             logger.error(t)
@@ -99,7 +111,13 @@ private class F95ParserJsoup(
     }
 
     @Throws(IllegalStateException::class)
-    private fun parseTitleVersion(document: Document): Pair<String, String> {
+    private fun parseDescription(document: Document): String {
+        return document.select(".bbWrapper").first()?.children()?.first()?.text()?.replaceFirst("Overview: ", "") ?: ""
+    }
+
+    @Suppress("MagicNumber")
+    @Throws(IllegalStateException::class)
+    private fun parseTitleVersionDeveloper(document: Document): Triple<String, String, String> {
         val titleRaw = document.select(".p-title-value").first()?.textNodes()?.first()?.text()
             ?: error("cant get title")
         val matchResult = titleRegex.matchEntire(titleRaw)
@@ -107,7 +125,9 @@ private class F95ParserJsoup(
             matchResult?.groups?.get(1)?.value?.trim() ?: error("invalid title detected")
         val version =
             matchResult.groups[2]?.value?.trim() ?: error("invalid version detected")
-        return title to version
+        val developer =
+            matchResult.groups[3]?.value?.trim() ?: error("invalid developer detected")
+        return Triple(title, version, developer)
     }
 
     @Throws(IllegalStateException::class)

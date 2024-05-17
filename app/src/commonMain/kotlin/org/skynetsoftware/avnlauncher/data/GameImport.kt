@@ -54,18 +54,17 @@ private class GameImportImpl(
                         this.copy(executablePaths = executablePath)
                     }
                 }.run {
-                    // if (playTime == null) {
-                    this
-                    // } else {
-                    //    this.copy(playTime = playTime)
-                    // }
-                    // TODO
+                    if (playTime == null) {
+                        this
+                    } else {
+                        this.copy(totalPlayTime = playTime)
+                    }
                 }.run {
-                    // if (firstPlayed == null) {
-                    this
-                    // } else {
-                    //    this.copy(firstPlayed = firstPlayed)
-                    // }
+                    if (firstPlayed == null) {
+                        this
+                    } else {
+                        this.copy(firstPlayedTime = firstPlayed)
+                    }
                 }
                 val existingGame = gamesRepository.get(game.f95ZoneThreadId)
                 if (existingGame == null) {

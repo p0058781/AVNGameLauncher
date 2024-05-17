@@ -22,7 +22,18 @@ import kotlin.test.assertIs
 
 class F95RepositoryImplTest : KoinTest {
     private val f95Api = mockk<F95Api>()
-    private val fakef95Game = F95Game(0, "", "", "", 0f, 0L, 0L, emptySet())
+    private val fakef95Game = F95Game(
+        threadId = 0,
+        title = "",
+        description = "",
+        developer = "",
+        imageUrl = "",
+        version = "",
+        rating = 0f,
+        firstReleaseDate = 0L,
+        releaseDate = 0L,
+        tags = emptySet(),
+    )
 
     private val f95Repository by inject<F95Repository>()
 

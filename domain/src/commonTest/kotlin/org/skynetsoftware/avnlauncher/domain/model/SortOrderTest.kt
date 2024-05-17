@@ -160,6 +160,8 @@ class SortOrderTest {
     ): Game {
         return Game(
             title = title,
+            description = "",
+            developer = "",
             imageUrl = "",
             f95ZoneThreadId = 0,
             executablePaths = emptySet(),

@@ -7,6 +7,8 @@ import org.skynetsoftware.avnlauncher.domain.model.PlayState
 class GameEntitySlots {
     val f95ZoneThreadId: CapturingSlot<Int> = slot()
     val title: CapturingSlot<String> = slot()
+    val description: CapturingSlot<String> = slot()
+    val developer: CapturingSlot<String> = slot()
     val imageUrl: CapturingSlot<String> = slot()
     val executablePaths: CapturingSlot<Set<String>> = slot()
     val version: CapturingSlot<String> = slot()

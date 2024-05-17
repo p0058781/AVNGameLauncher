@@ -6,6 +6,7 @@ import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.data.gameImportKoinModule
+import org.skynetsoftware.avnlauncher.domain.domainKoinModule
 import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
 import org.skynetsoftware.avnlauncher.link.externalLinkUtilsKoinModule
@@ -28,6 +29,7 @@ object AVNLauncherApp {
                 imageLoaderKoinModule(),
                 configKoinModule(config),
                 dataKoinModule,
+                domainKoinModule,
                 loggerKoinModule,
                 gameImportKoinModule,
                 updateCheckerKoinModule,

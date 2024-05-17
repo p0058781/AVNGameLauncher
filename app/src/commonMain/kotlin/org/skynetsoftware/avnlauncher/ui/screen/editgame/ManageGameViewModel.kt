@@ -1,13 +1,12 @@
 package org.skynetsoftware.avnlauncher.ui.screen.editgame
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.model.isF95Game
@@ -25,9 +24,11 @@ class ManageGameViewModel(
     private val gamesRepository: GamesRepository,
     private val executableFinder: ExecutableFinder,
     eventCenter: EventCenter,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val coroutineDispatchers: CoroutineDispatchers,
 ) : ShowToastViewModel(eventCenter) {
     val title = MutableStateFlow("")
+    val description = MutableStateFlow("")
+    val developer = MutableStateFlow("")
     val imageUrl = MutableStateFlow("")
     val checkForUpdates = MutableStateFlow(true)
     val currentPlayState = MutableStateFlow(PlayState.Playing)
@@ -76,6 +77,8 @@ class ManageGameViewModel(
                 } else {
                     _isF95Game.emit(game.isF95Game())
                     title.emit(game.title)
+                    description.emit(game.description)
+                    developer.emit(game.developer)
                     imageUrl.emit(game.imageUrl)
                     checkForUpdates.emit(game.checkForUpdates)
                     currentPlayState.emit(game.playState)
@@ -123,6 +126,8 @@ class ManageGameViewModel(
         val notes = notes.value
         val dateFormat = DateVisualTransformation.getUnmaskedDateFormat()
         val title = title.value
+        val description = description.value
+        val developer = developer.value
         val imageUrl = imageUrl.value
         val version = version.value
         val releaseDate = releaseDate.value
@@ -144,6 +149,8 @@ class ManageGameViewModel(
                 gamesRepository.updateGame(
                     gameId,
                     title,
+                    description,
+                    developer,
                     imageUrl,
                     version,
                     dateFormat.parse(releaseDate)!!.time,
@@ -168,6 +175,8 @@ class ManageGameViewModel(
         val notes = notes.value
         val dateFormat = DateVisualTransformation.getUnmaskedDateFormat()
         val title = title.value
+        val description = description.value
+        val developer = developer.value
         val imageUrl = imageUrl.value
         val version = version.value
         val releaseDate = releaseDate.value
@@ -178,6 +187,8 @@ class ManageGameViewModel(
             val id = Random.nextInt(Int.MIN_VALUE, 0)
             val game = Game(
                 title = title,
+                description = description,
+                developer = developer,
                 imageUrl = imageUrl,
                 f95ZoneThreadId = id,
                 executablePaths = executablePath,
@@ -249,7 +260,7 @@ class ManageGameViewModel(
         }
 
     fun findExecutablePaths() =
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch(coroutineDispatchers.io) {
             _findingExecutablePathsInProgress.emit(true)
             val currentExecutables = executablePaths.value.toMutableSet()
             val foundExecutables = executableFinder.findExecutables(title.value)

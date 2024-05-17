@@ -242,8 +242,8 @@ actual fun MainScreenContent(
             timeFormat = timeFormat,
             gridColumns = gridColumns,
             gamesDisplayMode = currentGamesDisplayMode,
-            editGame = {
-                navigator?.navigateToEditGame(it)
+            gameDetails = {
+                navigator?.navigateToGameDetails(it)
             },
             launchGame = launchGame,
             resetUpdateAvailable = resetUpdateAvailable,

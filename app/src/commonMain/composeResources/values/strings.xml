@@ -112,6 +112,27 @@
     <!--Game Card Values Screen-->
     <string name="cardValuesScreenTitle">Game Card Values</string>
 
+    <!--Game Details Screen-->
+    <string name="gameDetailsAveragePlayTimeTotalLabel">Average Play Time:</string>
+    <string name="gameDetailsAveragePlayTimeTotal">%.1fh/day</string>
+    <string name="gameDetailsAveragePlayTime7Days">%.1fh/day</string>
+    <string name="gameDetailsAveragePlayTime7DaysLabel">Average Play Time Last 7 Days:</string>
+    <string name="gameDetailsAveragePlayTime30Days">%.1fh/day</string>
+    <string name="gameDetailsAveragePlayTime30DaysLabel">Average Play Time Last 30 Days:</string>
+    <string name="gameDetailsAveragePlayTime365Days">%.1fh/day</string>
+    <string name="gameDetailsAveragePlayTime365DaysLabel">Average Play Time Last 365 Days:</string>
+    <string name="gameDetailsVersionLabel">%s:</string>
+    <string name="gameDetailsVersionOther">Other</string>
+    <string name="gameDetailsTotalPlayTime">Total Play Time:</string>
+    <string name="gameDetailsPlayTimeToday">Play Time Today:</string>
+    <string name="gameDetailsPlayTimeLast7Days">Play Time Last 7 Days:</string>
+    <string name="gameDetailsPlayTimeLast30Days">Play Time Last 30 Days:</string>
+    <string name="gameDetailsPlayTimeLast365Days">Play Time Last 365 Days:</string>
+    <string name="gameDetailsPlayTimeByVersion">Play Time by Version</string>
+    <string name="gameDetailsTabEdit">Edit</string>
+    <string name="gameDetailsTabStatistics">Statistics</string>
+    <string name="gameDetailsTabOverview">Overview</string>
+    <string name="gameDetailsError">Error loading game</string>
 
     <!--Main Screen-->
     <string name="updateCheckUpdateAvailable">Updates Available: %1$d, Errors: %2$d</string>
@@ -159,6 +180,7 @@
     <string name="hoverExplanationF95Link">Open F95 Game thread in Browser.</string>
     <string name="hoverExplanationFavorites">Add or Remove from Favorites.</string>
     <string name="hoverExplanationEditGame">Edit Game</string>
+    <string name="hoverExplanationGameDetails">Game Details</string>
     <string name="hoverExplanationAddExecutable">Manually add Game Executable</string>
     <string name="hoverExplanationSearchExecutable">Automatically search for Game executables</string>
     <string name="hoverExplanationSortDirection">Tip: Click same item again in the dropdown to reverse order. Order is indicated by the error in the brackets.</string>
