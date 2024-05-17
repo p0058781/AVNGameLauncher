@@ -12,6 +12,8 @@ interface GamesRepository {
 
     suspend fun get(id: Int): Game?
 
+    fun getFlow(id: Int): Flow<Game?>
+
     // write
 
     suspend fun updateRating(
@@ -44,6 +46,8 @@ interface GamesRepository {
     suspend fun updateGame(
         id: Int,
         title: String,
+        description: String,
+        developer: String,
         imageUrl: String,
         version: String,
         releaseDate: Long,

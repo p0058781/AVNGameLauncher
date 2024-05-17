@@ -102,6 +102,7 @@ fun EditGameScreen(
 ) {
     ManageGameScreen(
         mode = ManageGameViewModel.Mode.EditGame(gameId),
+        scrollable = false,
         onCloseRequest = onCloseRequest,
     )
 }
@@ -110,6 +111,7 @@ fun EditGameScreen(
 fun CreateCustomGameScreen(onCloseRequest: () -> Unit) {
     ManageGameScreen(
         mode = ManageGameViewModel.Mode.CreateCustomGame,
+        scrollable = true,
         onCloseRequest = onCloseRequest,
     )
 }
@@ -120,6 +122,7 @@ fun CreateCustomGameScreen(onCloseRequest: () -> Unit) {
 private fun ManageGameScreen(
     mode: ManageGameViewModel.Mode,
     manageGameViewModel: ManageGameViewModel = viewModel { parametersOf(mode) },
+    scrollable: Boolean,
     onCloseRequest: () -> Unit,
 ) {
     var title by remember { manageGameViewModel.title }.collectAsMutableState(context = Dispatchers.Main.immediate)
@@ -164,8 +167,14 @@ private fun ManageGameScreen(
         }
     }
 
+    val modifier = if (scrollable) {
+        Modifier.verticalScroll(rememberScrollState())
+    } else {
+        Modifier
+    }
+
     Surface(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = modifier.fillMaxSize(),
     ) {
         Column(
             modifier = Modifier.padding(10.dp),

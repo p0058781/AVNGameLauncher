@@ -78,6 +78,8 @@ class FilterTest {
     ): Game {
         return Game(
             title = "",
+            description = "",
+            developer = "",
             imageUrl = "",
             f95ZoneThreadId = 0,
             executablePaths = emptySet(),

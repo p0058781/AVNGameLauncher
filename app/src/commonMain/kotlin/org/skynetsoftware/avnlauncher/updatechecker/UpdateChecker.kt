@@ -1,17 +1,15 @@
 package org.skynetsoftware.avnlauncher.updatechecker
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
@@ -28,7 +26,7 @@ private const val MIN_INTERVAL = 3_600_000L // 1h
 
 val updateCheckerKoinModule = module {
     single<UpdateChecker> {
-        UpdateCheckerImpl(get(), get(), get(), get(), get())
+        UpdateCheckerImpl(get(), get(), get(), get(), get(), get())
     }
 }
 
@@ -49,10 +47,10 @@ private class UpdateCheckerImpl(
     private val f95Repository: F95Repository,
     private val eventCenter: EventCenter,
     private val settingsRepository: SettingsRepository,
-    coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    coroutineDispatchers: CoroutineDispatchers,
 ) : UpdateChecker() {
     private var updateCheckRunning = false
-    private val scope = CoroutineScope(SupervisorJob() + coroutineDispatcher)
+    private val scope = CoroutineScope(SupervisorJob() + coroutineDispatchers.io)
 
     private var updateCheckSchedulerJob: Job? = null
 
@@ -217,6 +215,8 @@ private class UpdateCheckerImpl(
 private fun Game.mergeWith(f95Game: Game) =
     Game(
         title = f95Game.title,
+        description = f95Game.description,
+        developer = f95Game.developer,
         imageUrl = f95Game.imageUrl,
         f95ZoneThreadId = f95Game.f95ZoneThreadId,
         executablePaths = executablePaths,

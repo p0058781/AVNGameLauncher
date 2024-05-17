@@ -28,7 +28,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.cardValuesScreenTi
 import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
-import org.skynetsoftware.avnlauncher.app.generated.resources.editGameDialogTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.importExportScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsTitle
@@ -37,7 +36,7 @@ import org.skynetsoftware.avnlauncher.ui.screen.cardvalues.CardValuesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.CreateCustomGameScreen
-import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameScreen
+import org.skynetsoftware.avnlauncher.ui.screen.game.GameDetailsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportScreen
 import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreen
@@ -56,6 +55,9 @@ private const val SETTINGS_WINDOW_HEIGHT_PERCENT = 0.5f
 
 private const val EDIT_GAME_WINDOW_WIDTH_PERCENT = 0.4f
 private const val EDIT_GAME_WINDOW_HEIGHT_PERCENT = 0.5f
+
+private const val GAME_DETAILS_WINDOW_WIDTH_PERCENT = 0.4f
+private const val GAME_DETAILS_WINDOW_HEIGHT_PERCENT = 0.5f
 
 private val IMPORT_WINDOW_WIDTH = 500.dp
 private val IMPORT_WINDOW_HEIGHT = 350.dp
@@ -83,7 +85,7 @@ actual fun App() {
     )
     var showSettingsScreen by remember { mutableStateOf(false) }
     var showImportGameScreen by remember { mutableStateOf(false) }
-    var showEditGameScreen by remember { mutableStateOf<Game?>(null) }
+    var showGameDetailsScreen by remember { mutableStateOf<Game?>(null) }
     var showImportExportScreen by remember { mutableStateOf(false) }
     var showCustomListsScreen by remember { mutableStateOf(false) }
     var showCustomStatusesScreen by remember { mutableStateOf(false) }
@@ -98,8 +100,8 @@ actual fun App() {
                 showSettingsScreen = true
             }
 
-            override fun navigateToEditGame(game: Game) {
-                showEditGameScreen = game
+            override fun navigateToGameDetails(game: Game) {
+                showGameDetailsScreen = game
             }
 
             override fun navigateToCreateCustomGame() {
@@ -195,26 +197,26 @@ actual fun App() {
                     }
                 }
             }
-            showEditGameScreen?.let {
+            showGameDetailsScreen?.let {
                 DialogWindow(
                     state = rememberDialogState(
-                        size = getPercentageWindowSize(EDIT_GAME_WINDOW_WIDTH_PERCENT, EDIT_GAME_WINDOW_HEIGHT_PERCENT),
+                        size = getPercentageWindowSize(
+                            widthPercent = GAME_DETAILS_WINDOW_WIDTH_PERCENT,
+                            heightPercent = GAME_DETAILS_WINDOW_HEIGHT_PERCENT,
+                        ),
                     ),
-                    title = stringResource(Res.string.editGameDialogTitle, it.title),
+                    title = it.title,
                     icon = painterResource(WINDOW_ICON),
                     resizable = false,
                     onCloseRequest = {
-                        showEditGameScreen = null
+                        showGameDetailsScreen = null
                     },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
                     ) {
-                        EditGameScreen(
+                        GameDetailsScreen(
                             gameId = it.f95ZoneThreadId,
-                            onCloseRequest = {
-                                showEditGameScreen = null
-                            },
                         )
                     }
                 }

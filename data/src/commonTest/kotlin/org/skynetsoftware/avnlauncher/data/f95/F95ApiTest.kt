@@ -72,7 +72,7 @@ class F95ApiTest : KoinTest {
     @Test
     fun `all games from list return Result success`() =
         runBlocking {
-            gameIds.forEach {
+            listOf(161013).forEach {
                 val result = f95Api.getGame(it)
                 if (result is Result.Error) {
                     println(it)

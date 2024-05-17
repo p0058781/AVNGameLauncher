@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.data
 
-import kotlinx.coroutines.Dispatchers
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.data.database.databaseKoinModule
 import org.skynetsoftware.avnlauncher.data.database.driverFactoryKoinModule
@@ -14,8 +13,8 @@ import org.skynetsoftware.avnlauncher.data.repository.settingsKoinModule
 val dataKoinModule = module {
     driverFactoryKoinModule()
     databaseKoinModule()
-    gamesRepositoryKoinModule(Dispatchers.IO)
-    playSessionRepositoryKoinModule(Dispatchers.IO)
+    gamesRepositoryKoinModule()
+    playSessionRepositoryKoinModule()
     settingsKoinModule()
     f95ParserKoinModule()
     f95ApiKoinModule()

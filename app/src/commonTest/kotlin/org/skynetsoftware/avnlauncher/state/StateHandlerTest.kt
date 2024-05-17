@@ -8,6 +8,8 @@ import kotlin.test.assertEquals
 class StateHandlerTest {
     private val game = Game(
         title = "",
+        description = "",
+        developer = "",
         imageUrl = "",
         f95ZoneThreadId = 0,
         executablePaths = emptySet(),

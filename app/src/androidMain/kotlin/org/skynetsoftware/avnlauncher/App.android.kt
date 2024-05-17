@@ -42,8 +42,8 @@ private const val MAIN_SCREEN_ROUTE = "mainScreen"
 private const val SETTINGS_SCREEN_ROUTE = "settingsScreen"
 private const val CREATE_CUSTOM_GAME_SCREEN_ROUTE = "createCustomGameScreen"
 private const val IMPORT_GAME_SCREEN_ROUTE = "importGameScreen"
-private const val EDIT_GAME_SCREEN_ROUTE = "editGameScreen"
-private const val EDIT_GAME_SCREEN_PARAM_ID = "id"
+private const val GAME_DETAILS_SCREEN_ROUTE = "gameDetailsScreen"
+private const val GAME_DETAILS_SCREEN_PARAM_ID = "id"
 private const val IMPORT_EXPORT_SCREEN_ROUTE = "importExportScreen"
 private const val CUSTOM_LISTS_SCREEN_ROUTE = "customListsScreen"
 private const val CUSTOM_STATUSES_SCREEN_ROUTE = "customStatusesScreen"
@@ -82,12 +82,12 @@ actual fun App() {
                         }
                     }
                 }
-                composable("$EDIT_GAME_SCREEN_ROUTE/{$EDIT_GAME_SCREEN_PARAM_ID}") { backStackEntry ->
+                composable("$GAME_DETAILS_SCREEN_ROUTE/{$GAME_DETAILS_SCREEN_PARAM_ID}") { backStackEntry ->
                     WithToolbar(
                         title = stringResource(Res.string.editGameDialogTitleNoGameTitle),
                         navController = navController,
                     ) {
-                        backStackEntry.arguments?.getString(EDIT_GAME_SCREEN_PARAM_ID)?.toIntOrNull()?.let {
+                        backStackEntry.arguments?.getString(GAME_DETAILS_SCREEN_PARAM_ID)?.toIntOrNull()?.let {
                             EditGameScreen(it) {
                                 navController.popBackStack()
                             }
@@ -178,8 +178,8 @@ private class AndroidNavigator(private val navController: NavController) : Navig
         navController.navigate(SETTINGS_SCREEN_ROUTE)
     }
 
-    override fun navigateToEditGame(game: Game) {
-        navController.navigate("$EDIT_GAME_SCREEN_ROUTE/${game.f95ZoneThreadId}")
+    override fun navigateToGameDetails(game: Game) {
+        navController.navigate("$GAME_DETAILS_SCREEN_PARAM_ID/${game.f95ZoneThreadId}")
     }
 
     override fun navigateToCreateCustomGame() {

@@ -27,7 +27,9 @@ CREATE TABLE GameEntity (
     customImageUrl TEXT,
     firstPlayed INTEGER NOT NULL,
     notes TEXT,
-    favorite INTEGER AS Boolean NOT NULL
+    favorite INTEGER AS Boolean NOT NULL,
+    description TEXT NOT NULL DEFAULT "",
+    developer TEXT NOT NULL DEFAULT ""
 );
 
 gamesWithPlaySessions:
@@ -53,6 +55,8 @@ UPDATE GameEntity SET executablePaths = ? WHERE f95ZoneThreadId = ?;
 updateGame:
 UPDATE GameEntity
 SET title = ?,
+    description = ?,
+    developer = ?,
     imageUrl = ?,
     customImageUrl = ?,
     executablePaths = ?,
@@ -84,6 +88,8 @@ WHERE f95ZoneThreadId = ?;
 updateGameNonF95:
 UPDATE GameEntity
 SET title = ?,
+    description = ?,
+    developer = ?,
     imageUrl = ?,
     version = ?,
     releaseDate = ?,

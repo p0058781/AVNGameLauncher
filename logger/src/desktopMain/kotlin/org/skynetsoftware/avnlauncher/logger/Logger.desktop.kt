@@ -1,8 +1,6 @@
 package org.skynetsoftware.avnlauncher.logger
 
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.Level
@@ -10,21 +8,22 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.Config
+import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.slf4j.LoggerFactory
 import java.io.File
 
 actual val loggerKoinModule = module {
-    single<Logger> { LoggerImpl(get(), get()) }
+    single<Logger> { LoggerImpl(get(), get(), get()) }
 }
 
 private class LoggerImpl(
     config: Config,
     settingsRepository: SettingsRepository,
-    coroutineDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    coroutineDispatchers: CoroutineDispatchers,
 ) : Logger {
-    private val coroutineScope = CoroutineScope(SupervisorJob() + coroutineDispatcher)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + coroutineDispatchers.default)
 
     init {
         val builder = ConfigurationBuilderFactory.newConfigurationBuilder()

@@ -10,7 +10,7 @@ val LocalNavigator: ProvidableCompositionLocal<Navigator?> = staticCompositionLo
 interface Navigator {
     fun navigateToSettings()
 
-    fun navigateToEditGame(game: Game)
+    fun navigateToGameDetails(game: Game)
 
     fun navigateToCreateCustomGame()
 
