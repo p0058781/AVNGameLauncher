@@ -170,8 +170,12 @@ private fun GameItem(
             ) {
                 InfoItem(stringResource(Res.string.infoLabelPlayTime), formatPlayTime(game.totalPlayTime))
                 InfoItem(
-                    stringResource(Res.string.infoLabelFirstPlayed),
-                    "${dateFormat.format(game.firstPlayedTime)} ${timeFormat.format(game.firstPlayedTime)}",
+                    label = stringResource(Res.string.infoLabelFirstPlayed),
+                    value = if (game.firstPlayedTime <= 0) {
+                        "-"
+                    } else {
+                        "${dateFormat.format(game.firstPlayedTime)} ${timeFormat.format(game.firstPlayedTime)}"
+                    },
                 )
                 InfoItem(
                     stringResource(Res.string.infoLabelLastPlayed),
