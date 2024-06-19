@@ -1,17 +1,13 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("com.android.library")
     alias(libs.plugins.sqldelight)
 }
 
 kotlin {
-    androidTarget()
-
     jvm("desktop")
 
     sourceSets {
-
         val commonMain by getting {
             dependencies {
                 implementation(project(":domain"))
@@ -35,6 +31,7 @@ kotlin {
 
                 implementation(libs.jsoup)
                 implementation(libs.ktor.client.okhttp)
+                implementation(libs.sqdelight.sqlitedriver)
             }
         }
         val commonTest by getting {
@@ -46,42 +43,9 @@ kotlin {
                 implementation(libs.mockk)
             }
         }
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.sqdelight.androiddriver)
-            }
-        }
-        val desktopMain by getting {
-            dependencies {
-                implementation(libs.sqdelight.sqlitedriver)
-            }
-        }
     }
 
     jvmToolchain(17)
-}
-
-android {
-    compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "org.skynetsoftware.avnlauncher.data"
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
-
-    defaultConfig {
-        minSdk = (findProperty("android.minSdk") as String).toInt()
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlin {
-        jvmToolchain(17)
-    }
-    buildFeatures {
-        buildConfig = true
-    }
 }
 
 sqldelight {
