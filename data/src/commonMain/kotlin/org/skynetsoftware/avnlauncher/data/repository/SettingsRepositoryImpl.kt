@@ -13,14 +13,20 @@ import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.MutableStateFlow
+import org.skynetsoftware.avnlauncher.domain.utils.Option
 
-internal expect fun Module.settingsKoinModule()
+@Suppress("MayBeConst")
+object SettingsDefaults : ISettingsDefaults() {
+    val minimizeToTrayOnClose: Boolean = false
+    val startMinimized: Boolean = false
+}
 
-expect object SettingsDefaults : ISettingsDefaults
+internal fun Module.settingsKoinModule() {
+    single { Settings() }
+    single<SettingsRepository> { SettingsRepositoryImpl(get()) }
+}
 
-abstract class SettingsRepositoryShared internal constructor(
-    private val settings: Settings,
-) : SettingsRepository {
+internal class SettingsRepositoryImpl(private val settings: Settings) : SettingsRepository {
     private val _selectedFilter = MutableStateFlow {
         val selectedFilterClassname =
             settings.getString(
@@ -249,6 +255,52 @@ abstract class SettingsRepositoryShared internal constructor(
         _gridImageAspectRatio.emit(gridImageAspectRatio)
         settings[SettingsRepository::gridImageAspectRatio.name] = gridImageAspectRatio
     }
-}
 
-internal expect class SettingsRepositoryImpl : SettingsRepositoryShared
+    private val _gamesDir = Option.Some(
+        MutableStateFlow {
+            val value = settings.getString(
+                SettingsRepository::gamesDir.name,
+                "",
+            )
+            value.ifBlank {
+                null
+            }
+        },
+    )
+    override val gamesDir: Option<out StateFlow<String?>> get() = _gamesDir
+
+    private val _minimizeToTrayOnClose = Option.Some(
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::minimizeToTrayOnClose.name,
+                SettingsDefaults.minimizeToTrayOnClose,
+            )
+        },
+    )
+    override val minimizeToTrayOnClose: Option<out StateFlow<Boolean>> get() = _minimizeToTrayOnClose
+
+    private val _startMinimized = Option.Some(
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::startMinimized.name,
+                SettingsDefaults.startMinimized,
+            )
+        },
+    )
+    override val startMinimized: Option<out StateFlow<Boolean>> get() = _startMinimized
+
+    override suspend fun setGamesDir(gamesDir: String) {
+        _gamesDir.value.emit(gamesDir)
+        settings[SettingsRepository::gamesDir.name] = gamesDir
+    }
+
+    override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
+        _minimizeToTrayOnClose.value.emit(minimizeToTrayOnClose)
+        settings[SettingsRepository::minimizeToTrayOnClose.name] = minimizeToTrayOnClose
+    }
+
+    override suspend fun setStartMinimized(startMinimized: Boolean) {
+        _startMinimized.value.emit(startMinimized)
+        settings[SettingsRepository::startMinimized.name] = startMinimized
+    }
+}

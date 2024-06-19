@@ -59,6 +59,7 @@ import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameButtonSave
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputError
+import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelExecutablePath
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelFirstReleaseDate
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelImageUrl
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelNotes
@@ -534,4 +535,4 @@ sealed class ShowFilePicker {
 }
 
 @OptIn(ExperimentalResourceApi::class)
-expect val inputLabelExecutablePath: StringResource
+val inputLabelExecutablePath: StringResource = Res.string.editGameInputLabelExecutablePath

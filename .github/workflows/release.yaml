@@ -30,7 +30,7 @@ jobs:
           run: ./analyze_code.sh
         - name: Run Tests
           if: matrix.os == 'ubuntu-latest'
-          run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease
+          run: ./gradlew --console=plain clean koverHtmlReport
         - name: Package Uber Jar for ${{ runner.os }}
           run: ./gradlew --console=plain packageReleaseUberJarForCurrentOS
         - name: Create release distributable for ${{ runner.os }}
@@ -39,14 +39,10 @@ jobs:
           run: |
             cd app/build/compose/binaries/main-release/app/ &&
             7z a avn-game-launcher-${{ runner.os }}-release.zip *
-        - name: Build Android APK
-          if: matrix.os == 'ubuntu-latest'
-          run: ./gradlew --console=plain assembleRelease
         - name: Create a Release
           uses: softprops/action-gh-release@v2
           with:
             prerelease: ${{ contains(github.ref_name, '_pre') }}
             files: |-
-              app/build/outputs/apk/release/*.apk
               app/build/compose/binaries/main-release/app/avn-game-launcher-${{ runner.os }}-release.zip
               app/build/compose/jars/*
