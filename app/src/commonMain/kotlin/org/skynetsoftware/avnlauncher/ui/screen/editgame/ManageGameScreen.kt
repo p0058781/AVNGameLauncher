@@ -56,6 +56,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
+import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameButtonSave
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputError
@@ -378,129 +379,25 @@ fun ColumnScope.ExecutablePaths(
     var showFilePicker by remember { mutableStateOf<ShowFilePicker?>(null) }
 
     if (executablePaths.isEmpty()) {
-        val addIconId = "addIcon"
-        val searchIconId = "searchIcon"
-        Text(
-            modifier = Modifier.fillMaxWidth().padding(10.dp),
-            text = buildAnnotatedString {
-                append(stringResource(Res.string.editGameScreenNoExecutablePaths1))
-                append(" ")
-                appendInlineContent(addIconId, "[$addIconId]")
-                append(" ")
-                append(stringResource(Res.string.editGameScreenNoExecutablePaths2))
-                append(" ")
-                appendInlineContent(searchIconId, "[$searchIconId]")
-                append(" ")
-                append(stringResource(Res.string.editGameScreenNoExecutablePaths3))
-            },
-            inlineContent = mapOf(
-                Pair(
-                    addIconId,
-                    InlineTextContent(
-                        Placeholder(
-                            width = 24.sp,
-                            height = 24.sp,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
-                        ),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Add,
-                            contentDescription = "",
-                        )
-                    },
-                ),
-                Pair(
-                    searchIconId,
-                    InlineTextContent(
-                        Placeholder(
-                            width = 24.sp,
-                            height = 24.sp,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
-                        ),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Search,
-                            contentDescription = "",
-                        )
-                    },
-                ),
-            ),
-            textAlign = TextAlign.Center,
-        )
-        Divider(
-            modifier = Modifier.padding(horizontal = 10.dp),
-        )
+        NoExecutablePaths()
     }
 
-    executablePaths.forEachIndexed { index, executablePath ->
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp).fillMaxWidth(),
-        ) {
-            Text(
-                modifier = Modifier.weight(1f).padding(10.dp).fillMaxWidth(),
-                text = executablePath,
-            )
-            Spacer(
-                modifier = Modifier.width(10.dp),
-            )
-            Icon(
-                modifier = Modifier.align(Alignment.CenterVertically).clickable {
-                    showFilePicker = ShowFilePicker.ChangePath(index)
-                },
-                imageVector = Icons.Outlined.Edit,
-                contentDescription = null,
-            )
-            Icon(
-                modifier = Modifier.align(Alignment.CenterVertically).clickable {
-                    deleteExecutablePath(index)
-                },
-                imageVector = Icons.Outlined.Close,
-                contentDescription = null,
-            )
-        }
-        Divider(
-            modifier = Modifier.padding(horizontal = 10.dp),
-        )
-    }
-    Row(
-        modifier = Modifier.align(Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val interactionSourceAdd = remember { MutableInteractionSource() }
-        val isHoveredAdd by interactionSourceAdd.collectIsHoveredAsStateDelayed()
-        Icon(
-            modifier = Modifier.padding(10.dp).clickable {
-                showFilePicker = ShowFilePicker.AddPath
-            }.hoverable(interactionSourceAdd),
-            imageVector = Icons.Outlined.Add,
-            contentDescription = null,
-        )
-        if (isHoveredAdd) {
-            HoverExplanation(stringResource(Res.string.hoverExplanationAddExecutable))
-        }
-        Box(
-            modifier = Modifier.padding(10.dp),
-        ) {
-            if (findingExecutablePathsInProgress) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                )
-            } else {
-                val interactionSourceSearch = remember { MutableInteractionSource() }
-                val isHoveredSearch by interactionSourceSearch.collectIsHoveredAsStateDelayed()
-                Icon(
-                    modifier = Modifier.clickable {
-                        findExecutables()
-                    }.hoverable(interactionSourceSearch),
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = null,
-                )
-                if (isHoveredSearch) {
-                    HoverExplanation(stringResource(Res.string.hoverExplanationSearchExecutable))
-                }
-            }
-        }
-    }
+    ExecutablePathsList(
+        executablePaths = executablePaths,
+        showFilePicker = {
+            showFilePicker = it
+        },
+        deleteExecutablePath = {
+            deleteExecutablePath(it)
+        },
+    )
+    ExecutablePathsOptions(
+        showFilePicker = {
+            showFilePicker = it
+        },
+        findingExecutablePathsInProgress = findingExecutablePathsInProgress,
+        findExecutables = findExecutables,
+    )
 
     val currentPath = when (val localShowFilePicker = showFilePicker) {
         is ShowFilePicker.ChangePath -> {
@@ -526,6 +423,147 @@ fun ColumnScope.ExecutablePaths(
         }
         showFilePicker = null
     }
+}
+
+@Composable
+private fun ColumnScope.ExecutablePathsOptions(
+    showFilePicker: (value: ShowFilePicker) -> Unit,
+    findingExecutablePathsInProgress: Boolean,
+    findExecutables: () -> Unit,
+) {
+    Row(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val interactionSourceAdd = remember { MutableInteractionSource() }
+        val isHoveredAdd by interactionSourceAdd.collectIsHoveredAsStateDelayed()
+        Icon(
+            modifier = Modifier.padding(10.dp).clickable {
+                showFilePicker(ShowFilePicker.AddPath)
+            }.hoverable(interactionSourceAdd),
+            imageVector = Icons.Outlined.Add,
+            contentDescription = null,
+        )
+        if (isHoveredAdd && LocalWindowControl.current?.windowFocused?.value == true) {
+            HoverExplanation(stringResource(Res.string.hoverExplanationAddExecutable))
+        }
+        Box(
+            modifier = Modifier.padding(10.dp),
+        ) {
+            if (findingExecutablePathsInProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                )
+            } else {
+                val interactionSourceSearch = remember { MutableInteractionSource() }
+                val isHoveredSearch by interactionSourceSearch.collectIsHoveredAsStateDelayed()
+                Icon(
+                    modifier = Modifier.clickable {
+                        findExecutables()
+                    }.hoverable(interactionSourceSearch),
+                    imageVector = Icons.Outlined.Search,
+                    contentDescription = null,
+                )
+                if (isHoveredSearch && LocalWindowControl.current?.windowFocused?.value == true) {
+                    HoverExplanation(stringResource(Res.string.hoverExplanationSearchExecutable))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExecutablePathsList(
+    executablePaths: List<String>,
+    showFilePicker: (value: ShowFilePicker) -> Unit,
+    deleteExecutablePath: (index: Int) -> Unit,
+) {
+    executablePaths.forEachIndexed { index, executablePath ->
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp).fillMaxWidth(),
+        ) {
+            Text(
+                modifier = Modifier.weight(1f).padding(10.dp).fillMaxWidth(),
+                text = executablePath,
+            )
+            Spacer(
+                modifier = Modifier.width(10.dp),
+            )
+            Icon(
+                modifier = Modifier.align(Alignment.CenterVertically).clickable {
+                    showFilePicker(ShowFilePicker.ChangePath(index))
+                },
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = null,
+            )
+            Icon(
+                modifier = Modifier.align(Alignment.CenterVertically).clickable {
+                    deleteExecutablePath(index)
+                },
+                imageVector = Icons.Outlined.Close,
+                contentDescription = null,
+            )
+        }
+        Divider(
+            modifier = Modifier.padding(horizontal = 10.dp),
+        )
+    }
+}
+
+@Composable
+private fun NoExecutablePaths() {
+    val addIconId = "addIcon"
+    val searchIconId = "searchIcon"
+    Text(
+        modifier = Modifier.fillMaxWidth().padding(10.dp),
+        text = buildAnnotatedString {
+            append(stringResource(Res.string.editGameScreenNoExecutablePaths1))
+            append(" ")
+            appendInlineContent(addIconId, "[$addIconId]")
+            append(" ")
+            append(stringResource(Res.string.editGameScreenNoExecutablePaths2))
+            append(" ")
+            appendInlineContent(searchIconId, "[$searchIconId]")
+            append(" ")
+            append(stringResource(Res.string.editGameScreenNoExecutablePaths3))
+        },
+        inlineContent = mapOf(
+            Pair(
+                addIconId,
+                InlineTextContent(
+                    Placeholder(
+                        width = 24.sp,
+                        height = 24.sp,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Add,
+                        contentDescription = "",
+                    )
+                },
+            ),
+            Pair(
+                searchIconId,
+                InlineTextContent(
+                    Placeholder(
+                        width = 24.sp,
+                        height = 24.sp,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center,
+                    ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
+                        contentDescription = "",
+                    )
+                },
+            ),
+        ),
+        textAlign = TextAlign.Center,
+    )
+    Divider(
+        modifier = Modifier.padding(horizontal = 10.dp),
+    )
 }
 
 sealed class ShowFilePicker {

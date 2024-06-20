@@ -5,6 +5,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,8 @@ import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsScreen
 import org.skynetsoftware.avnlauncher.ui.theme.darkColors
 import java.awt.Dimension
 import java.awt.Toolkit
+import java.awt.event.WindowEvent
+import java.awt.event.WindowFocusListener
 
 private const val WINDOW_ICON = "icon.png"
 
@@ -93,6 +96,7 @@ class WindowControl(
     val draggableArea: DraggableArea,
     val maximizeWindow: MaximizeWindow,
     val floatingWindow: FloatingWindow,
+    val windowFocused: State<Boolean>,
 )
 
 @OptIn(ExperimentalResourceApi::class)
@@ -155,6 +159,16 @@ fun App() {
             state = windowState,
             undecorated = true,
         ) {
+            val windowFocused = remember { mutableStateOf(window.isFocused) }
+            window.addWindowFocusListener(object : WindowFocusListener {
+                override fun windowGainedFocus(e: WindowEvent) {
+                    windowFocused.value = true
+                }
+
+                override fun windowLostFocus(e: WindowEvent) {
+                    windowFocused.value = false
+                }
+            })
             MaterialTheme(
                 colors = darkColors,
             ) {
@@ -171,6 +185,7 @@ fun App() {
                         floatingWindow = {
                             windowState.placement = WindowPlacement.Floating
                         },
+                        windowFocused = windowFocused,
                     ),
                 ) {
                     MainScreen()
