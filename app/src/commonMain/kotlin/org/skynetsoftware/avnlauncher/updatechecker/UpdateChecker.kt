@@ -70,10 +70,10 @@ private class UpdateCheckerImpl(
         updateCheckSchedulerJob = scope.launch {
             val interval = settingsRepository.updateCheckInterval.value.run {
                 if (this < MIN_INTERVAL) {
-                    this
-                } else {
                     logger.info("updateCheckInterval is smaller then minimum value: $MIN_INTERVAL, using $MIN_INTERVAL")
                     MIN_INTERVAL
+                } else {
+                    this
                 }
             }
             logger.info("startPeriodicUpdateChecks interval: $interval")
