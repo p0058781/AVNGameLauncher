@@ -13,7 +13,7 @@
     <string name="editGameInputLabelReleaseDate">Release Date</string>
     <string name="editGameInputLabelFirstReleaseDate">First Release Date</string>
     <string name="editGameToastGameUpdated">Game Updated</string>
-    <string name="editGameButtonSave">Save</string>
+    <string name="editGameButtonSave">Save and Close</string>
     <string name="editGameDialogCheckForUpdates">Check for Updates</string>
     <string name="editGameDialogArchived">Archived</string>
     <string name="editDialogButtonDetectPaths">Detect Game Executables</string>

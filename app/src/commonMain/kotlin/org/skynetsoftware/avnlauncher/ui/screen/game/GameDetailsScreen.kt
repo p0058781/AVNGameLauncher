@@ -80,6 +80,7 @@ fun GameDetailsScreen(
     gameId: Int,
     gameDetailsViewModel: GameDetailsViewModel = viewModel { parametersOf(gameId) },
     imageLoaderFactory: ImageLoaderFactory = koinInject(),
+    onCloseRequest: () -> Unit,
 ) {
     val loadingState by remember { gameDetailsViewModel.state }
         .collectAsState(GameDetailsViewModel.LoadingState.Loading)
@@ -153,7 +154,7 @@ fun GameDetailsScreen(
                         when (tabIndex) {
                             TAB_INDEX_OVERVIEW -> TabOverview(game.game)
                             TAB_INDEX_STATISTICS -> TabStatistics(game)
-                            TAB_INDEX_EDIT -> TabEdit(game.game.f95ZoneThreadId)
+                            TAB_INDEX_EDIT -> TabEdit(game.game.f95ZoneThreadId, onCloseRequest)
                         }
                     }
                 }
@@ -286,7 +287,9 @@ private fun TabStatistics(gameWithStats: GameWithStats) {
 }
 
 @Composable
-private fun TabEdit(gameId: Int) {
-    EditGameScreen(gameId) {
-    }
+private fun TabEdit(
+    gameId: Int,
+    onCloseRequest: () -> Unit,
+) {
+    EditGameScreen(gameId, onCloseRequest)
 }
