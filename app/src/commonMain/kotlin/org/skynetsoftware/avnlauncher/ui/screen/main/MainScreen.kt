@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.seiko.imageloader.LocalImageLoader
@@ -104,8 +105,14 @@ fun MainScreen(
     CompositionLocalProvider(
         LocalImageLoader provides imageLoader,
     ) {
+        val blockedByPopup = LocalWindowControl.current?.blockedByPopup
+        val blurModifier = if (blockedByPopup == true) {
+            Modifier.blur(3.dp)
+        } else {
+            Modifier
+        }
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = blurModifier.fillMaxSize(),
         ) {
             MainScreenContent(
                 games = games,

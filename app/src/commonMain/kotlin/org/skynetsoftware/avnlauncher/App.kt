@@ -21,7 +21,6 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
@@ -97,10 +96,11 @@ class WindowControl(
     val maximizeWindow: MaximizeWindow,
     val floatingWindow: FloatingWindow,
     val windowFocused: State<Boolean>,
+    val blockedByPopup: Boolean,
 )
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
+@Suppress("CyclomaticComplexMethod")
 fun App() {
     val windowState = rememberWindowState(
         position = WindowPosition.Aligned(Alignment.Center),
@@ -186,6 +186,9 @@ fun App() {
                             windowState.placement = WindowPlacement.Floating
                         },
                         windowFocused = windowFocused,
+                        blockedByPopup = showSettingsScreen || showImportGameScreen || showGameDetailsScreen != null ||
+                            showImportGameScreen || showCustomListsScreen || showCardValuesScreen ||
+                            showCreateCustomGameScreen,
                     ),
                 ) {
                     MainScreen()
