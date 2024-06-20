@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.filterLabel
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSortDirection
@@ -90,7 +91,7 @@ fun SortFilter(
                         },
                     ),
                 )
-                if (isHovered) {
+                if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
                     HoverExplanation(stringResource(it.hoverExplanation()))
                 }
             }
@@ -150,7 +151,7 @@ fun Sort(
                 }
             }
         }
-        if (isHovered) {
+        if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(stringResource(Res.string.hoverExplanationSortDirection))
         }
     }

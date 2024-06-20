@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 
 @OptIn(ExperimentalResourceApi::class)
@@ -44,7 +45,7 @@ fun IconAction(
             },
             colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary),
         )
-        if (isHovered && hoverExplanation != null) {
+        if (isHovered && hoverExplanation != null && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(hoverExplanation)
         }
     }
@@ -69,7 +70,7 @@ fun TextAction(
             },
             color = MaterialTheme.colors.onPrimary,
         )
-        if (isHovered && hoverExplanation != null) {
+        if (isHovered && hoverExplanation != null && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(hoverExplanation)
         }
     }

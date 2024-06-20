@@ -39,6 +39,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.edit
 import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_filled
@@ -174,7 +175,7 @@ fun EditIcon(
         }.hoverable(interactionSource),
         colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
     )
-    if (isHovered) {
+    if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
         HoverExplanation(stringResource(Res.string.hoverExplanationEditGame))
     }
 }
@@ -196,7 +197,7 @@ fun DetailsIcon(
         }.hoverable(interactionSource),
         colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
     )
-    if (isHovered) {
+    if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
         HoverExplanation(stringResource(Res.string.hoverExplanationGameDetails))
     }
 }
@@ -219,7 +220,7 @@ fun AddToFavoritesIcon(
             }.hoverable(interactionSource),
         colorFilter = ColorFilter.tint(Color.Red),
     )
-    if (isHovered) {
+    if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
         HoverExplanation(stringResource(Res.string.hoverExplanationFavorites))
     }
 }
@@ -245,7 +246,7 @@ fun F95LinkIcon(
                 }.hoverable(interactionSource),
             colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface),
         )
-        if (isHovered) {
+        if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(stringResource(Res.string.hoverExplanationF95Link))
         }
     }
@@ -271,7 +272,7 @@ fun UpdateAvailableIcon(
                 }
             }.hoverable(interactionSource),
         )
-        if (isHovered) {
+        if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(stringResource(Res.string.hoverExplanationUpdateAvailable))
         }
     }
@@ -292,7 +293,7 @@ fun ExecutablePathMissingIcon(
             contentDescription = null,
             modifier = modifier.size(30.dp).padding(5.dp).hoverable(interactionSource),
         )
-        if (isHovered) {
+        if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(stringResource(Res.string.hoverExplanationExecutablePathMissing))
         }
     }
@@ -327,7 +328,7 @@ fun Rating(
                 style = MaterialTheme.typography.body2,
             )
         }
-        if (isHovered) {
+        if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
             HoverExplanation(stringResource(Res.string.hoverExplanationRating))
         }
     }
