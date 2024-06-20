@@ -236,6 +236,9 @@ fun App() {
                     ) {
                         GameDetailsScreen(
                             gameId = it.f95ZoneThreadId,
+                            onCloseRequest = {
+                                showGameDetailsScreen = null
+                            },
                         )
                     }
                 }
