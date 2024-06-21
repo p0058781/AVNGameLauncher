@@ -12,11 +12,10 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-import org.skynetsoftware.avnlauncher.AVNLauncherApp
+import org.koin.core.context.startKoin
 import org.skynetsoftware.avnlauncher.App
 import org.skynetsoftware.avnlauncher.LocalExitApplication
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
@@ -27,20 +26,32 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.trayCheckForUpdate
 import org.skynetsoftware.avnlauncher.app.generated.resources.trayExit
 import org.skynetsoftware.avnlauncher.app.generated.resources.trayShowHideWindow
 import org.skynetsoftware.avnlauncher.config.Config
+import org.skynetsoftware.avnlauncher.config.configKoinModule
+import org.skynetsoftware.avnlauncher.data.dataKoinModule
+import org.skynetsoftware.avnlauncher.data.gameImportKoinModule
+import org.skynetsoftware.avnlauncher.domain.domainKoinModule
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
-import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.domain.utils.os
+import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
+import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
+import org.skynetsoftware.avnlauncher.link.externalLinkUtilsKoinModule
+import org.skynetsoftware.avnlauncher.logger.logUncaughtExceptions
+import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
+import org.skynetsoftware.avnlauncher.state.eventCenterModule
+import org.skynetsoftware.avnlauncher.state.stateHandlerModule
+import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModelsKoinModule
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
+import org.skynetsoftware.avnlauncher.updatechecker.updateCheckerKoinModule
+import org.skynetsoftware.avnlauncher.utils.executableFinderKoinModule
 import java.awt.Toolkit
 import java.io.File
 import java.lang.reflect.Field
 
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("LongMethod")
 suspend fun main(args: Array<String>) {
     setAwtAppName()
@@ -53,15 +64,31 @@ suspend fun main(args: Array<String>) {
     val config = createConfig(dataDir, cacheDir)
     System.setProperty("java.util.prefs.userRoot", config.dataDir)
 
-    AVNLauncherApp.onCreate(config)
+    val koinApplication = startKoin {
+        modules(
+            imageLoaderKoinModule(),
+            configKoinModule(config),
+            dataKoinModule,
+            domainKoinModule,
+            loggerKoinModule,
+            gameImportKoinModule,
+            updateCheckerKoinModule,
+            gameLauncherKoinModule,
+            viewModelsKoinModule,
+            eventCenterModule,
+            stateHandlerModule,
+            executableFinderKoinModule,
+            externalLinkUtilsKoinModule,
+        )
+    }
+
+    logUncaughtExceptions(koinApplication.koin.get())
+
     application {
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
-        // on desktop these are always Option.Some
-        val minimizeToTrayOnClose by remember {
-            (settingsRepository.minimizeToTrayOnClose as Option.Some).value
-        }.collectAsState()
-        val startMinimized = (settingsRepository.startMinimized as Option.Some).value.value
+        val minimizeToTrayOnClose by remember { settingsRepository.minimizeToTrayOnClose }.collectAsState()
+        val startMinimized = settingsRepository.startMinimized.value
         var minimized by remember { mutableStateOf(minimizeToTrayOnClose && startMinimized) }
         var open by remember { mutableStateOf(true) }
 
@@ -87,29 +114,39 @@ suspend fun main(args: Array<String>) {
             if (minimizeToTrayOnClose) {
                 val trayState = rememberTrayState()
                 val eventCenter = koinInject<EventCenter>()
+                var hasUpdates by remember { mutableStateOf(false) }
 
                 LaunchedEffect(null) {
                     eventCenter.events.collect {
-                        if (it is Event.UpdateCheckComplete) {
-                            val count = it.updateCheckResult.updates.count { game -> game.updateAvailable }
-                            if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {
-                                trayState.sendNotification(
-                                    Notification(
-                                        title = getString(Res.string.systemNotificationTitleUpdateAvailable),
-                                        message = getString(
-                                            Res.string.systemNotificationDescriptionUpdateAvailable,
-                                            count,
+                        when (it) {
+                            is Event.UpdateCheckComplete -> {
+                                val count = it.updateCheckResult.updates.count { game -> game.updateAvailable }
+                                if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {
+                                    trayState.sendNotification(
+                                        Notification(
+                                            title = getString(Res.string.systemNotificationTitleUpdateAvailable),
+                                            message = getString(
+                                                Res.string.systemNotificationDescriptionUpdateAvailable,
+                                                count,
+                                            ),
+                                            type = Notification.Type.None,
                                         ),
-                                        type = Notification.Type.None,
-                                    ),
-                                )
+                                    )
+                                    hasUpdates = true
+                                }
                             }
+
+                            Event.UpdateSeen -> {
+                                hasUpdates = false
+                            }
+
+                            else -> {}
                         }
                     }
                 }
                 Tray(
                     state = trayState,
-                    icon = painterResource("icon.png"),
+                    icon = painterResource(if (hasUpdates) "tray_icon_updates.png" else "tray_icon.png"),
                     menu = {
                         Item(
                             stringResource(Res.string.trayShowHideWindow),
@@ -147,7 +184,6 @@ suspend fun main(args: Array<String>) {
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("TooGenericExceptionCaught")
 private suspend fun setAwtAppName() {
     try {

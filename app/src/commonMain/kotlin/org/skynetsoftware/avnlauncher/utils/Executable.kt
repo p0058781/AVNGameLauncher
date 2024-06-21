@@ -4,7 +4,6 @@ import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
-import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.logger.Logger
 import java.io.File
@@ -59,10 +58,7 @@ private class ExecutableFinderDesktop(
 
     private fun getGamesRootDir(): File? {
         val gamesDir = settingsRepository.gamesDir
-        if (gamesDir !is Option.Some) {
-            return null
-        }
-        return gamesDir.value.value?.let { File(it) }
+        return gamesDir.value?.let { File(it) }
     }
 
     override fun findExecutables(title: String): Set<String> {
