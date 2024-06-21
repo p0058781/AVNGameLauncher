@@ -39,6 +39,8 @@ sealed class Event {
 
     class UpdateCheckComplete(val updateCheckResult: UpdateCheckResult) : Event()
 
+    object UpdateSeen : Event()
+
     // GameLauncher
     class PlayingStarted(val game: Game) : Event()
 

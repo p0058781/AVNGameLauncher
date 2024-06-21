@@ -215,5 +215,6 @@ class MainScreenViewModel(
     fun resetNewUpdateAvailableIndicatorVisible() =
         viewModelScope.launch {
             _newUpdateAvailableIndicatorVisible.emit(false)
+            eventCenter.emit(Event.UpdateSeen)
         }
 }

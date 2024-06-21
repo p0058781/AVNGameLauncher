@@ -70,7 +70,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsSectionTit
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsSectionTitleUI
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
-import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.Dropdown
 import org.skynetsoftware.avnlauncher.ui.component.Input
@@ -95,9 +94,6 @@ fun SettingsScreen(
     externalLinkUtils: ExternalLinkUtils = koinInject(),
 ) {
     val periodicUpdateChecks by remember { settingsViewModel.periodicUpdateChecksEnabled }.collectAsState()
-    val gamesDirShown = settingsViewModel.gamesDir is Option.Some
-    val minimizeToTrayOnCloseShown = settingsViewModel.minimizeToTrayOnClose is Option.Some
-    val startMinimizedShown = settingsViewModel.startMinimized is Option.Some
     val logLevel by remember { settingsViewModel.logLevel }.collectAsState()
     val showGifs by remember { settingsViewModel.showGifs }.collectAsState()
     val dateFormat by remember { settingsViewModel.dateFormat }.collectAsState()
@@ -120,36 +116,28 @@ fun SettingsScreen(
             Section(
                 title = stringResource(Res.string.settingsSectionTitleGeneral),
             ) {
-                if (minimizeToTrayOnCloseShown) {
-                    val minimizeToTrayOnClose by remember {
-                        (settingsViewModel.minimizeToTrayOnClose as Option.Some).value
-                    }.collectAsState()
-                    Item(
-                        title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
-                        subtitle = stringResource(Res.string.settingsItemDescriptionMinimizeToTray),
-                        endContent = {
-                            Toggle(minimizeToTrayOnClose) {
-                                settingsViewModel.setMinimizeToTrayOnClose(it)
-                            }
-                        },
-                    )
-                    Divider()
-                }
-                if (startMinimizedShown) {
-                    val startMinimized by remember {
-                        (settingsViewModel.startMinimized as Option.Some).value
-                    }.collectAsState()
-                    Item(
-                        title = stringResource(Res.string.settingsItemTitleStartMinimized),
-                        subtitle = stringResource(Res.string.settingsItemDescriptionStartMinimized),
-                        endContent = {
-                            Toggle(startMinimized) {
-                                settingsViewModel.setStartMinimized(it)
-                            }
-                        },
-                    )
-                    Divider()
-                }
+                val minimizeToTrayOnClose by remember { settingsViewModel.minimizeToTrayOnClose }.collectAsState()
+                Item(
+                    title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
+                    subtitle = stringResource(Res.string.settingsItemDescriptionMinimizeToTray),
+                    endContent = {
+                        Toggle(minimizeToTrayOnClose) {
+                            settingsViewModel.setMinimizeToTrayOnClose(it)
+                        }
+                    },
+                )
+                Divider()
+                val startMinimized by remember { settingsViewModel.startMinimized }.collectAsState()
+                Item(
+                    title = stringResource(Res.string.settingsItemTitleStartMinimized),
+                    subtitle = stringResource(Res.string.settingsItemDescriptionStartMinimized),
+                    endContent = {
+                        Toggle(startMinimized) {
+                            settingsViewModel.setStartMinimized(it)
+                        }
+                    },
+                )
+                Divider()
                 Item(
                     title = stringResource(Res.string.settingsItemTitleLogLevel),
                     subtitle = stringResource(Res.string.settingsItemDescriptionLogLevel),
@@ -179,22 +167,20 @@ fun SettingsScreen(
             Section(
                 title = stringResource(Res.string.settingsSectionTitleGames),
             ) {
-                if (gamesDirShown) {
-                    val gamesDir by remember { (settingsViewModel.gamesDir as Option.Some).value }.collectAsState()
-                    var showFilePicker by remember { mutableStateOf(false) }
-                    Item(
-                        title = stringResource(Res.string.settingsItemTitleGamesDir),
-                        subtitle = gamesDir ?: stringResource(Res.string.settingsItemDescriptionGamesDir),
-                        onClick = {
-                            showFilePicker = true
-                        },
-                    )
-                    Divider()
-                    GamesDirPicker(showFilePicker, gamesDir) {
-                        showFilePicker = false
-                        it?.let {
-                            settingsViewModel.setGamesDir(it)
-                        }
+                val gamesDir by remember { settingsViewModel.gamesDir }.collectAsState()
+                var showFilePicker by remember { mutableStateOf(false) }
+                Item(
+                    title = stringResource(Res.string.settingsItemTitleGamesDir),
+                    subtitle = gamesDir ?: stringResource(Res.string.settingsItemDescriptionGamesDir),
+                    onClick = {
+                        showFilePicker = true
+                    },
+                )
+                Divider()
+                GamesDirPicker(showFilePicker, gamesDir) {
+                    showFilePicker = false
+                    it?.let {
+                        settingsViewModel.setGamesDir(it)
                     }
                 }
                 Item(

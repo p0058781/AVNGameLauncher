@@ -7,7 +7,6 @@ import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
-import org.skynetsoftware.avnlauncher.domain.utils.Option
 
 abstract class ISettingsDefaults {
     open val selectedFilter: Filter = Filter.All
@@ -36,13 +35,13 @@ interface SettingsRepository {
     val selectedSortOrder: StateFlow<SortOrder>
     val selectedSortDirection: StateFlow<SortDirection>
     val selectedGamesDisplayMode: StateFlow<GamesDisplayMode>
-    val gamesDir: Option<out StateFlow<String?>>
+    val gamesDir: StateFlow<String?>
     val sfwModeEnabled: StateFlow<Boolean>
     val periodicUpdateChecksEnabled: StateFlow<Boolean>
     val updateCheckInterval: StateFlow<Long>
     val lastUpdateCheck: StateFlow<Long>
-    val minimizeToTrayOnClose: Option<out StateFlow<Boolean>>
-    val startMinimized: Option<out StateFlow<Boolean>>
+    val minimizeToTrayOnClose: StateFlow<Boolean>
+    val startMinimized: StateFlow<Boolean>
     val logLevel: StateFlow<LogLevel>
     val showGifs: StateFlow<Boolean>
     val dateFormat: StateFlow<String>
