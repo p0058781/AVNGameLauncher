@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.gameLauncherInvalidExecutableToast
+import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
@@ -25,7 +26,6 @@ import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.state.StateHandler
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
-import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 import org.skynetsoftware.avnlauncher.utils.calculateAveragePlayTime
 
 @Suppress("TooManyFunctions", "LongParameterList")

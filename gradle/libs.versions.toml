@@ -1,25 +1,20 @@
 [versions]
 kotlin = "1.9.23"
-activity-compose = "1.8.2"
-appcompat = "1.6.1"
-core-ktx = "1.12.0"
 image-loader = "1.7.1"
 jsoup = "1.16.1"
 koin = "3.5.3"
 koin-compose = "1.1.2"
 kotlinx-coroutines-core = "1.7.3"
-kotlinx-datetime = "0.4.1"
+kotlinx-datetime = "0.6.0"
 kotlinx-cli = "0.3.6"
-ktor = "2.3.7"
+ktor = "2.3.11"
+ktor-wasm = "3.2.0"
 mpfilepicker = "2.1.0"
 multiplatform-settings-no-arg = "1.1.0"
 okio = "3.6.0"
 turbine = "0.12.1"
-agp = "8.2.1"
 jetbrains-compose = "1.6.10"
 ktlint-plugin = "12.0.3"
-accompanist = "0.28.0"
-moko = "0.23.0"
 kover = "0.7.5"
 detekt = "1.23.3"
 sqldelight = "2.0.1"
@@ -27,61 +22,58 @@ log4j = "2.22.1"
 dependencygraphgenerator = "0.8.0"
 mockk = "1.13.9"
 buildkonfig = "0.15.1"
-work = "2.9.0"
-navigation-compose = "2.7.7"
 mvvm = "0.16.1"
 chiptextfield = "0.7.0-alpha02"
-systemtray = "4.4"
+junit = "4.13.2"
 
 [libraries]
-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
-core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "image-loader" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
-koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin-compose" }
-koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines-core" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-core" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-cli = { module = "org.jetbrains.kotlinx:kotlinx-cli", version.ref = "kotlinx-cli" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-core-wasm = { module = "io.ktor:ktor-client-core-wasm-js", version.ref = "ktor-wasm" }
+ktor-client-contentnegotiation-wasm = { module = "io.ktor:ktor-client-content-negotiation-wasm-js", version.ref = "ktor-wasm" }
+ktor-serialization-kotlinx-json-wasm = { module = "io.ktor:ktor-serialization-kotlinx-json-wasm-js", version.ref = "ktor-wasm" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-client-contentnegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
+ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
+ktor-server-contentnegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers", version.ref = "ktor" }
 mpfilepicker = { module = "com.darkrockstudios:mpfilepicker", version.ref = "mpfilepicker" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings-no-arg" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
-accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 mvvm-flow-compose = { module = "dev.icerock.moko:mvvm-flow-compose", version.ref = "mvvm" }
 mvvm-compose = { module = "dev.icerock.moko:mvvm-compose", version.ref = "mvvm" }
 sqdelight-primitiveadapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
-sqdelight-androiddriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqdelight-sqlitedriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqdelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-androidx-work-runtimektx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 dokar3-chiptextfield = { module = "io.github.dokar3:chiptextfield", version.ref = "chiptextfield" }
-dokbox-systemtray = { module = "com.dorkbox:SystemTray", version.ref = "systemtray" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [bundles]
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
-ktor-plugin = { id = "io.ktor.plugin", version.ref = "ktor" }
-ktlint-plugin = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-plugin" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-plugin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

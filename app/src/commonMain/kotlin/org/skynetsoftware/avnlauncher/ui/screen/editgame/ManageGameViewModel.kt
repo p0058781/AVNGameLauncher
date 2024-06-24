@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
+import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.model.isF95Game
@@ -14,7 +15,6 @@ import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
-import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 import org.skynetsoftware.avnlauncher.utils.isValidDateTimeFormat
 import java.text.SimpleDateFormat
 import kotlin.random.Random
@@ -31,7 +31,7 @@ class ManageGameViewModel(
     val developer = MutableStateFlow("")
     val imageUrl = MutableStateFlow("")
     val checkForUpdates = MutableStateFlow(true)
-    val currentPlayState = MutableStateFlow(PlayState.Playing)
+    val currentPlayState = MutableStateFlow(PlayState.NotStarted)
     val hidden = MutableStateFlow(false)
     val notes = MutableStateFlow<String?>(null)
     val version = MutableStateFlow("")

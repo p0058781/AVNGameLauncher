@@ -3,7 +3,6 @@
 package org.skynetsoftware.avnlauncher.utils
 
 import androidx.compose.runtime.Composable
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.nHours
@@ -21,7 +20,6 @@ private const val HOURS_IN_DAY = 24f
 private const val ONE_DAY_MS = 86400000f
 private const val WEEK_NUMBER_OF_DAYS = 7L
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun formatPlayTime(playTime: Long?): String {
     if (playTime == null || playTime == 0L) {

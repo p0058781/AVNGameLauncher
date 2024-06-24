@@ -17,10 +17,11 @@ kotlin {
 
         val commonMain by getting {
             dependencies {
+                implementation(project(":server"))
                 implementation(project(":data"))
-                api(project(":domain"))
-                api(project(":logger"))
-                api(project(":config"))
+                implementation(project(":domain"))
+                implementation(project(":logger"))
+                implementation(project(":config"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)

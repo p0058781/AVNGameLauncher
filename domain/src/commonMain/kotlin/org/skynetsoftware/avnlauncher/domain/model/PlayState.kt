@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.domain.model
 
 enum class PlayState {
+    NotStarted,
     Playing,
     WaitingForUpdate,
     Completed,

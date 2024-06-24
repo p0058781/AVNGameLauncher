@@ -12,6 +12,7 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -25,10 +26,10 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotification
 import org.skynetsoftware.avnlauncher.app.generated.resources.trayCheckForUpdates
 import org.skynetsoftware.avnlauncher.app.generated.resources.trayExit
 import org.skynetsoftware.avnlauncher.app.generated.resources.trayShowHideWindow
+import org.skynetsoftware.avnlauncher.appKoinModule
 import org.skynetsoftware.avnlauncher.config.Config
-import org.skynetsoftware.avnlauncher.config.configKoinModule
+import org.skynetsoftware.avnlauncher.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
-import org.skynetsoftware.avnlauncher.data.gameImportKoinModule
 import org.skynetsoftware.avnlauncher.domain.domainKoinModule
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
@@ -38,6 +39,8 @@ import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
 import org.skynetsoftware.avnlauncher.link.externalLinkUtilsKoinModule
 import org.skynetsoftware.avnlauncher.logger.logUncaughtExceptions
 import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
+import org.skynetsoftware.avnlauncher.server.HttpServer
+import org.skynetsoftware.avnlauncher.server.httpServerKoinModule
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.eventCenterModule
@@ -51,6 +54,7 @@ import java.io.File
 import java.lang.reflect.Field
 
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
+private const val HTTP_SERVER_STOP_TIMEOUT = 500L
 
 @Suppress("LongMethod")
 suspend fun main(args: Array<String>) {
@@ -68,10 +72,10 @@ suspend fun main(args: Array<String>) {
         modules(
             imageLoaderKoinModule(),
             configKoinModule(config),
+            appKoinModule,
             dataKoinModule,
             domainKoinModule,
             loggerKoinModule,
-            gameImportKoinModule,
             updateCheckerKoinModule,
             gameLauncherKoinModule,
             viewModelsKoinModule,
@@ -79,12 +83,14 @@ suspend fun main(args: Array<String>) {
             stateHandlerModule,
             executableFinderKoinModule,
             externalLinkUtilsKoinModule,
+            httpServerKoinModule,
         )
     }
 
     logUncaughtExceptions(koinApplication.koin.get())
 
     application {
+        val httpServer = koinInject<HttpServer>()
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
         val minimizeToTrayOnClose by remember { settingsRepository.minimizeToTrayOnClose }.collectAsState()
@@ -108,6 +114,16 @@ suspend fun main(args: Array<String>) {
                         updateChecker.startPeriodicUpdateChecks()
                     } else {
                         updateChecker.stopPeriodicUpdateChecks()
+                    }
+                }
+            }
+            LaunchedEffect(null) {
+                settingsRepository.httpServerEnabled.collect { httpServerEnabled ->
+                    if (httpServerEnabled) {
+                        httpServer.start()
+                    } else {
+                        httpServer.stop(HTTP_SERVER_STOP_TIMEOUT)
+                        delay(HTTP_SERVER_STOP_TIMEOUT)
                     }
                 }
             }

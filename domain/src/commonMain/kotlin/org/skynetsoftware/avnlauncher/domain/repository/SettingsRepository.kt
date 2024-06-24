@@ -8,28 +8,35 @@ import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 
-abstract class ISettingsDefaults {
-    open val selectedFilter: Filter = Filter.All
-    open val selectedSortOrder: SortOrder = SortOrder.LastPlayed
-    open val selectedSortOrderDirection: SortDirection = SortDirection.Descending
-    open val selectedGamesDisplayMode: GamesDisplayMode = GamesDisplayMode.Grid
-    open val sfwModeEnabled: Boolean = false
+@Suppress("ConstPropertyName")
+object SettingsDefaults {
+    val selectedFilter: Filter = Filter.All
+    val selectedSortOrder: SortOrder = SortOrder.LastPlayed
+    val selectedSortOrderDirection: SortDirection = SortDirection.Descending
+    val selectedGamesDisplayMode: GamesDisplayMode = GamesDisplayMode.Grid
+    const val sfwModeEnabled: Boolean = false
 
     @Suppress("MagicNumber")
-    open val updateCheckInterval: Long = 3_600_000L // 1 hour
-    open val periodicUpdateChecks: Boolean = true
-    open val logLevel: LogLevel = LogLevel.Info
-    open val showGifs: Boolean = false
-    open val systemNotificationsEnabled: Boolean = true
-    open val dateFormat: String = "MMM dd, yyyy"
-    open val timeFormat: String = "HH:mm"
-    open val gridColumns: GridColumns = GridColumns.Auto
+    const val updateCheckInterval: Long = 3_600_000L // 1 hour
+    const val periodicUpdateChecks: Boolean = true
+    val logLevel: LogLevel = LogLevel.Info
+    const val showGifs: Boolean = false
+    const val systemNotificationsEnabled: Boolean = true
+    const val dateFormat: String = "MMM dd, yyyy"
+    const val timeFormat: String = "HH:mm"
+    val gridColumns: GridColumns = GridColumns.Auto
 
     @Suppress("MagicNumber")
-    open val gridImageAspectRatio: Float = 3.5f
-    open val archivedGamesDisableUpdateChecks: Boolean = false
+    const val gridImageAspectRatio: Float = 3.5f
+    const val archivedGamesDisableUpdateChecks: Boolean = false
+
+    const val minimizeToTrayOnClose: Boolean = false
+    const val startMinimized: Boolean = false
+
+    const val httpServerEnabled: Boolean = true
 }
 
+@Suppress("TooManyFunctions")
 interface SettingsRepository {
     val selectedFilter: StateFlow<Filter>
     val selectedSortOrder: StateFlow<SortOrder>
@@ -50,6 +57,7 @@ interface SettingsRepository {
     val systemNotificationsEnabled: StateFlow<Boolean>
     val archivedGamesDisableUpdateChecks: StateFlow<Boolean>
     val gridImageAspectRatio: StateFlow<Float>
+    val httpServerEnabled: StateFlow<Boolean>
 
     suspend fun setSelectedFilter(filter: Filter)
 
@@ -88,4 +96,6 @@ interface SettingsRepository {
     suspend fun setArchivedGamesDisableUpdateChecks(archivedGamesDisableUpdateChecks: Boolean)
 
     suspend fun setGridImageAspectRatio(gridImageAspectRatio: Float)
+
+    suspend fun setHttpServerEnabled(httpServerEnabled: Boolean)
 }
