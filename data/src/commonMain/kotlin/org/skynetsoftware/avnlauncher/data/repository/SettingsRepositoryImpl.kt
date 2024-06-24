@@ -10,21 +10,16 @@ import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
-import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
+import org.skynetsoftware.avnlauncher.domain.repository.SettingsDefaults
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.MutableStateFlow
-
-@Suppress("MayBeConst")
-object SettingsDefaults : ISettingsDefaults() {
-    val minimizeToTrayOnClose: Boolean = false
-    val startMinimized: Boolean = false
-}
 
 internal fun Module.settingsKoinModule() {
     single { Settings() }
     single<SettingsRepository> { SettingsRepositoryImpl(get()) }
 }
 
+@Suppress("TooManyFunctions")
 internal class SettingsRepositoryImpl(private val settings: Settings) : SettingsRepository {
     private val _selectedFilter = MutableStateFlow {
         val selectedFilterClassname =
@@ -175,6 +170,15 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
         }
     override val gridImageAspectRatio: StateFlow<Float> get() = _gridImageAspectRatio
 
+    private val _httpServerEnabled =
+        MutableStateFlow {
+            settings.getBoolean(
+                SettingsRepository::httpServerEnabled.name,
+                SettingsDefaults.httpServerEnabled,
+            )
+        }
+    override val httpServerEnabled: StateFlow<Boolean> get() = _httpServerEnabled
+
     override suspend fun setSelectedFilter(filter: Filter) {
         _selectedFilter.emit(filter)
         settings[SettingsRepository::selectedFilter.name] = filter::class.simpleName
@@ -295,5 +299,10 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
     override suspend fun setStartMinimized(startMinimized: Boolean) {
         _startMinimized.emit(startMinimized)
         settings[SettingsRepository::startMinimized.name] = startMinimized
+    }
+
+    override suspend fun setHttpServerEnabled(httpServerEnabled: Boolean) {
+        _httpServerEnabled.emit(httpServerEnabled)
+        settings[SettingsRepository::httpServerEnabled.name] = httpServerEnabled
     }
 }

@@ -3,8 +3,8 @@ package org.skynetsoftware.avnlauncher.ui.screen.import
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.skynetsoftware.avnlauncher.data.GameImport
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.usecase.ImportGameUseCase
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.EventCenter
@@ -13,7 +13,7 @@ import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
 import org.skynetsoftware.avnlauncher.utils.hoursToMilliseconds
 
 class ImportGameViewModel(
-    private val gameImport: GameImport,
+    private val importGame: ImportGameUseCase,
     private val logger: Logger,
     eventCenter: EventCenter,
 ) : ShowToastViewModel(eventCenter) {
@@ -48,13 +48,7 @@ class ImportGameViewModel(
                 }
 
                 _state.emit(State.Importing)
-                val threadId = it.toIntOrNull()
-                val gameResult = if (threadId == null) {
-                    gameImport.importGame(it, playTime, firstPlayed)
-                } else {
-                    gameImport.importGame(threadId, playTime, firstPlayed)
-                }
-                when (gameResult) {
+                when (val gameResult = importGame(it, playTime, firstPlayed)) {
                     is Result.Error -> _state.emit(State.Error(gameResult.exception))
                     is Result.Ok -> _state.emit(State.Imported(gameResult.value))
                 }

@@ -1,48 +1,32 @@
-package org.skynetsoftware.avnlauncher.data
+package org.skynetsoftware.avnlauncher.domain.usecase
 
-import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
-import org.skynetsoftware.avnlauncher.utils.ExecutableFinder
 
-val gameImportKoinModule = module {
-    single<GameImport> {
-        GameImportImpl(get(), get(), get())
-    }
-}
+class GameExistsException : Exception()
 
-interface GameImport {
-    suspend fun importGame(
-        threadId: Int,
-        playTime: Long? = null,
-        firstPlayed: Long? = null,
-    ): Result<Game>
+class InvalidUrlException : Exception()
 
-    suspend fun importGame(
-        threadUrl: String,
-        playTime: Long? = null,
-        firstPlayed: Long? = null,
-    ): Result<Game>
-
-    class GameExistsException : Exception()
-
-    class InvalidUrlException : Exception()
-}
-
-private class GameImportImpl(
+class ImportGameUseCase(
     private val gamesRepository: GamesRepository,
     private val f95Repository: F95Repository,
     private val executableFinder: ExecutableFinder,
-) : GameImport {
-    private val gameThreadUrlRegex = Regex("https://f95zone.to/threads/.+l\\.(\\d+).*")
+) {
+    private val gameThreadUrlRegex = Regex("https://f95zone.to/threads/.+\\.(\\d+).*")
 
-    override suspend fun importGame(
-        threadId: Int,
+    suspend operator fun invoke(
+        threadIdOrUrl: String,
         playTime: Long?,
         firstPlayed: Long?,
     ): Result<Game> {
+        var threadId = threadIdOrUrl.toIntOrNull()
+        if (threadId == null) {
+            threadId = gameThreadUrlRegex.matchEntire(threadIdOrUrl)?.groupValues?.getOrNull(1)?.toIntOrNull()
+                ?: return Result.Error(InvalidUrlException())
+        }
         return when (val f95GameResult = f95Repository.getGame(threadId)) {
             is Result.Error -> Result.Error(f95GameResult.exception)
             is Result.Ok -> {
@@ -71,19 +55,9 @@ private class GameImportImpl(
                     gamesRepository.insertGame(game)
                     Result.Ok(game)
                 } else {
-                    Result.Error(GameImport.GameExistsException())
+                    Result.Error(GameExistsException())
                 }
             }
         }
-    }
-
-    override suspend fun importGame(
-        threadUrl: String,
-        playTime: Long?,
-        firstPlayed: Long?,
-    ): Result<Game> {
-        val threadId = gameThreadUrlRegex.matchEntire(threadUrl)?.groupValues?.getOrNull(1)?.toIntOrNull()
-            ?: return Result.Error(GameImport.InvalidUrlException())
-        return importGame(threadId, playTime, firstPlayed)
     }
 }

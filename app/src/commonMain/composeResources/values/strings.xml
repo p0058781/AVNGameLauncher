@@ -159,6 +159,7 @@
     <string name="gamePickerPickGame">Pick Game</string>
     <string name="pickeExecutablePathDialogTitle">Pick Executable</string>
     <string name="playStateLabelPlaying">Playing</string>
+    <string name="playStateLabelNotStarted">Not Started</string>
     <string name="playStateLabelWaitingForUpdate">Waiting for Update</string>
     <string name="playStateLabelCompleted">Completed</string>
     <string name="trayShowHideWindow">Show/Hide Window</string>

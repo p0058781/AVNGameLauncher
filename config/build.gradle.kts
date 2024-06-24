@@ -1,23 +1,20 @@
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+
 plugins {
     kotlin("multiplatform")
 }
 
 kotlin {
 
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        browser()
+    }
     jvm("desktop")
 
     sourceSets {
-
         val commonMain by getting {
             dependencies {
-                implementation(libs.koin.core)
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-                implementation(libs.koin.test)
-                implementation(libs.turbine)
             }
         }
     }

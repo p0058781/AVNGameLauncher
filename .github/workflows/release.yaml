@@ -35,6 +35,12 @@ jobs:
           run: ./gradlew --console=plain packageReleaseUberJarForCurrentOS
         - name: Create release distributable for ${{ runner.os }}
           run: ./gradlew --console=plain createReleaseDistributable
+        - name: Create browser extension distributable
+          run: ./gradlew wasmJsBrowserDistribution
+        - name: Zip browser extension distributable
+          run: |
+            cd browser-extension/build/dist/wasmJs/productionExecutable/ &&
+            7z a avn-game-launcher-browser-extension-release.zip *
         - name: Zip release distributable for ${{ runner.os }}
           run: |
             cd app/build/compose/binaries/main-release/app/ &&

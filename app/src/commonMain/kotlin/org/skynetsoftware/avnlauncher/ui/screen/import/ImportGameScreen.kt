@@ -39,7 +39,8 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogPl
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogSuccessToast
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogThreadIdHint
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameScreenButtonAddCustomGame
-import org.skynetsoftware.avnlauncher.data.GameImport
+import org.skynetsoftware.avnlauncher.domain.usecase.GameExistsException
+import org.skynetsoftware.avnlauncher.domain.usecase.InvalidUrlException
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
@@ -138,8 +139,8 @@ fun ImportGameScreen(
 
             is ImportGameViewModel.State.Error -> {
                 val message = when (stateCopy.error) {
-                    is GameImport.GameExistsException -> stringResource(Res.string.importGameDialogGameExists)
-                    is GameImport.InvalidUrlException -> stringResource(Res.string.importGameDialogInvalidUrl)
+                    is GameExistsException -> stringResource(Res.string.importGameDialogGameExists)
+                    is InvalidUrlException -> stringResource(Res.string.importGameDialogInvalidUrl)
                     is ImportGameViewModel.ValidationFirstPlayedInvalidException -> stringResource(
                         Res.string.importGameDialogFirstPlayedInvalid,
                     )

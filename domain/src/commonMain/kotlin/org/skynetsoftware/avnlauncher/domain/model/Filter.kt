@@ -26,6 +26,10 @@ sealed class Filter(val label: String) {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.Playing }
     }
 
+    object NotStarted : Filter("Not Started") {
+        override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.NotStarted }
+    }
+
     object Completed : Filter("Completed") {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.Completed }
     }
@@ -40,7 +44,10 @@ sealed class Filter(val label: String) {
 
     companion object {
         val entries: List<Filter> by lazy {
-            listOf(Playing, GamesWithUpdate, WaitingForUpdate, Favorites, Completed, All, HiddenGames, UnplayedGames)
+            listOf(
+                Playing, NotStarted, GamesWithUpdate, WaitingForUpdate,
+                Favorites, Completed, All, HiddenGames, UnplayedGames,
+            )
         }
     }
 }

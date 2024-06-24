@@ -10,7 +10,6 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.skynetsoftware.avnlauncher.config.Config
-import org.skynetsoftware.avnlauncher.config.configKoinModule
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
@@ -55,9 +54,9 @@ class F95ApiTest : KoinTest {
     fun beforeTest() {
         startKoin {
             modules(
-                configKoinModule(config),
                 dataKoinModule,
                 module {
+                    single { config }
                     single<Logger> { mockk<Logger>() }
                 },
             )

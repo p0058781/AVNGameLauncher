@@ -9,8 +9,8 @@ plugins {
 
     alias(libs.plugins.jetbrains.compose).apply(false)
 
-    alias(libs.plugins.ktor.plugin).apply(false)
-    alias(libs.plugins.ktlint.plugin).apply(false)
+    alias(libs.plugins.ktor).apply(false)
+    alias(libs.plugins.ktlint).apply(false)
     alias(libs.plugins.kover).apply(false)
     alias(libs.plugins.detekt).apply(false)
     alias(libs.plugins.sqldelight).apply(false)
@@ -49,7 +49,7 @@ subprojects {
         exclude("**/Database.kt")
         exclude("**/DatabaseImpl.kt")
         exclude("**/BuildKonfig.kt")
-        exclude("org/skynetsoftware/avnlauncher/app/generated/resources/**/*")
+        exclude("org/skynetsoftware/avnlauncher/**/generated/resources/**/*")
         reports {
             html.required.set(true)
             xml.required.set(false)

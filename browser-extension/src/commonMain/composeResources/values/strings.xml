@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="myRating">My Rating</string>
+    <string name="haveLatestVersion">Have Latest Version</string>
+    <string name="archived">Archived</string>
+    <string name="playState">Play State</string>
+    <string name="notes">Notes</string>
+    <string name="favorites">Favorites</string>
+    <string name="totalPlayTime">Total Play Time</string>
+    <string name="added">Added</string>
+    <string name="firstPlayed">First Played</string>
+    <string name="lastPlayed">Last Played</string>
+    <string name="addGame">Add Game</string>
+    <string name="unknownError">Unknown Error</string>
+    <string name="notGameThread">Go to game thread to add game</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="noValue">-</string>
+    <string name="nHours">%1$d hours</string>
+    <string name="nMinutes">%1$d minutes</string>
+    <string name="nSeconds">%1$d seconds</string>
+</resources>
