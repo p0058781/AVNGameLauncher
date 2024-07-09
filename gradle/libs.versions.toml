@@ -25,6 +25,7 @@ buildkonfig = "0.15.1"
 mvvm = "0.16.1"
 chiptextfield = "0.7.0-alpha02"
 junit = "4.13.2"
+systemtray = "4.4"
 
 [libraries]
 image-loader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "image-loader" }
@@ -63,6 +64,7 @@ log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.r
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 dokar3-chiptextfield = { module = "io.github.dokar3:chiptextfield", version.ref = "chiptextfield" }
+systemtray = { module = "com.dorkbox:SystemTray", version.ref = "systemtray" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

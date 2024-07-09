@@ -10,6 +10,7 @@ import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
+import dorkbox.systemTray.SystemTray
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.coroutines.delay
@@ -53,11 +54,18 @@ import java.awt.Toolkit
 import java.io.File
 import java.lang.reflect.Field
 
+
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 private const val HTTP_SERVER_STOP_TIMEOUT = 500L
 
 @Suppress("LongMethod")
 suspend fun main(args: Array<String>) {
+    SystemTray.DEBUG = true
+    if(os == OS.Linux) {
+        // workaround for https://github.com/dorkbox/SystemTray/issues/190
+        SystemTray.FORCE_TRAY_TYPE = SystemTray.TrayType.AutoDetect
+    }
+
     setAwtAppName()
 
     val parser = ArgParser("avnlauncher")
@@ -160,6 +168,9 @@ suspend fun main(args: Array<String>) {
                         }
                     }
                 }
+
+                //val systemTray = remember { SystemTray.get() ?: throw RuntimeException("unable to initialize system tray") }
+                //systemTray.setImage(systemTray.javaClass.getResourceAsStream("/tray_icon.png"))
                 Tray(
                     state = trayState,
                     icon = painterResource(if (hasUpdates) "tray_icon_updates.png" else "tray_icon.png"),

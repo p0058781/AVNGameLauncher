@@ -42,6 +42,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.cli)
                 implementation(libs.mpfilepicker)
+                implementation(libs.systemtray)
             }
         }
         val commonTest by getting {
