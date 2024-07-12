@@ -41,7 +41,7 @@ kotlin {
                 implementation(libs.dokar3.chiptextfield)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.cli)
-                implementation(libs.mpfilepicker)
+                implementation(libs.filekit.compose)
             }
         }
         val commonTest by getting {
@@ -74,7 +74,7 @@ compose.desktop {
 
         nativeDistributions {
             modules("java.sql", "java.management", "jdk.unsupported")
-            packageName = "AVN Game Launcher"
+            packageName = "avngamelauncher"
             licenseFile.set(project.rootProject.file("LICENSE.txt"))
             val resourcesDir = project.file("src/commonMain/resources")
             macOS {

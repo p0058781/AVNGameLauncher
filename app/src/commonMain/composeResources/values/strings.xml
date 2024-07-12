@@ -60,6 +60,8 @@
     <string name="settingsItemDescriptionLogLevel">Chose Log Level</string>
     <string name="settingsItemTitleImportExport">Import/Export</string>
     <string name="settingsItemDescriptionImportExport">Import/Export games to/from different formats</string>
+    <string name="settingsItemTitleHttpServer">HTTP Server</string>
+    <string name="settingsItemDescriptionHttpServer">HTTP Server used for browser plugin</string>
 
     <string name="settingsSectionTitleGames">Games</string>
     <string name="settingsItemTitleGamesDir">Games Dir</string>

@@ -12,7 +12,6 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -37,6 +36,7 @@ import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
 import org.skynetsoftware.avnlauncher.link.externalLinkUtilsKoinModule
+import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.logger.logUncaughtExceptions
 import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
 import org.skynetsoftware.avnlauncher.server.HttpServer
@@ -54,7 +54,6 @@ import java.io.File
 import java.lang.reflect.Field
 
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
-private const val HTTP_SERVER_STOP_TIMEOUT = 500L
 
 @Suppress("LongMethod")
 suspend fun main(args: Array<String>) {
@@ -90,6 +89,7 @@ suspend fun main(args: Array<String>) {
     logUncaughtExceptions(koinApplication.koin.get())
 
     application {
+        val logger = koinInject<Logger>()
         val httpServer = koinInject<HttpServer>()
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
@@ -119,11 +119,11 @@ suspend fun main(args: Array<String>) {
             }
             LaunchedEffect(null) {
                 settingsRepository.httpServerEnabled.collect { httpServerEnabled ->
+                    logger.debug("httpServerEnabled changed: $httpServerEnabled")
                     if (httpServerEnabled) {
                         httpServer.start()
                     } else {
-                        httpServer.stop(HTTP_SERVER_STOP_TIMEOUT)
-                        delay(HTTP_SERVER_STOP_TIMEOUT)
+                        httpServer.stop()
                     }
                 }
             }
