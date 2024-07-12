@@ -16,6 +16,7 @@
 -dontwarn sun.misc.**
 -dontwarn org.codehaus.mojo.**
 -dontwarn com.ibm.icu.**
+-dontwarn io.netty.**
 
 -keep class kotlin.Metadata
 
