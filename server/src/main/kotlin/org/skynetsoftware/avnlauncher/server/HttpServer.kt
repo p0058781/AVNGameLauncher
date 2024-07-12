@@ -6,6 +6,7 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.call
 import io.ktor.server.application.install
+import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -17,6 +18,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import org.koin.ktor.ext.inject
 import org.skynetsoftware.avnlauncher.config.Config
+import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.usecase.ImportGameUseCase
 import org.skynetsoftware.avnlauncher.domain.utils.Result
@@ -30,27 +32,34 @@ import org.skynetsoftware.avnlauncher.server.dto.toGameDto
 interface HttpServer {
     fun start()
 
-    fun stop(gracePeriodMillis: Long)
+    fun stop()
 }
 
 internal class HttpServerImplementation(
     private val logger: Logger,
+    private val coroutineDispatchers: CoroutineDispatchers,
 ) : HttpServer {
-    private var applicationEngine =
-        embeddedServer(Netty, port = Config.Defaults.SERVER_PORT, host = Config.Defaults.SERVER_HOST, module = Application::module)
+    private var applicationEngine: ApplicationEngine? = null
 
     override fun start() {
         logger.info("starting http server")
-        applicationEngine.start(false)
+        applicationEngine = embeddedServer(
+            factory = Netty,
+            port = Config.Defaults.SERVER_PORT,
+            host = Config.Defaults.SERVER_HOST,
+            module = Application::module,
+        )
+        applicationEngine?.start(false)
     }
 
     /**
      * Stop http server gracefully
      * @param gracePeriodMillis maximum time to wait for server to stop gracefully.
      * */
-    override fun stop(gracePeriodMillis: Long) {
-        logger.info("stopping http server, grace period: $gracePeriodMillis")
-        applicationEngine.stop()
+    override fun stop() {
+        logger.info("stopping http server")
+        applicationEngine?.stop(gracePeriodMillis = 0L)
+        applicationEngine = null
     }
 }
 

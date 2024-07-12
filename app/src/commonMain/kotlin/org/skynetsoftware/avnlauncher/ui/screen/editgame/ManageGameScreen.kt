@@ -35,7 +35,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -50,11 +49,13 @@ import androidx.compose.ui.unit.sp
 import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
+import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.core.PickerMode
+import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
@@ -85,14 +86,14 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameU
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationAddExecutable
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSearchExecutable
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
-import org.skynetsoftware.avnlauncher.logger.Logger
+import org.skynetsoftware.avnlauncher.domain.utils.OS
+import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.ui.component.Dropdown
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.Item
 import org.skynetsoftware.avnlauncher.ui.component.Section
 import org.skynetsoftware.avnlauncher.ui.component.Toggle
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
-import org.skynetsoftware.avnlauncher.ui.screen.GamePicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
@@ -374,63 +375,42 @@ fun ColumnScope.ExecutablePaths(
     deleteExecutablePath: (index: Int) -> Unit,
     setExecutablePath: (index: Int, executablePath: String) -> Unit,
     findExecutables: () -> Unit,
-    logger: Logger = koinInject(),
 ) {
-    var showFilePicker by remember { mutableStateOf<ShowFilePicker?>(null) }
-
     if (executablePaths.isEmpty()) {
         NoExecutablePaths()
     }
 
     ExecutablePathsList(
         executablePaths = executablePaths,
-        showFilePicker = {
-            showFilePicker = it
-        },
+        setExecutablePath = setExecutablePath,
         deleteExecutablePath = {
             deleteExecutablePath(it)
         },
     )
     ExecutablePathsOptions(
-        showFilePicker = {
-            showFilePicker = it
-        },
+        currentPath = executablePaths.lastOrNull(),
+        addExecutablePath = addExecutablePath,
         findingExecutablePathsInProgress = findingExecutablePathsInProgress,
         findExecutables = findExecutables,
     )
-
-    val currentPath = when (val localShowFilePicker = showFilePicker) {
-        is ShowFilePicker.ChangePath -> {
-            executablePaths[localShowFilePicker.index]
-        }
-
-        ShowFilePicker.AddPath -> executablePaths.lastOrNull() ?: ""
-        null -> ""
-    }
-    GamePicker(showFilePicker != null, currentPath) {
-        it?.let {
-            when (val localShowFilePicker = showFilePicker) {
-                ShowFilePicker.AddPath -> {
-                    addExecutablePath(it)
-                }
-
-                is ShowFilePicker.ChangePath -> {
-                    setExecutablePath(localShowFilePicker.index, it)
-                }
-
-                null -> logger.warning("showFilePicker null in GamePicker callback")
-            }
-        }
-        showFilePicker = null
-    }
 }
 
 @Composable
 private fun ColumnScope.ExecutablePathsOptions(
-    showFilePicker: (value: ShowFilePicker) -> Unit,
+    currentPath: String?,
+    addExecutablePath: (executablePath: String) -> Unit,
     findingExecutablePathsInProgress: Boolean,
     findExecutables: () -> Unit,
 ) {
+    val filePickerLauncher = rememberFilePickerLauncher(
+        mode = PickerMode.Single,
+        type = PickerType.File(extensions = osExecutableExstensions()),
+        initialDirectory = currentPath,
+    ) { file ->
+        file?.path?.let {
+            addExecutablePath(it)
+        }
+    }
     Row(
         modifier = Modifier.align(Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
@@ -439,7 +419,7 @@ private fun ColumnScope.ExecutablePathsOptions(
         val isHoveredAdd by interactionSourceAdd.collectIsHoveredAsStateDelayed()
         Icon(
             modifier = Modifier.padding(10.dp).clickable {
-                showFilePicker(ShowFilePicker.AddPath)
+                filePickerLauncher.launch()
             }.hoverable(interactionSourceAdd),
             imageVector = Icons.Outlined.Add,
             contentDescription = null,
@@ -475,10 +455,19 @@ private fun ColumnScope.ExecutablePathsOptions(
 @Composable
 private fun ExecutablePathsList(
     executablePaths: List<String>,
-    showFilePicker: (value: ShowFilePicker) -> Unit,
+    setExecutablePath: (index: Int, executablePath: String) -> Unit,
     deleteExecutablePath: (index: Int) -> Unit,
 ) {
     executablePaths.forEachIndexed { index, executablePath ->
+        val filePickerLauncher = rememberFilePickerLauncher(
+            mode = PickerMode.Single,
+            type = PickerType.File(extensions = osExecutableExstensions()),
+            initialDirectory = executablePaths[index],
+        ) { file ->
+            file?.path?.let {
+                setExecutablePath(index, it)
+            }
+        }
         Row(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp).fillMaxWidth(),
         ) {
@@ -491,7 +480,7 @@ private fun ExecutablePathsList(
             )
             Icon(
                 modifier = Modifier.align(Alignment.CenterVertically).clickable {
-                    showFilePicker(ShowFilePicker.ChangePath(index))
+                    filePickerLauncher.launch()
                 },
                 imageVector = Icons.Outlined.Edit,
                 contentDescription = null,
@@ -566,10 +555,14 @@ private fun NoExecutablePaths() {
     )
 }
 
-sealed class ShowFilePicker {
-    object AddPath : ShowFilePicker()
+private fun osExecutableExstensions(): List<String> {
+    return when (os) {
+        OS.Linux -> listOf("sh")
 
-    class ChangePath(val index: Int) : ShowFilePicker()
+        OS.Windows -> listOf("exe")
+
+        OS.Mac -> listOf("app")
+    }
 }
 
 @OptIn(ExperimentalResourceApi::class)

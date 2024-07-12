@@ -33,7 +33,7 @@ object SettingsDefaults {
     const val minimizeToTrayOnClose: Boolean = false
     const val startMinimized: Boolean = false
 
-    const val httpServerEnabled: Boolean = true
+    const val httpServerEnabled: Boolean = false
 }
 
 @Suppress("TooManyFunctions")

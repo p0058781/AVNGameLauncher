@@ -12,11 +12,11 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -31,6 +31,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescri
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridCardValues
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridImageAspectRatio
+import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionHttpServer
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionImportExport
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionMinimizeToTray
@@ -53,6 +54,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleG
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridImageAspectRatio
+import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleHttpServer
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleImportExport
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleMinimizeToTray
@@ -76,7 +78,6 @@ import org.skynetsoftware.avnlauncher.ui.component.Input
 import org.skynetsoftware.avnlauncher.ui.component.Item
 import org.skynetsoftware.avnlauncher.ui.component.Section
 import org.skynetsoftware.avnlauncher.ui.component.Toggle
-import org.skynetsoftware.avnlauncher.ui.screen.GamesDirPicker
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.hoursToMilliseconds
 import org.skynetsoftware.avnlauncher.utils.isValidDateTimePattern
@@ -117,6 +118,7 @@ fun SettingsScreen(
                 title = stringResource(Res.string.settingsSectionTitleGeneral),
             ) {
                 val minimizeToTrayOnClose by remember { settingsViewModel.minimizeToTrayOnClose }.collectAsState()
+                val httpServerEnabled by remember { settingsViewModel.httpServerEnabled }.collectAsState()
                 Item(
                     title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
                     subtitle = stringResource(Res.string.settingsItemDescriptionMinimizeToTray),
@@ -152,12 +154,21 @@ fun SettingsScreen(
                     },
                 )
                 Divider()
-
                 Item(
                     title = stringResource(Res.string.settingsItemTitleImportExport),
                     subtitle = stringResource(Res.string.settingsItemDescriptionImportExport),
                     onClick = {
                         navigator?.navigateToImportExport()
+                    },
+                )
+                Divider()
+                Item(
+                    title = stringResource(Res.string.settingsItemTitleHttpServer),
+                    subtitle = stringResource(Res.string.settingsItemDescriptionHttpServer),
+                    endContent = {
+                        Toggle(httpServerEnabled) {
+                            settingsViewModel.setHttpServerEnabled(it)
+                        }
                     },
                 )
             }
@@ -168,21 +179,23 @@ fun SettingsScreen(
                 title = stringResource(Res.string.settingsSectionTitleGames),
             ) {
                 val gamesDir by remember { settingsViewModel.gamesDir }.collectAsState()
-                var showFilePicker by remember { mutableStateOf(false) }
+
+                val gamesDirPickerLauncher = rememberDirectoryPickerLauncher(
+                    initialDirectory = gamesDir,
+                ) { file ->
+                    file?.path?.let {
+                        settingsViewModel.setGamesDir(it)
+                    }
+                }
+
                 Item(
                     title = stringResource(Res.string.settingsItemTitleGamesDir),
                     subtitle = gamesDir ?: stringResource(Res.string.settingsItemDescriptionGamesDir),
                     onClick = {
-                        showFilePicker = true
+                        gamesDirPickerLauncher.launch()
                     },
                 )
                 Divider()
-                GamesDirPicker(showFilePicker, gamesDir) {
-                    showFilePicker = false
-                    it?.let {
-                        settingsViewModel.setGamesDir(it)
-                    }
-                }
                 Item(
                     title = stringResource(Res.string.settingsItemTitleUpdateChecks),
                     subtitle = stringResource(Res.string.settingsItemDescriptionUpdateChecks),
