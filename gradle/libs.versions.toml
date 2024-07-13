@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.23"
-image-loader = "1.7.1"
+image-loader = "1.8.1"
 jsoup = "1.16.1"
 koin = "3.5.3"
 koin-compose = "1.1.2"
