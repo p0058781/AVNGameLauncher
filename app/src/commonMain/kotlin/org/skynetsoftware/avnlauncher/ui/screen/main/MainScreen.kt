@@ -12,7 +12,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,9 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.seiko.imageloader.LocalImageLoader
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.setSingletonImageLoaderFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -69,7 +68,7 @@ import org.skynetsoftware.avnlauncher.updatechecker.buildToastMessage
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import java.text.SimpleDateFormat
 
-@OptIn(ExperimentalResourceApi::class)
+@OptIn(ExperimentalResourceApi::class, ExperimentalCoilApi::class)
 @Composable
 fun MainScreen(
     gamesViewModel: MainScreenViewModel = viewModel(),
@@ -98,59 +97,56 @@ fun MainScreen(
     val timeFormat by remember { gamesViewModel.timeFormat }.collectAsState()
     val gridColumns by remember { gamesViewModel.gridColumns }.collectAsState()
 
-    val imageLoader by remember {
-        gamesViewModel.showGifs.map { imageLoaderFactory.createImageLoader(it) }
-    }.collectAsState(imageLoaderFactory.createImageLoader(false))
-
-    CompositionLocalProvider(
-        LocalImageLoader provides imageLoader,
-    ) {
-        val blockedByPopup = LocalWindowControl.current?.blockedByPopup
-        val blurModifier = if (blockedByPopup == true) {
-            Modifier.blur(3.dp)
-        } else {
-            Modifier
-        }
-        Surface(
-            modifier = blurModifier.fillMaxSize(),
-        ) {
-            MainScreenContent(
-                games = games,
-                currentFilter = currentFilter,
-                currentSortOrder = currentSortOrder,
-                currentSortDirection = currentSortDirection,
-                currentGamesDisplayMode = currentGamesDisplayMode,
-                newUpdateAvailableIndicatorVisible = newUpdateAvailableIndicatorVisible,
-                globalState = globalState,
-                sfwMode = sfwMode,
-                totalPlayTime = totalPlayTime,
-                averagePlayTime,
-                searchQuery,
-                imageAspectRatio = imageAspectRatio,
-                dateFormat = SimpleDateFormat(dateFormat),
-                timeFormat = SimpleDateFormat(timeFormat),
-                gridColumns = gridColumns,
-                setSearchQuery = {
-                    searchQuery = it
-                },
-                startUpdateCheck = gamesViewModel::startUpdateCheck,
-                toggleSfwMode = gamesViewModel::toggleSfwMode,
-                setFilter = {
-                    gamesViewModel.setFilter(it)
-                    if (it == Filter.GamesWithUpdate) {
-                        gamesViewModel.resetNewUpdateAvailableIndicatorVisible()
-                    }
-                },
-                setSortOrder = gamesViewModel::setSortOrder,
-                setSortDirection = gamesViewModel::setSortDirection,
-                setGamesDisplayMode = gamesViewModel::setGamesDisplayMode,
-                launchGame = gamesViewModel::launchGame,
-                resetUpdateAvailable = gamesViewModel::resetUpdateAvailable,
-                updateRating = gamesViewModel::updateRating,
-                updateFavorite = gamesViewModel::updateFavorite,
-            )
-        }
+    setSingletonImageLoaderFactory { context ->
+        imageLoaderFactory.createImageLoader(false, context)
     }
+
+    val blockedByPopup = LocalWindowControl.current?.blockedByPopup
+    val blurModifier = if (blockedByPopup == true) {
+        Modifier.blur(3.dp)
+    } else {
+        Modifier
+    }
+    Surface(
+        modifier = blurModifier.fillMaxSize(),
+    ) {
+        MainScreenContent(
+            games = games,
+            currentFilter = currentFilter,
+            currentSortOrder = currentSortOrder,
+            currentSortDirection = currentSortDirection,
+            currentGamesDisplayMode = currentGamesDisplayMode,
+            newUpdateAvailableIndicatorVisible = newUpdateAvailableIndicatorVisible,
+            globalState = globalState,
+            sfwMode = sfwMode,
+            totalPlayTime = totalPlayTime,
+            averagePlayTime,
+            searchQuery,
+            imageAspectRatio = imageAspectRatio,
+            dateFormat = SimpleDateFormat(dateFormat),
+            timeFormat = SimpleDateFormat(timeFormat),
+            gridColumns = gridColumns,
+            setSearchQuery = {
+                searchQuery = it
+            },
+            startUpdateCheck = gamesViewModel::startUpdateCheck,
+            toggleSfwMode = gamesViewModel::toggleSfwMode,
+            setFilter = {
+                gamesViewModel.setFilter(it)
+                if (it == Filter.GamesWithUpdate) {
+                    gamesViewModel.resetNewUpdateAvailableIndicatorVisible()
+                }
+            },
+            setSortOrder = gamesViewModel::setSortOrder,
+            setSortDirection = gamesViewModel::setSortDirection,
+            setGamesDisplayMode = gamesViewModel::setGamesDisplayMode,
+            launchGame = gamesViewModel::launchGame,
+            resetUpdateAvailable = gamesViewModel::resetUpdateAvailable,
+            updateRating = gamesViewModel::updateRating,
+            updateFavorite = gamesViewModel::updateFavorite,
+        )
+    }
+
     showExecutablePathPicker?.let { game ->
         PickExecutableDialog(
             executablePaths = game.executablePaths,

@@ -29,6 +29,7 @@ kotlin {
                 implementation(compose.components.resources)
 
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.coroutines.swing)
                 implementation(libs.kotlinx.datetime)
 
                 api(libs.koin.core)
@@ -36,7 +37,8 @@ kotlin {
                 implementation(libs.mvvm.compose)
                 implementation(libs.mvvm.flow.compose)
 
-                implementation(libs.image.loader)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor)
 
                 implementation(libs.dokar3.chiptextfield)
                 implementation(compose.desktop.currentOs)

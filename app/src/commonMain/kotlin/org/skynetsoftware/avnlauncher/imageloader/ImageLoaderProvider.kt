@@ -1,83 +1,77 @@
 package org.skynetsoftware.avnlauncher.imageloader
 
-import com.seiko.imageloader.ImageLoader
-import com.seiko.imageloader.component.setupDefaultComponents
-import com.seiko.imageloader.intercept.bitmapMemoryCacheConfig
-import com.seiko.imageloader.intercept.imageMemoryCacheConfig
-import com.seiko.imageloader.intercept.painterMemoryCacheConfig
-import com.seiko.imageloader.util.LogPriority
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
+import coil3.util.Logger.Level
 import okio.Path.Companion.toPath
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.Config
-import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.logger.Logger
 
-const val MEMORY_CACHE_MAX_SIZE_BYTES = 64 * 1024 * 1024 // 64 MB
-const val MEMORY_CACHE_MAX_IMAGES = 20
-const val MEMORY_CACHE_MAX_PAINTERS = 20
-const val DISK_CACHE_MAX_SIZE_BYTES = 512L * 1024 * 1024 // 512 MB
+const val MEMORY_CACHE_MAX_SIZE_BYTES = 256 * 1024 * 1024L // 256 MB
+const val DISK_CACHE_MAX_SIZE_BYTES = 1024L * 1024 * 1024L // 1 GB
 
 fun imageLoaderKoinModule() =
     module {
-        single<ImageLoaderFactory> { ImageLoaderFactoryImpl(get(), get(), get()) }
+        single<ImageLoaderFactory> { ImageLoaderFactoryImpl(get(), get()) }
     }
 
 interface ImageLoaderFactory {
-    fun createImageLoader(animateGifs: Boolean): ImageLoader
+    fun createImageLoader(
+        animateGifs: Boolean,
+        platformContext: PlatformContext,
+    ): ImageLoader
 }
 
 private class ImageLoaderFactoryImpl(
     private val config: Config,
     private val avnLauncherLogger: Logger,
-    private val coroutineDispatchers: CoroutineDispatchers,
 ) : ImageLoaderFactory {
-    override fun createImageLoader(animateGifs: Boolean): ImageLoader {
-        return ImageLoader(requestCoroutineContext = coroutineDispatchers.io) {
-            options {
-                playAnimate = animateGifs
+    override fun createImageLoader(
+        animateGifs: Boolean,
+        platformContext: PlatformContext,
+    ): ImageLoader {
+        return ImageLoader.Builder(platformContext)
+            .memoryCache {
+                MemoryCache.Builder()
+                    .maxSizeBytes(MEMORY_CACHE_MAX_SIZE_BYTES)
+                    .strongReferencesEnabled(true)
+                    .build()
             }
-            logger = ImageLoaderLogger(avnLauncherLogger)
-            components {
-                setupDefaultComponents()
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(config.cacheDir.toPath().resolve("images"))
+                    .maxSizeBytes(DISK_CACHE_MAX_SIZE_BYTES)
+                    .build()
             }
-            interceptor {
-                bitmapMemoryCacheConfig {
-                    maxSize(MEMORY_CACHE_MAX_SIZE_BYTES)
-                }
-                imageMemoryCacheConfig {
-                    maxSize(MEMORY_CACHE_MAX_IMAGES)
-                }
-                painterMemoryCacheConfig {
-                    maxSize(MEMORY_CACHE_MAX_PAINTERS)
-                }
-                diskCacheConfig {
-                    directory(config.cacheDir.toPath().resolve("images"))
-                    maxSizeBytes(DISK_CACHE_MAX_SIZE_BYTES)
-                }
-            }
-        }
+            .logger(ImageLoaderLogger(avnLauncherLogger))
+            .build()
     }
 }
 
-class ImageLoaderLogger(private val logger: Logger) : com.seiko.imageloader.util.Logger {
-    override fun isLoggable(priority: LogPriority): Boolean {
-        return true
-    }
+class ImageLoaderLogger(private val logger: Logger) : coil3.util.Logger {
+    override var minLevel: Level = Level.Verbose
 
     override fun log(
-        priority: LogPriority,
         tag: String,
-        data: Any?,
+        level: Level,
+        message: String?,
         throwable: Throwable?,
-        message: String,
     ) {
-        when (priority) {
-            LogPriority.VERBOSE -> logger.verbose(message)
-            LogPriority.DEBUG -> logger.debug(message)
-            LogPriority.INFO -> logger.info(message)
-            LogPriority.WARN -> logger.warning(message)
-            LogPriority.ERROR -> logger.error(message)
-            LogPriority.ASSERT -> logger.error(message)
+        when (level) {
+            Level.Verbose -> message?.let { logger.verbose(it) }
+            Level.Debug -> message?.let { logger.debug(it) }
+            Level.Info -> message?.let { logger.info(it) }
+            Level.Warn -> message?.let { logger.warning(it) }
+            Level.Error -> {
+                if (throwable != null) {
+                    logger.error(throwable)
+                } else if (message != null) {
+                    logger.error(message)
+                }
+            }
         }
     }
 }

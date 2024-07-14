@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.ui.screen.game
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,7 +21,6 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,10 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.seiko.imageloader.LocalImageLoader
-import com.seiko.imageloader.model.ImageRequest
-import com.seiko.imageloader.rememberImagePainter
-import kotlinx.coroutines.flow.map
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImage
+import coil3.compose.setSingletonImageLoaderFactory
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -75,6 +72,7 @@ private const val TAB_INDEX_EDIT = 2
 
 private const val IMAGE_ASPECT_RATIO = 5f
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun GameDetailsScreen(
     gameId: Int,
@@ -85,11 +83,11 @@ fun GameDetailsScreen(
     val loadingState by remember { gameDetailsViewModel.state }
         .collectAsState(GameDetailsViewModel.LoadingState.Loading)
 
-    val imageLoader by remember {
-        gameDetailsViewModel.showGifs.map { imageLoaderFactory.createImageLoader(it) }
-    }.collectAsState(imageLoaderFactory.createImageLoader(false))
-
     var tabIndex by remember { mutableStateOf(TAB_INDEX_OVERVIEW) }
+
+    setSingletonImageLoaderFactory { context ->
+        imageLoaderFactory.createImageLoader(false, context)
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
@@ -110,52 +108,47 @@ fun GameDetailsScreen(
 
             is GameDetailsViewModel.LoadingState.Ready -> {
                 val game = loadingStateLocal.game
-                CompositionLocalProvider(
-                    LocalImageLoader provides imageLoader,
-                ) {
-                    Column {
-                        Image(
-                            painter = rememberImagePainter(
-                                request = ImageRequest { data(game.game.imageUrl) },
-                            ),
-                            contentDescription = null,
-                            modifier = Modifier.aspectRatio(IMAGE_ASPECT_RATIO),
-                            contentScale = ContentScale.Crop,
-                        )
-                        TabRow(
-                            selectedTabIndex = tabIndex,
-                            tabs = {
-                                Tab(
-                                    title = stringResource(Res.string.gameDetailsTabOverview),
-                                    selectedTabIndex = tabIndex,
-                                    tabIndex = TAB_INDEX_OVERVIEW,
-                                    onClick = {
-                                        tabIndex = TAB_INDEX_OVERVIEW
-                                    },
-                                )
-                                Tab(
-                                    title = stringResource(Res.string.gameDetailsTabStatistics),
-                                    selectedTabIndex = tabIndex,
-                                    tabIndex = TAB_INDEX_STATISTICS,
-                                    onClick = {
-                                        tabIndex = TAB_INDEX_STATISTICS
-                                    },
-                                )
-                                Tab(
-                                    title = stringResource(Res.string.gameDetailsTabEdit),
-                                    selectedTabIndex = tabIndex,
-                                    tabIndex = TAB_INDEX_EDIT,
-                                    onClick = {
-                                        tabIndex = TAB_INDEX_EDIT
-                                    },
-                                )
-                            },
-                        )
-                        when (tabIndex) {
-                            TAB_INDEX_OVERVIEW -> TabOverview(game.game)
-                            TAB_INDEX_STATISTICS -> TabStatistics(game)
-                            TAB_INDEX_EDIT -> TabEdit(game.game.f95ZoneThreadId, onCloseRequest)
-                        }
+
+                Column {
+                    AsyncImage(
+                        model = game.game.imageUrl,
+                        contentDescription = null,
+                        modifier = Modifier.aspectRatio(IMAGE_ASPECT_RATIO),
+                        contentScale = ContentScale.Crop,
+                    )
+                    TabRow(
+                        selectedTabIndex = tabIndex,
+                        tabs = {
+                            Tab(
+                                title = stringResource(Res.string.gameDetailsTabOverview),
+                                selectedTabIndex = tabIndex,
+                                tabIndex = TAB_INDEX_OVERVIEW,
+                                onClick = {
+                                    tabIndex = TAB_INDEX_OVERVIEW
+                                },
+                            )
+                            Tab(
+                                title = stringResource(Res.string.gameDetailsTabStatistics),
+                                selectedTabIndex = tabIndex,
+                                tabIndex = TAB_INDEX_STATISTICS,
+                                onClick = {
+                                    tabIndex = TAB_INDEX_STATISTICS
+                                },
+                            )
+                            Tab(
+                                title = stringResource(Res.string.gameDetailsTabEdit),
+                                selectedTabIndex = tabIndex,
+                                tabIndex = TAB_INDEX_EDIT,
+                                onClick = {
+                                    tabIndex = TAB_INDEX_EDIT
+                                },
+                            )
+                        },
+                    )
+                    when (tabIndex) {
+                        TAB_INDEX_OVERVIEW -> TabOverview(game.game)
+                        TAB_INDEX_STATISTICS -> TabStatistics(game)
+                        TAB_INDEX_EDIT -> TabEdit(game.game.f95ZoneThreadId, onCloseRequest)
                     }
                 }
             }

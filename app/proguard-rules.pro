@@ -109,3 +109,5 @@
 -keepclasseswithmembers class org.skynetsoftware.avnlauncher.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+-keep class ** implements coil3.util.FetcherServiceLoaderTarget
