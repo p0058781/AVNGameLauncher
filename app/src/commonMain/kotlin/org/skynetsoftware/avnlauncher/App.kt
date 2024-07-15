@@ -12,6 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -205,6 +207,14 @@ fun App() {
                     onCloseRequest = {
                         showSettingsScreen = false
                     },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showSettingsScreen = false
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -223,6 +233,14 @@ fun App() {
                     resizable = false,
                     onCloseRequest = {
                         showImportGameScreen = false
+                    },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showImportGameScreen = false
+                            true
+                        } else {
+                            false
+                        }
                     },
                 ) {
                     MaterialTheme(
@@ -248,6 +266,14 @@ fun App() {
                     onCloseRequest = {
                         showGameDetailsScreen = null
                     },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showGameDetailsScreen = null
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -272,6 +298,14 @@ fun App() {
                     onCloseRequest = {
                         showCreateCustomGameScreen = false
                     },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showCreateCustomGameScreen = false
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -292,6 +326,14 @@ fun App() {
                     onCloseRequest = {
                         showImportExportScreen = false
                     },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showImportExportScreen = false
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -307,6 +349,14 @@ fun App() {
                     icon = painterResource(WINDOW_ICON),
                     onCloseRequest = {
                         showCustomListsScreen = false
+                    },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showCustomListsScreen = false
+                            true
+                        } else {
+                            false
+                        }
                     },
                 ) {
                     MaterialTheme(
@@ -324,6 +374,14 @@ fun App() {
                     onCloseRequest = {
                         showCustomStatusesScreen = false
                     },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showCustomStatusesScreen = false
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -339,6 +397,14 @@ fun App() {
                     icon = painterResource(WINDOW_ICON),
                     onCloseRequest = {
                         showCardValuesScreen = false
+                    },
+                    onPreviewKeyEvent = {
+                        if (it.key == Key.Escape) {
+                            showCardValuesScreen = false
+                            true
+                        } else {
+                            false
+                        }
                     },
                 ) {
                     MaterialTheme(
