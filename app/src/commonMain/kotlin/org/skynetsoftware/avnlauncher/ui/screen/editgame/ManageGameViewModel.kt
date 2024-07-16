@@ -9,9 +9,12 @@ import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.model.PlayState
+import org.skynetsoftware.avnlauncher.domain.model.GamesList
+import org.skynetsoftware.avnlauncher.domain.model.PLAY_STATE_NONE
 import org.skynetsoftware.avnlauncher.domain.model.isF95Game
+import org.skynetsoftware.avnlauncher.domain.repository.GameListsRepository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.domain.repository.PlayStateRepository
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
@@ -19,9 +22,12 @@ import org.skynetsoftware.avnlauncher.utils.isValidDateTimeFormat
 import java.text.SimpleDateFormat
 import kotlin.random.Random
 
+@Suppress("LongParameterList")
 class ManageGameViewModel(
     private val mode: Mode,
     private val gamesRepository: GamesRepository,
+    playStateRepository: PlayStateRepository,
+    private val gamesListsRepository: GameListsRepository,
     private val executableFinder: ExecutableFinder,
     eventCenter: EventCenter,
     private val coroutineDispatchers: CoroutineDispatchers,
@@ -31,7 +37,8 @@ class ManageGameViewModel(
     val developer = MutableStateFlow("")
     val imageUrl = MutableStateFlow("")
     val checkForUpdates = MutableStateFlow(true)
-    val currentPlayState = MutableStateFlow(PlayState.NotStarted)
+    val currentPlayState = MutableStateFlow(PLAY_STATE_NONE)
+    val currentGamesLists = MutableStateFlow(emptyList<GamesList>())
     val hidden = MutableStateFlow(false)
     val notes = MutableStateFlow<String?>(null)
     val version = MutableStateFlow("")
@@ -68,9 +75,12 @@ class ManageGameViewModel(
     private val _firstReleaseDateError = MutableStateFlow(false)
     val firstReleaseDateError: StateFlow<Boolean> get() = _firstReleaseDateError
 
+    val playStates = playStateRepository.playStates
+    val gamesLists = gamesListsRepository.gamesLists
+
     init {
         if (mode is Mode.EditGame) {
-            viewModelScope.launch {
+            viewModelScope.launch(coroutineDispatchers.io) {
                 val game = gamesRepository.get(mode.gameId)
                 if (game == null) {
                     _gameNotFound.emit(Unit)
@@ -82,6 +92,7 @@ class ManageGameViewModel(
                     imageUrl.emit(game.imageUrl)
                     checkForUpdates.emit(game.checkForUpdates)
                     currentPlayState.emit(game.playState)
+                    currentGamesLists.emit(game.lists)
                     hidden.emit(game.hidden)
                     notes.emit(game.notes)
                     version.emit(game.version)
@@ -97,7 +108,7 @@ class ManageGameViewModel(
     }
 
     fun save() =
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatchers.io) {
             _titleError.emit(false)
             _releaseDateError.emit(false)
             _firstReleaseDateError.emit(false)
@@ -121,7 +132,8 @@ class ManageGameViewModel(
     private suspend fun updateGame(gameId: Int): Boolean {
         val executablePath = executablePaths.value.removeEmptyValues()
         val checkForUpdates = checkForUpdates.value
-        val playState = currentPlayState.value
+        val playState = currentPlayState.value.id
+        val gamesLists = currentGamesLists.value
         val hidden = hidden.value
         val notes = notes.value
         val dateFormat = DateVisualTransformation.getUnmaskedDateFormat()
@@ -139,6 +151,7 @@ class ManageGameViewModel(
                 executablePath,
                 checkForUpdates,
                 playState,
+                gamesLists,
                 hidden,
                 notes,
             )
@@ -159,6 +172,7 @@ class ManageGameViewModel(
                     executablePath,
                     checkForUpdates,
                     playState,
+                    gamesLists,
                     hidden,
                     notes,
                 )
@@ -208,8 +222,8 @@ class ManageGameViewModel(
                 checkForUpdates = checkForUpdates,
                 firstPlayedTime = 0L,
                 notes = notes,
-                favorite = false,
                 playSessions = emptyList(),
+                lists = emptyList(),
             )
             gamesRepository.insertGame(game)
         }
@@ -239,21 +253,21 @@ class ManageGameViewModel(
     fun setExecutablePath(
         index: Int,
         executablePath: String,
-    ) = viewModelScope.launch {
+    ) = viewModelScope.launch(coroutineDispatchers.io) {
         val executablePaths = executablePaths.value.toMutableList()
         executablePaths[index] = executablePath
         _executablePaths.emit(executablePaths)
     }
 
     fun deleteExecutablePath(index: Int) =
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatchers.io) {
             val executablePaths = executablePaths.value.toMutableList()
             executablePaths.removeAt(index)
             _executablePaths.emit(executablePaths)
         }
 
     fun addExecutablePath(executablePath: String) =
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatchers.io) {
             val executablePaths = executablePaths.value.toMutableList()
             executablePaths.add(executablePath)
             _executablePaths.emit(executablePaths)
@@ -270,9 +284,22 @@ class ManageGameViewModel(
         }
 
     fun setTags(tags: List<String>) =
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatchers.io) {
             _tags.emit(tags)
         }
+
+    fun updateGameLists(
+        gamesList: GamesList,
+        add: Boolean,
+    ) = viewModelScope.launch(coroutineDispatchers.io) {
+        val currentGamesLists = currentGamesLists.value.toMutableList()
+        if (add) {
+            currentGamesLists.add(gamesList)
+        } else {
+            currentGamesLists.removeIf { it.id == gamesList.id }
+        }
+        this@ManageGameViewModel.currentGamesLists.emit(currentGamesLists)
+    }
 
     sealed class Mode {
         object CreateCustomGame : Mode()

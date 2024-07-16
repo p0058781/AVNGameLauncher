@@ -2,52 +2,69 @@ package org.skynetsoftware.avnlauncher.domain.model
 
 private const val ONE_HOUR_MILLIS = 3600_000L
 
-sealed class Filter(val label: String) {
+sealed class Filter {
+    val name = this::class.simpleName!!
+    open val data: String? = null
+
     @Suppress("MemberNameEqualsClassName")
     abstract fun filter(input: List<Game>): List<Game>
 
-    object All : Filter("All") {
+    object All : Filter() {
         override fun filter(input: List<Game>) = input.filter { !it.hidden }
     }
 
-    object GamesWithUpdate : Filter("Games With Update") {
+    object GamesWithUpdate : Filter() {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.updateAvailable }
     }
 
-    object HiddenGames : Filter("Archived Games") {
+    object HiddenGames : Filter() {
         override fun filter(input: List<Game>) = input.filter { it.hidden }
     }
 
-    object UnplayedGames : Filter("Unplayed Games") {
+    object UnplayedGames : Filter() {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.totalPlayTime < ONE_HOUR_MILLIS }
     }
 
-    object Playing : Filter("Playing") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.Playing }
+    class PlayState(private val playStateId: String) : Filter() {
+        override val data = playStateId
+
+        override fun filter(input: List<Game>) = All.filter(input).filter { it.playState.id == playStateId }
     }
 
-    object NotStarted : Filter("Not Started") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.NotStarted }
-    }
+    class Lists(private val listId: Int) : Filter() {
+        override val data = listId.toString()
 
-    object Completed : Filter("Completed") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.Completed }
-    }
-
-    object WaitingForUpdate : Filter("Waiting For Update") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.playState == PlayState.WaitingForUpdate }
-    }
-
-    object Favorites : Filter("Favorites") {
-        override fun filter(input: List<Game>) = All.filter(input).filter { it.favorite }
+        override fun filter(input: List<Game>) = All.filter(input).filter { it.lists.find { it.id == listId } != null }
     }
 
     companion object {
-        val entries: List<Filter> by lazy {
-            listOf(
-                Playing, NotStarted, GamesWithUpdate, WaitingForUpdate,
-                Favorites, Completed, All, HiddenGames, UnplayedGames,
-            )
+        fun fromNameAndData(
+            name: String,
+            data: String?,
+        ): Filter {
+            val fallback = All
+            return when (name) {
+                All::class.simpleName -> All
+                GamesWithUpdate::class.simpleName -> GamesWithUpdate
+                HiddenGames::class.simpleName -> HiddenGames
+                UnplayedGames::class.simpleName -> UnplayedGames
+                PlayState::class.simpleName -> {
+                    if (data == null) {
+                        fallback
+                    } else {
+                        PlayState(data)
+                    }
+                }
+                Lists::class.simpleName -> {
+                    val dataInt = data?.toIntOrNull()
+                    if (dataInt == null) {
+                        fallback
+                    } else {
+                        Lists(dataInt)
+                    }
+                }
+                else -> fallback
+            }
         }
     }
 }

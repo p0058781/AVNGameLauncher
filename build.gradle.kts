@@ -45,6 +45,9 @@ subprojects {
         exclude("**/MR.kt")
         exclude("**/GameEntityQueries.kt")
         exclude("**/PlaySessionEntityQueries.kt")
+        exclude("**/ListEntityQueries.kt")
+        exclude("**/GameEntityToListEntityQueries.kt")
+        exclude("**/PlayStateEntityQueries.kt")
         exclude("**/TotalPlayTime.kt")
         exclude("**/Database.kt")
         exclude("**/DatabaseImpl.kt")
@@ -76,6 +79,9 @@ subprojects {
                     "org.skynetsoftware.avnlauncher.data.TotalPlayTime",
                     "org.skynetsoftware.avnlauncher.data.PlaySessionEntityQueries*",
                     "org.skynetsoftware.avnlauncher.data.PlaySessionEntity*",
+                    "org.skynetsoftware.avnlauncher.data.ListEntity*",
+                    "org.skynetsoftware.avnlauncher.data.GameEntityToListEntity*",
+                    "org.skynetsoftware.avnlauncher.data.PlayStateEntity*",
                 )
             }
         }

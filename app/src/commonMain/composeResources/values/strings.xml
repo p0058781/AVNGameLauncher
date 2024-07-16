@@ -24,6 +24,8 @@
     <string name="editGameScreenSectionTitleOptions">Options</string>
     <string name="editGameScreenItemTitlePlayState">Play State</string>
     <string name="editGameScreenItemDescriptionPlayState">Playing, Waiting for Update, Completed, etc</string>
+    <string name="editGameScreenItemTitleLists">Custom Lists</string>
+    <string name="editGameScreenItemDescriptionLists">Add game to custom lists. Manage lists in settings</string>
     <string name="editGameScreenItemTitleCheckForUpdates">Check for Updates</string>
     <string name="editGameScreenItemDescriptionCheckForUpdates">Include game in update checks</string>
     <string name="editGameScreenItemTitleArchived">Archived</string>
@@ -58,8 +60,6 @@
     <string name="settingsItemDescriptionStartMinimized">When app is launched it will start minimized to tray.</string>
     <string name="settingsItemTitleLogLevel">Log Level</string>
     <string name="settingsItemDescriptionLogLevel">Chose Log Level</string>
-    <string name="settingsItemTitleImportExport">Import/Export</string>
-    <string name="settingsItemDescriptionImportExport">Import/Export games to/from different formats</string>
     <string name="settingsItemTitleHttpServer">HTTP Server</string>
     <string name="settingsItemDescriptionHttpServer">HTTP Server used for browser plugin</string>
 
@@ -102,17 +102,31 @@
     <string name="settingsItemTitleSource">Source</string>
     <string name="settingsItemTitleF95Thread">F95 Thread</string>
 
-    <!--Import Export Screen-->
-    <string name="importExportScreenTitle">Import/Export</string>
-
     <!--Custom Lists Screen-->
     <string name="customListsScreenTitle">Custom Lists</string>
+    <string name="customListsAddNew">Add New List</string>
+    <string name="customListsDeleteConfirmButton">Confirm</string>
+    <string name="customListsDeleteCancelButton">Cancel</string>
+    <string name="customListsDeleteTitle">Delete '%s'?</string>
+    <string name="customListsDeleteText">Are you sure. This cannot be undone?</string>
+    <string name="customListsInputLabelLabel">Name</string>
+    <string name="customListsInputHintLabel">Enter name</string>
+    <string name="customListsInputLabelDescription">Description</string>
+    <string name="customListsInputHintDescription">Enter description (optional)</string>
+
 
     <!--Custom Statuses Screen-->
     <string name="customStatusesScreenTitle">Custom Statuses</string>
-
-    <!--Game Card Values Screen-->
-    <string name="cardValuesScreenTitle">Game Card Values</string>
+    <string name="playStateErrorAlreadyExists">Play State with that name already exists</string>
+    <string name="customPlayStatesAddNew">Add New Play State</string>
+    <string name="customPlayStatesDeleteConfirmButton">Confirm</string>
+    <string name="customPlayStatesDeleteCancelButton">Cancel</string>
+    <string name="customPlayStatesDeleteTitle">Delete '%s'?</string>
+    <string name="customPlayStatesDeleteText">Are you sure. This cannot be undone?</string>
+    <string name="customPlayStatesInputLabelLabel">Label</string>
+    <string name="customPlayStatesInputHintLabel">Enter label</string>
+    <string name="customPlayStatesInputLabelDescription">Description</string>
+    <string name="customPlayStatesInputHintDescription">Enter description (optional)</string>
 
     <!--Game Details Screen-->
     <string name="gameDetailsAveragePlayTimeTotalLabel">Average Play Time:</string>
@@ -193,4 +207,13 @@
     <string name="hoverExplanationSettings">Settings</string>
     <string name="hoverExplanationMaximizeFloating">Toggle between Maximized and Floating Window</string>
     <string name="hoverExplanationExit">Exit Application if \"Minimize to Tray\" is disabled, close window otherwise.</string>
+
+    <!--Filter/Sort-->
+    <string name="filterGroupGeneral">General</string>
+    <string name="filterGroupPlayStates">Play States</string>
+    <string name="filterGroupLists">Lists</string>
+    <string name="filterAll">All</string>
+    <string name="filterGamesWithUpdate">Games With Update</string>
+    <string name="filterArchived">Archived Games</string>
+    <string name="filterUnPlayed">UnPlayed Games</string>
 </resources>

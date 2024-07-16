@@ -51,9 +51,11 @@ class SettingsRepositorySharedTest : KoinTest {
     @Test
     fun `selectedFilter returns correct default value`() =
         runTest(testDispatcher) {
-            val expected = Filter.All
+            val expected = Filter.All.name
 
-            val actual = settingsRepository.selectedFilter.first()
+            every { settingsMock.getString("selectedFilterName", expected) } returns expected
+
+            val actual = settingsRepository.selectedFilterName.first()
 
             assertEquals(expected, actual)
         }
@@ -61,11 +63,11 @@ class SettingsRepositorySharedTest : KoinTest {
     @Test
     fun `selectedFilter returns correct value`() =
         runTest(testDispatcher) {
-            val expected = Filter.GamesWithUpdate
+            val expected = Filter.GamesWithUpdate.name
 
-            every { settingsMock.getString("selectedFilter", any()) } returns expected::class.simpleName!!
+            every { settingsMock.getString("selectedFilterName", any()) } returns expected
 
-            val actual = settingsRepository.selectedFilter.first()
+            val actual = settingsRepository.selectedFilterName.first()
 
             assertEquals(expected, actual)
         }

@@ -4,7 +4,6 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.StateFlow
 import org.koin.core.module.Module
-import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
@@ -21,15 +20,18 @@ internal fun Module.settingsKoinModule() {
 
 @Suppress("TooManyFunctions")
 internal class SettingsRepositoryImpl(private val settings: Settings) : SettingsRepository {
-    private val _selectedFilter = MutableStateFlow {
-        val selectedFilterClassname =
-            settings.getString(
-                SettingsRepository::selectedFilter.name,
-                SettingsDefaults.selectedFilter::class.simpleName!!,
-            )
-        Filter.entries.find { it::class.simpleName == selectedFilterClassname } ?: SettingsDefaults.selectedFilter
+    private val _selectedFilterName = MutableStateFlow {
+        settings.getString(
+            SettingsRepository::selectedFilterName.name,
+            SettingsDefaults.selectedFilter,
+        )
     }
-    override val selectedFilter: StateFlow<Filter> get() = _selectedFilter
+    override val selectedFilterName: StateFlow<String> get() = _selectedFilterName
+
+    private val _selectedFilterData = MutableStateFlow {
+        settings.getStringOrNull(SettingsRepository::selectedFilterData.name)
+    }
+    override val selectedFilterData: StateFlow<String?> get() = _selectedFilterData
 
     private val _selectedSortOrder = MutableStateFlow {
         val selectedSortOrderClassname = settings.getString(
@@ -179,9 +181,14 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
         }
     override val httpServerEnabled: StateFlow<Boolean> get() = _httpServerEnabled
 
-    override suspend fun setSelectedFilter(filter: Filter) {
-        _selectedFilter.emit(filter)
-        settings[SettingsRepository::selectedFilter.name] = filter::class.simpleName
+    override suspend fun setSelectedFilterName(filterName: String) {
+        _selectedFilterName.emit(filterName)
+        settings[SettingsRepository::selectedFilterName.name] = filterName
+    }
+
+    override suspend fun setSelectedFilterData(filterData: String?) {
+        _selectedFilterData.emit(filterData)
+        settings[SettingsRepository::selectedFilterData.name] = filterData
     }
 
     override suspend fun setSelectedSortOrder(sortOrder: SortOrder) {

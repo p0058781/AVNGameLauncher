@@ -1,15 +1,13 @@
 package org.skynetsoftware.avnlauncher.domain.model
 
-enum class PlayState {
-    NotStarted,
-    Playing,
-    WaitingForUpdate,
-    Completed,
-    ;
+data class PlayState(
+    val id: String,
+    val label: String,
+    val description: String?,
+)
 
-    companion object {
-        fun fromString(playState: String?): PlayState {
-            return entries.find { it.name == playState } ?: error("Invalid value '$playState'")
-        }
-    }
-}
+val PLAY_STATE_NONE = PlayState(
+    id = "None",
+    label = "-",
+    description = null,
+)

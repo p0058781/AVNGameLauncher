@@ -12,8 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -26,21 +24,17 @@ import androidx.compose.ui.window.rememberWindowState
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
-import org.skynetsoftware.avnlauncher.app.generated.resources.cardValuesScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
-import org.skynetsoftware.avnlauncher.app.generated.resources.importExportScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsTitle
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.ui.screen.cardvalues.CardValuesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.CreateCustomGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.game.GameDetailsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameScreen
-import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportScreen
 import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreen
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsScreen
 import org.skynetsoftware.avnlauncher.ui.theme.darkColors
@@ -63,6 +57,12 @@ private const val EDIT_GAME_WINDOW_HEIGHT_PERCENT = 0.5f
 private const val GAME_DETAILS_WINDOW_WIDTH_PERCENT = 0.4f
 private const val GAME_DETAILS_WINDOW_HEIGHT_PERCENT = 0.5f
 
+private const val CUSTOM_STATUSES_WINDOW_WIDTH_PERCENT = 0.4f
+private const val CUSTOM_STATUSES_WINDOW_HEIGHT_PERCENT = 0.5f
+
+private const val CUSTOM_LISTS_WINDOW_WIDTH_PERCENT = 0.4f
+private const val CUSTOM_LISTS_WINDOW_HEIGHT_PERCENT = 0.5f
+
 private val IMPORT_WINDOW_WIDTH = 500.dp
 private val IMPORT_WINDOW_HEIGHT = 350.dp
 
@@ -84,13 +84,9 @@ interface Navigator {
 
     fun navigateToImportGame()
 
-    fun navigateToImportExport()
-
     fun navigateToCustomLists()
 
     fun navigateToCustomStatuses()
-
-    fun navigateToCardValues()
 }
 
 class WindowControl(
@@ -111,10 +107,8 @@ fun App() {
     var showSettingsScreen by remember { mutableStateOf(false) }
     var showImportGameScreen by remember { mutableStateOf(false) }
     var showGameDetailsScreen by remember { mutableStateOf<Game?>(null) }
-    var showImportExportScreen by remember { mutableStateOf(false) }
     var showCustomListsScreen by remember { mutableStateOf(false) }
     var showCustomStatusesScreen by remember { mutableStateOf(false) }
-    var showCardValuesScreen by remember { mutableStateOf(false) }
     var showCreateCustomGameScreen by remember { mutableStateOf(false) }
 
     val exitApplication = LocalExitApplication.current
@@ -137,20 +131,12 @@ fun App() {
                 showImportGameScreen = true
             }
 
-            override fun navigateToImportExport() {
-                showImportExportScreen = true
-            }
-
             override fun navigateToCustomLists() {
                 showCustomListsScreen = true
             }
 
             override fun navigateToCustomStatuses() {
                 showCustomStatusesScreen = true
-            }
-
-            override fun navigateToCardValues() {
-                showCardValuesScreen = true
             }
         },
     ) {
@@ -189,7 +175,7 @@ fun App() {
                         },
                         windowFocused = windowFocused,
                         blockedByPopup = showSettingsScreen || showImportGameScreen || showGameDetailsScreen != null ||
-                            showImportGameScreen || showCustomListsScreen || showCardValuesScreen ||
+                            showImportGameScreen || showCustomListsScreen ||
                             showCreateCustomGameScreen,
                     ),
                 ) {
@@ -206,14 +192,6 @@ fun App() {
                     icon = painterResource(WINDOW_ICON),
                     onCloseRequest = {
                         showSettingsScreen = false
-                    },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showSettingsScreen = false
-                            true
-                        } else {
-                            false
-                        }
                     },
                 ) {
                     MaterialTheme(
@@ -233,14 +211,6 @@ fun App() {
                     resizable = false,
                     onCloseRequest = {
                         showImportGameScreen = false
-                    },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showImportGameScreen = false
-                            true
-                        } else {
-                            false
-                        }
                     },
                 ) {
                     MaterialTheme(
@@ -266,14 +236,6 @@ fun App() {
                     onCloseRequest = {
                         showGameDetailsScreen = null
                     },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showGameDetailsScreen = null
-                            true
-                        } else {
-                            false
-                        }
-                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -298,14 +260,6 @@ fun App() {
                     onCloseRequest = {
                         showCreateCustomGameScreen = false
                     },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showCreateCustomGameScreen = false
-                            true
-                        } else {
-                            false
-                        }
-                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
@@ -318,45 +272,19 @@ fun App() {
                     }
                 }
             }
-            if (showImportExportScreen) {
-                DialogWindow(
-                    resizable = false,
-                    title = stringResource(Res.string.importExportScreenTitle),
-                    icon = painterResource(WINDOW_ICON),
-                    onCloseRequest = {
-                        showImportExportScreen = false
-                    },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showImportExportScreen = false
-                            true
-                        } else {
-                            false
-                        }
-                    },
-                ) {
-                    MaterialTheme(
-                        colors = darkColors,
-                    ) {
-                        ImportExportScreen()
-                    }
-                }
-            }
             if (showCustomListsScreen) {
                 DialogWindow(
+                    state = rememberDialogState(
+                        size = getPercentageWindowSize(
+                            widthPercent = CUSTOM_LISTS_WINDOW_WIDTH_PERCENT,
+                            heightPercent = CUSTOM_LISTS_WINDOW_HEIGHT_PERCENT,
+                        ),
+                    ),
                     resizable = false,
                     title = stringResource(Res.string.customListsScreenTitle),
                     icon = painterResource(WINDOW_ICON),
                     onCloseRequest = {
                         showCustomListsScreen = false
-                    },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showCustomListsScreen = false
-                            true
-                        } else {
-                            false
-                        }
                     },
                 ) {
                     MaterialTheme(
@@ -368,49 +296,23 @@ fun App() {
             }
             if (showCustomStatusesScreen) {
                 DialogWindow(
+                    state = rememberDialogState(
+                        size = getPercentageWindowSize(
+                            widthPercent = CUSTOM_STATUSES_WINDOW_WIDTH_PERCENT,
+                            heightPercent = CUSTOM_STATUSES_WINDOW_HEIGHT_PERCENT,
+                        ),
+                    ),
                     resizable = false,
                     title = stringResource(Res.string.customStatusesScreenTitle),
                     icon = painterResource(WINDOW_ICON),
                     onCloseRequest = {
                         showCustomStatusesScreen = false
                     },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showCustomStatusesScreen = false
-                            true
-                        } else {
-                            false
-                        }
-                    },
                 ) {
                     MaterialTheme(
                         colors = darkColors,
                     ) {
                         CustomStatusesScreen()
-                    }
-                }
-            }
-            if (showCardValuesScreen) {
-                DialogWindow(
-                    resizable = false,
-                    title = stringResource(Res.string.cardValuesScreenTitle),
-                    icon = painterResource(WINDOW_ICON),
-                    onCloseRequest = {
-                        showCardValuesScreen = false
-                    },
-                    onPreviewKeyEvent = {
-                        if (it.key == Key.Escape) {
-                            showCardValuesScreen = false
-                            true
-                        } else {
-                            false
-                        }
-                    },
-                ) {
-                    MaterialTheme(
-                        colors = darkColors,
-                    ) {
-                        CardValuesScreen()
                     }
                 }
             }

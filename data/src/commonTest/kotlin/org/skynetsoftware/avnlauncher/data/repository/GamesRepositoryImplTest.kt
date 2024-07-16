@@ -1,8 +1,10 @@
 package org.skynetsoftware.avnlauncher.data.repository
 
 import app.cash.sqldelight.Query
+import io.mockk.Runs
 import io.mockk.confirmVerified
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
@@ -16,12 +18,14 @@ import org.skynetsoftware.avnlauncher.data.Database
 import org.skynetsoftware.avnlauncher.data.GameEntity
 import org.skynetsoftware.avnlauncher.data.GameEntityQueries
 import org.skynetsoftware.avnlauncher.data.GameEntitySlots
-import org.skynetsoftware.avnlauncher.data.GameWithPlaySessions
-import org.skynetsoftware.avnlauncher.data.GamesWithPlaySessions
+import org.skynetsoftware.avnlauncher.data.GameFull
+import org.skynetsoftware.avnlauncher.data.GamesFull
+import org.skynetsoftware.avnlauncher.data.ListEntityQueries
 import org.skynetsoftware.avnlauncher.data.TestCoroutineDispatchers
 import org.skynetsoftware.avnlauncher.data.mapper.toGame
 import org.skynetsoftware.avnlauncher.data.mapper.toGames
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
+import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import kotlin.test.AfterTest
@@ -32,7 +36,8 @@ import kotlin.test.assertEquals
 class GamesRepositoryImplTest : KoinTest {
     private val database = mockk<Database>()
     private val gameEntityQueries = mockk<GameEntityQueries>()
-    private val allQuery = mockk<Query<GamesWithPlaySessions>>()
+    private val listEntityQueries = mockk<ListEntityQueries>()
+    private val allQuery = mockk<Query<GamesFull>>()
 
     private lateinit var gameEntitySlots: GameEntitySlots
 
@@ -42,8 +47,11 @@ class GamesRepositoryImplTest : KoinTest {
     fun setup() {
         gameEntitySlots = GameEntitySlots()
 
+        every { database.listEntityQueries } returns listEntityQueries
         every { database.gameEntityQueries } returns gameEntityQueries
-        every { gameEntityQueries.gamesWithPlaySessions() } returns allQuery
+        every { gameEntityQueries.gamesFull() } returns allQuery
+        every { listEntityQueries.deleteAllGameToGamesList(any()) } just Runs
+        every { listEntityQueries.insertGameToGamesList(any()) } just Runs
 
         startKoin {
             modules(
@@ -84,7 +92,7 @@ class GamesRepositoryImplTest : KoinTest {
     @Test
     fun `get returns null if game doesnt exist`() =
         runTest {
-            val expected = emptyList<GameWithPlaySessions>()
+            val expected = emptyList<GameFull>()
             setupGetMock(12345676, expected)
             val game = gamesRepository.get(12345676)
 
@@ -113,7 +121,7 @@ class GamesRepositoryImplTest : KoinTest {
             gamesRepository.updateRating(expectedId, expectedRating)
 
             verify { gameEntityQueries.updateRating(expectedRating, expectedId) }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
@@ -137,7 +145,7 @@ class GamesRepositoryImplTest : KoinTest {
             gamesRepository.insertGame(expectedGame.toGame())
 
             verify { gameEntityQueries.insertGame(expectedGame) }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
@@ -172,7 +180,6 @@ class GamesRepositoryImplTest : KoinTest {
                     tags = capture(gameEntitySlots.tags),
                     checkForUpdates = capture(gameEntitySlots.checkForUpdates),
                     notes = captureNullable(gameEntitySlots.notes),
-                    favorite = capture(gameEntitySlots.favorite),
                     f95ZoneThreadId = capture(gameEntitySlots.f95ZoneThreadId),
                 )
             } answers {
@@ -199,7 +206,6 @@ class GamesRepositoryImplTest : KoinTest {
                     checkForUpdates = gameEntitySlots.checkForUpdates.captured,
                     firstPlayed = 0L,
                     notes = gameEntitySlots.notes.captured,
-                    favorite = gameEntitySlots.favorite.captured,
                     f95ZoneThreadId = gameEntitySlots.f95ZoneThreadId.captured,
                 )
             }
@@ -227,11 +233,10 @@ class GamesRepositoryImplTest : KoinTest {
                     tags = expected.tags,
                     checkForUpdates = expected.checkForUpdates,
                     notes = expected.notes,
-                    favorite = expected.favorite,
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
@@ -245,7 +250,7 @@ class GamesRepositoryImplTest : KoinTest {
 
             var executablePaths: Set<String>? = null
             var hidden: Boolean? = null
-            var playState: PlayState? = null
+            var playState: String? = null
             var checkForUpdates: Boolean? = null
             var notes: String? = null
             var f95ZoneThreadId: Int? = null
@@ -273,6 +278,7 @@ class GamesRepositoryImplTest : KoinTest {
                 executablePaths = expected.executablePaths,
                 checkForUpdates = expected.checkForUpdates,
                 playState = expected.playState,
+                gamesLists = emptyList(),
                 hidden = expected.hidden,
                 notes = expected.notes,
             )
@@ -287,7 +293,7 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
@@ -314,7 +320,7 @@ class GamesRepositoryImplTest : KoinTest {
             var tags: Set<String>? = null
             var executablePaths: Set<String>? = null
             var hidden: Boolean? = null
-            var playState: PlayState? = null
+            var playState: String? = null
             var checkForUpdates: Boolean? = null
             var notes: String? = null
             var f95ZoneThreadId: Int? = null
@@ -366,6 +372,7 @@ class GamesRepositoryImplTest : KoinTest {
                 executablePaths = expected.executablePaths,
                 checkForUpdates = expected.checkForUpdates,
                 playState = expected.playState,
+                gamesLists = emptyList(),
                 hidden = expected.hidden,
                 notes = expected.notes,
             )
@@ -388,7 +395,7 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
@@ -447,7 +454,7 @@ class GamesRepositoryImplTest : KoinTest {
                     f95ZoneThreadId = expected.f95ZoneThreadId,
                 )
             }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
@@ -492,28 +499,30 @@ class GamesRepositoryImplTest : KoinTest {
                     )
                 }
             }
-            verify { gameEntityQueries.gamesWithPlaySessions() }
+            verify { gameEntityQueries.gamesFull() }
 
             confirmVerified(gameEntityQueries)
 
             assertEquals(expected, actual)
         }
 
-    private fun setupGameListMock(games: List<GamesWithPlaySessions>) {
+    private fun setupGameListMock(games: List<GamesFull>) {
         every { allQuery.executeAsList() } returns games
     }
 
     private fun setupGetMock(
         id: Int,
-        gameEntity: List<GameWithPlaySessions>,
+        gameEntity: List<GameFull>,
     ) {
-        val getQuery = mockk<Query<GameWithPlaySessions>>()
-        every { gameEntityQueries.gameWithPlaySessions(id) } returns getQuery
+        val getQuery = mockk<Query<GameFull>>()
+        every { gameEntityQueries.gameFull(id) } returns getQuery
         every { getQuery.executeAsList() } returns gameEntity
     }
 
-    private fun createRandomGamesWithPlaySessions(): GamesWithPlaySessions {
-        return GamesWithPlaySessions(
+    private fun createRandomGamesWithPlaySessions(): GamesFull {
+        val plaStateId = getRandomString(5)
+        val listId = if ((0..1).random() == 1) (0..10).random() else null
+        return GamesFull(
             f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
             title = getRandomString(10),
             description = getRandomString(10),
@@ -530,22 +539,37 @@ class GamesRepositoryImplTest : KoinTest {
             hidden = (0..1).random() == 1,
             releaseDate = System.currentTimeMillis(),
             firstReleaseDate = System.currentTimeMillis(),
-            playState = PlayState.entries[(0 until PlayState.entries.size).random()],
+            playStateId = plaStateId,
+            playState = plaStateId,
+            playStateLabel = getRandomString(5),
+            playStateDescription = if ((0..1).random() == 1) getRandomString(10) else null,
             availableVersion = getRandomString(5),
             tags = setOf(getRandomString(4), getRandomString(3)),
             checkForUpdates = (0..1).random() == 1,
             customImageUrl = null,
             firstPlayed = System.currentTimeMillis(),
             notes = getRandomString(55),
-            favorite = (0..1).random() == 1,
             playSessionStartTime = System.currentTimeMillis(),
             playSessionEndTime = System.currentTimeMillis(),
             playSessionVersion = getRandomString(5),
+            listId = listId,
+            listName = if (listId != null) getRandomString(5) else null,
+            listDescription = if (listId != null) {
+                if ((0..1).random() == 1) {
+                    getRandomString(10)
+                } else {
+                    null
+                }
+            } else {
+                null
+            },
         )
     }
 
-    private fun createRandomGameWithPlaySessions(): GameWithPlaySessions {
-        return GameWithPlaySessions(
+    private fun createRandomGameWithPlaySessions(): GameFull {
+        val plaStateId = getRandomString(5)
+        val listId = if ((0..1).random() == 1) (0..10).random() else null
+        return GameFull(
             f95ZoneThreadId = (0..Int.MAX_VALUE).random(),
             title = getRandomString(10),
             description = getRandomString(10),
@@ -562,17 +586,30 @@ class GamesRepositoryImplTest : KoinTest {
             hidden = (0..1).random() == 1,
             releaseDate = System.currentTimeMillis(),
             firstReleaseDate = System.currentTimeMillis(),
-            playState = PlayState.entries[(0 until PlayState.entries.size).random()],
+            playStateId = plaStateId,
+            playState = plaStateId,
+            playStateLabel = getRandomString(5),
+            playStateDescription = if ((0..1).random() == 1) getRandomString(10) else null,
             availableVersion = getRandomString(5),
             tags = setOf(getRandomString(4), getRandomString(3)),
             checkForUpdates = (0..1).random() == 1,
             customImageUrl = null,
             firstPlayed = System.currentTimeMillis(),
             notes = getRandomString(55),
-            favorite = (0..1).random() == 1,
             playSessionStartTime = System.currentTimeMillis(),
             playSessionEndTime = System.currentTimeMillis(),
             playSessionVersion = getRandomString(5),
+            listId = listId,
+            listName = if (listId != null) getRandomString(5) else null,
+            listDescription = if (listId != null) {
+                if ((0..1).random() == 1) {
+                    getRandomString(10)
+                } else {
+                    null
+                }
+            } else {
+                null
+            },
         )
     }
 
@@ -594,14 +631,13 @@ class GamesRepositoryImplTest : KoinTest {
             hidden = (0..1).random() == 1,
             releaseDate = System.currentTimeMillis(),
             firstReleaseDate = System.currentTimeMillis(),
-            playState = PlayState.entries[(0 until PlayState.entries.size).random()],
+            playState = getRandomString(5),
             availableVersion = getRandomString(5),
             tags = setOf(getRandomString(4), getRandomString(3)),
             checkForUpdates = (0..1).random() == 1,
             customImageUrl = null,
             firstPlayed = 0L,
             notes = getRandomString(55),
-            favorite = (0..1).random() == 1,
         )
     }
 
@@ -610,5 +646,38 @@ class GamesRepositoryImplTest : KoinTest {
         return (1..length)
             .map { allowedChars.random() }
             .joinToString("")
+    }
+
+    private fun GameEntity.toGame(): Game {
+        return Game(
+            title = this.title,
+            description = this.description,
+            developer = this.developer,
+            imageUrl = this.imageUrl,
+            f95ZoneThreadId = this.f95ZoneThreadId,
+            executablePaths = this.executablePaths,
+            version = this.version,
+            rating = this.rating,
+            f95Rating = this.f95Rating,
+            updateAvailable = this.updateAvailable,
+            added = this.added,
+            hidden = this.hidden,
+            releaseDate = this.releaseDate,
+            firstReleaseDate = this.firstReleaseDate,
+            playState = PlayState(
+                id = this.playState,
+                label = this.playState,
+                description = null,
+            ),
+            availableVersion = this.availableVersion,
+            tags = this.tags,
+            checkForUpdates = this.checkForUpdates,
+            notes = this.notes,
+            playSessions = emptyList(),
+            lists = emptyList(),
+            totalPlayTime = 0L,
+            firstPlayedTime = this.firstPlayed,
+            lastPlayedTime = this.lastPlayed,
+        )
     }
 }

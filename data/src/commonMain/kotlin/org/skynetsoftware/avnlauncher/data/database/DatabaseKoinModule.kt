@@ -3,13 +3,14 @@
 package org.skynetsoftware.avnlauncher.data.database
 
 import app.cash.sqldelight.ColumnAdapter
-import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.adapter.primitive.FloatColumnAdapter
 import app.cash.sqldelight.adapter.primitive.IntColumnAdapter
 import org.jetbrains.annotations.VisibleForTesting
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.Database
 import org.skynetsoftware.avnlauncher.data.GameEntity
+import org.skynetsoftware.avnlauncher.data.GameEntityToListEntity
+import org.skynetsoftware.avnlauncher.data.ListEntity
 import org.skynetsoftware.avnlauncher.data.PlaySessionEntity
 
 @VisibleForTesting
@@ -36,10 +37,16 @@ internal fun Module.databaseKoinModule() {
                 f95RatingAdapter = FloatColumnAdapter,
                 tagsAdapter = StringSetAdapter,
                 executablePathsAdapter = StringSetAdapter,
-                playStateAdapter = EnumColumnAdapter(),
             ),
             PlaySessionEntityAdapter = PlaySessionEntity.Adapter(
                 gameIdAdapter = IntColumnAdapter,
+            ),
+            ListEntityAdapter = ListEntity.Adapter(
+                idAdapter = IntColumnAdapter,
+            ),
+            GameEntityToListEntityAdapter = GameEntityToListEntity.Adapter(
+                gameIdAdapter = IntColumnAdapter,
+                listIdAdapter = IntColumnAdapter,
             ),
         )
     }

@@ -1,33 +1,35 @@
 package org.skynetsoftware.avnlauncher.domain.model
 
 import kotlin.test.Test
-import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 class FilterTest {
-    private val games = listOf(
-        createGame(PlayState.Playing, false, true, 3600_001L),
-        createGame(PlayState.Playing, false, false, 4567),
-        createGame(PlayState.Completed, true, true, 39600_001L),
-        createGame(PlayState.Completed, false, true, 39600_001L),
-        createGame(PlayState.WaitingForUpdate, false, false, 0),
-        createGame(PlayState.WaitingForUpdate, true, false, 0),
+    private val playStatePlaying = PlayState(
+        id = "Playing",
+        label = "Playing",
+        description = null,
     )
 
-    @Test
-    fun `entries returns all values`() {
-        val entries = Filter.entries
-        assertEquals(9, entries.size)
-        assertContains(entries, Filter.All)
-        assertContains(entries, Filter.Playing)
-        assertContains(entries, Filter.NotStarted)
-        assertContains(entries, Filter.Completed)
-        assertContains(entries, Filter.WaitingForUpdate)
-        assertContains(entries, Filter.GamesWithUpdate)
-        assertContains(entries, Filter.HiddenGames)
-        assertContains(entries, Filter.UnplayedGames)
-        assertContains(entries, Filter.Favorites)
-    }
+    private val playStateCompleted = PlayState(
+        id = "Completed",
+        label = "Completed",
+        description = null,
+    )
+
+    private val playStateWaitingForUpdate = PlayState(
+        id = "WaitingForUpdate",
+        label = "WaitingForUpdate",
+        description = null,
+    )
+
+    private val games = listOf(
+        createGame(playStatePlaying, false, true, 3600_001L),
+        createGame(playStatePlaying, false, false, 4567),
+        createGame(playStateCompleted, true, true, 39600_001L),
+        createGame(playStateCompleted, false, true, 39600_001L),
+        createGame(playStateWaitingForUpdate, false, false, 0),
+        createGame(playStateWaitingForUpdate, true, false, 0),
+    )
 
     @Test
     fun `Filter_All_filter returns all games except hidden`() {
@@ -55,19 +57,19 @@ class FilterTest {
 
     @Test
     fun `Filter_Playing_filter returns all playing games`() {
-        val all = Filter.Playing
+        val all = Filter.PlayState(playStatePlaying.id)
         assertEquals(2, all.filter(games).size)
     }
 
     @Test
     fun `Filter_Completed_filter returns all completed games`() {
-        val all = Filter.Completed
+        val all = Filter.PlayState(playStateCompleted.id)
         assertEquals(1, all.filter(games).size)
     }
 
     @Test
     fun `Filter_WaitingForUpdate_filter returns all waiting for update games`() {
-        val all = Filter.WaitingForUpdate
+        val all = Filter.PlayState(playStateWaitingForUpdate.id)
         assertEquals(1, all.filter(games).size)
     }
 
@@ -97,8 +99,8 @@ class FilterTest {
             tags = emptySet(),
             checkForUpdates = false,
             notes = null,
-            favorite = false,
             playSessions = emptyList(),
+            lists = emptyList(),
             totalPlayTime = playTime,
             firstPlayedTime = 0L,
             lastPlayedTime = 0L,

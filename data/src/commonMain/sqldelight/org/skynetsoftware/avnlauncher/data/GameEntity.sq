@@ -3,7 +3,6 @@ import kotlin.Float;
 import kotlin.Int;
 import kotlin.String;
 import kotlin.collections.Set;
-import org.skynetsoftware.avnlauncher.domain.model.PlayState;
 
 CREATE TABLE GameEntity (
     f95ZoneThreadId INTEGER AS Int PRIMARY KEY NOT NULL,
@@ -20,27 +19,38 @@ CREATE TABLE GameEntity (
     hidden INTEGER AS Boolean NOT NULL,
     releaseDate INTEGER NOT NULL,
     firstReleaseDate INTEGER NOT NULL,
-    playState TEXT AS PlayState NOT NULL DEFAULT "None",
+    playState TEXT NOT NULL DEFAULT "None",
     availableVersion TEXT,
     tags TEXT AS Set<String> NOT NULL,
     checkForUpdates INTEGER AS Boolean NOT NULL DEFAULT 1,
     customImageUrl TEXT,
     firstPlayed INTEGER NOT NULL,
     notes TEXT,
-    favorite INTEGER AS Boolean NOT NULL,
     description TEXT NOT NULL DEFAULT "",
     developer TEXT NOT NULL DEFAULT ""
 );
 
-gamesWithPlaySessions:
-SELECT GameEntity.*, PlaySessionEntity.startTime AS playSessionStartTime, PlaySessionEntity.endTime AS playSessionEndTime, PlaySessionEntity.version AS playSessionVersion
-FROM GameEntity
-LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId;
-
-gameWithPlaySessions:
-SELECT GameEntity.*, PlaySessionEntity.startTime AS playSessionStartTime, PlaySessionEntity.endTime AS playSessionEndTime, PlaySessionEntity.version AS playSessionVersion
+gamesFull:
+SELECT 
+GameEntity.*, 
+PlaySessionEntity.startTime AS playSessionStartTime, PlaySessionEntity.endTime AS playSessionEndTime, PlaySessionEntity.version AS playSessionVersion,
+ListEntity.id AS listId, ListEntity.name AS listName, ListEntity.description AS listDescription,
+PlayStateEntity.id AS playStateId, PlayStateEntity.label AS playStateLabel, PlayStateEntity.description AS playStateDescription
 FROM GameEntity
 LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId
+LEFT JOIN GameEntityToListEntity ON GameEntity.f95ZoneThreadId = GameEntityToListEntity.gameId LEFT JOIN ListEntity ON GameEntityToListEntity.listId = ListEntity.id
+LEFT JOIN PlayStateEntity ON GameEntity.playState = PlayStateEntity.id;
+
+gameFull:
+SELECT 
+GameEntity.*,
+PlaySessionEntity.startTime AS playSessionStartTime, PlaySessionEntity.endTime AS playSessionEndTime, PlaySessionEntity.version AS playSessionVersion,
+ListEntity.id AS listId, ListEntity.name AS listName, ListEntity.description AS listDescription,
+PlayStateEntity.id AS playStateId, PlayStateEntity.label AS playStateLabel, PlayStateEntity.description AS playStateDescription
+FROM GameEntity
+LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId
+LEFT JOIN GameEntityToListEntity ON GameEntity.f95ZoneThreadId = GameEntityToListEntity.gameId LEFT JOIN ListEntity ON GameEntityToListEntity.listId = ListEntity.id
+LEFT JOIN PlayStateEntity ON GameEntity.playState = PlayStateEntity.id
 WHERE f95ZoneThreadId = ?;
 
 insertGame:
@@ -72,8 +82,7 @@ SET title = ?,
     availableVersion = ?,
     tags = ?,
     checkForUpdates = ?,
-    notes = ?,
-    favorite = ?
+    notes = ?
 WHERE f95ZoneThreadId = ?;
 
 updateGameF95:
@@ -107,9 +116,4 @@ UPDATE GameEntity
 SET updateAvailable = ?,
     version = ?,
     availableVersion = ?
-WHERE f95ZoneThreadId = ?;
-
-updateFavorite:
-UPDATE GameEntity
-SET favorite = ?
 WHERE f95ZoneThreadId = ?;

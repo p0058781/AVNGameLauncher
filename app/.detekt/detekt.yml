@@ -6,6 +6,8 @@ complexity:
     ignoreAnnotated: ['Composable']
   TooManyFunctions:
     thresholdInClasses: 20
+  CyclomaticComplexMethod:
+    threshold: 20
 
 exceptions:
   TooGenericExceptionCaught:
