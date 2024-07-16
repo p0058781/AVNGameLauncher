@@ -1,0 +1,28 @@
+import kotlin.Int;
+
+CREATE TABLE PlayState (
+    id TEXT PRIMARY KEY NOT NULL,
+    label TEXT,
+    description TEXT
+);
+
+INSERT INTO PlayStateEntity (id, label) VALUES ('Playing', 'Playing');
+INSERT INTO PlayStateEntity (id, label) VALUES ('NotStarted', 'Not Started');
+INSERT INTO PlayStateEntity (id, label) VALUES ('WaitingForUpdate', 'Waiting for Update');
+INSERT INTO PlayStateEntity (id, label) VALUES ('Completed', 'Completed');
+
+CREATE TABLE ListEntity (
+    id INTEGER AS Int PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE GameEntityToListEntity (
+    gameId INTEGER AS Int NOT NULL,
+    listId INTEGER AS Int NOT NULL
+);
+
+INSERT INTO ListEntity (name, description) VALUES ("Favorites", "Favorite games");
+INSERT INTO GameEntityToListEntity SELECT GameEntity.f95ZoneThreadId, 1 FROM GameEntity WHERE favorite = 1;
+
+ALTER TABLE GameEntity DROP COLUMN favorite;

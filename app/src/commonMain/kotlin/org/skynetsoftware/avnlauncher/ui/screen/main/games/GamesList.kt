@@ -50,7 +50,6 @@ fun GamesList(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -67,7 +66,6 @@ fun GamesList(
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
-                updateFavorite = updateFavorite,
             )
         }
     }
@@ -85,7 +83,6 @@ private fun GameItem(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     GameItemBase(
         game = game,
@@ -111,11 +108,6 @@ private fun GameItem(
                     game = game,
                     updateRating = updateRating,
                     modifier = Modifier.weight(1f),
-                )
-                AddToFavoritesIcon(
-                    modifier = Modifier,
-                    game = game,
-                    updateFavorite = updateFavorite,
                 )
                 F95LinkIcon(
                     modifier = Modifier,

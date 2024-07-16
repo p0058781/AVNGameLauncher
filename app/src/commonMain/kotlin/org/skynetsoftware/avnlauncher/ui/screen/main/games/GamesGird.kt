@@ -41,7 +41,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelReleaseDa
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelVersion
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
-import org.skynetsoftware.avnlauncher.domain.model.label
 import org.skynetsoftware.avnlauncher.ui.ext.lastPlayedDisplayValue
 import org.skynetsoftware.avnlauncher.ui.ext.releaseDateDisplayValue
 import org.skynetsoftware.avnlauncher.ui.ext.titleWithSfwFilterAndSearchMatchHighlight
@@ -64,7 +63,6 @@ fun GamesGrid(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     @Suppress("MagicNumber")
     val columns = when (gridColumns) {
@@ -93,7 +91,6 @@ fun GamesGrid(
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
-                updateFavorite = updateFavorite,
             )
         }
     }
@@ -113,7 +110,6 @@ private fun GameItem(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     GameItemBase(
         game = game,
@@ -138,7 +134,7 @@ private fun GameItem(
                         .background(MaterialTheme.colors.surface).padding(5.dp).clip(
                             RoundedCornerShape(5.dp),
                         ),
-                    text = game.playState.label(),
+                    text = game.playState.label,
                     style = MaterialTheme.typography.body2,
                 )
             }
@@ -217,11 +213,6 @@ private fun GameItem(
                     modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
                     game = game,
                     updateRating = updateRating,
-                )
-                AddToFavoritesIcon(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    game = game,
-                    updateFavorite = updateFavorite,
                 )
                 F95LinkIcon(
                     modifier = Modifier.align(Alignment.CenterVertically),

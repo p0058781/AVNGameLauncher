@@ -1,0 +1,34 @@
+CREATE TABLE PlayStateEntity (
+    id TEXT PRIMARY KEY NOT NULL,
+    label TEXT NOT NULL,
+    description TEXT
+);
+
+INSERT INTO PlayStateEntity (id, label) VALUES ('Playing', 'Playing');
+INSERT INTO PlayStateEntity (id, label) VALUES ('NotStarted', 'Not Started');
+INSERT INTO PlayStateEntity (id, label) VALUES ('WaitingForUpdate', 'Waiting for Update');
+INSERT INTO PlayStateEntity (id, label) VALUES ('Completed', 'Completed');
+
+playStates:
+SELECT * FROM PlayStateEntity;
+
+getById:
+SELECT * FROM PlayStateEntity
+WHERE id = ?;
+
+getByLabel:
+SELECT * FROM PlayStateEntity
+WHERE label = ?;
+
+insert:
+INSERT INTO PlayStateEntity VALUES ?;
+
+update:
+UPDATE PlayStateEntity
+SET label = ?,
+    description = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM PlayStateEntity
+WHERE id = ?;

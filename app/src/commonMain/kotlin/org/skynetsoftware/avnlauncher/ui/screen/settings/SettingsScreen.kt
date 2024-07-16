@@ -28,11 +28,9 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescri
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionDateFormat
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionDisableUpdateChecksForArchivedGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGamesDir
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridCardValues
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridImageAspectRatio
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionHttpServer
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionImportExport
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionMinimizeToTray
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionShowGifs
@@ -50,12 +48,10 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleC
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleDateFormat
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleDisableUpdateChecksForArchivedGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleF95Thread
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGameCardValues
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridImageAspectRatio
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleHttpServer
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleImportExport
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleMinimizeToTray
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleShowGifs
@@ -151,14 +147,6 @@ fun SettingsScreen(
                                 settingsViewModel.setLogLevel(it)
                             },
                         )
-                    },
-                )
-                Divider()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleImportExport),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionImportExport),
-                    onClick = {
-                        navigator?.navigateToImportExport()
                     },
                 )
                 Divider()
@@ -325,14 +313,6 @@ fun SettingsScreen(
                                 settingsViewModel.setGridImageAspectRatio(it.toFloat())
                             },
                         )
-                    },
-                )
-                Divider()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleGameCardValues),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionGridCardValues),
-                    onClick = {
-                        navigator?.navigateToCardValues()
                     },
                 )
                 Divider()

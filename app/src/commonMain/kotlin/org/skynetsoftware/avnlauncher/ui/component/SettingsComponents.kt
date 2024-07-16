@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Card
+import androidx.compose.material.Checkbox
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
@@ -116,6 +117,7 @@ fun <T> RowScope.Dropdown(
     values: List<T>,
     currentValue: T,
     onValueChanged: (newValue: T) -> Unit,
+    valueToString: (value: T) -> String = { it.toString() },
 ) {
     var dropdownShown by remember { mutableStateOf(false) }
     Row(
@@ -124,7 +126,7 @@ fun <T> RowScope.Dropdown(
         },
     ) {
         Text(
-            text = currentValue.toString(),
+            text = valueToString(currentValue),
         )
         Icon(
             imageVector = Icons.Filled.KeyboardArrowDown,
@@ -144,8 +146,59 @@ fun <T> RowScope.Dropdown(
                     },
                 ) {
                     Text(
-                        text = it.toString(),
+                        text = valueToString(it),
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun <T> RowScope.MultiselectDropdown(
+    values: List<T>,
+    currentValue: List<T>,
+    onCheckedChanged: (value: T, checked: Boolean) -> Unit,
+    valueToString: (value: T) -> String = { it.toString() },
+) {
+    var dropdownShown by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier.align(Alignment.CenterVertically).clickable {
+            dropdownShown = true
+        },
+    ) {
+        Text(
+            text = currentValue.joinToString { valueToString(it) },
+        )
+        Icon(
+            imageVector = Icons.Filled.KeyboardArrowDown,
+            contentDescription = null,
+        )
+        DropdownMenu(
+            expanded = dropdownShown,
+            onDismissRequest = {
+                dropdownShown = false
+            },
+        ) {
+            values.forEach { value ->
+                DropdownMenuItem(
+                    onClick = {
+                        onCheckedChanged(value, !currentValue.contains(value))
+                    },
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = currentValue.contains(value),
+                            onCheckedChange = {
+                                onCheckedChanged(value, it)
+                            },
+                        )
+                        Text(
+                            text = valueToString(value),
+                        )
+                    }
                 }
             }
         }

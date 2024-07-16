@@ -1,0 +1,47 @@
+import kotlin.Int;
+
+CREATE TABLE ListEntity (
+    id INTEGER AS Int PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE GameEntityToListEntity (
+    gameId INTEGER AS Int NOT NULL,
+    listId INTEGER AS Int NOT NULL
+);
+
+INSERT INTO ListEntity (name, description) VALUES ("Favorites", "Favorite games");
+
+gamesLists:
+SELECT * FROM ListEntity;
+
+getById:
+SELECT * FROM ListEntity
+WHERE id = ?;
+
+getByName:
+SELECT * FROM ListEntity
+WHERE name = ?;
+
+insert:
+INSERT INTO ListEntity VALUES ?;
+
+insertGameToGamesList:
+INSERT INTO GameEntityToListEntity VALUES ?;
+
+deleteGameToGamesList:
+DELETE FROM GameEntityToListEntity WHERE gameId = ? AND listId = ?;
+
+deleteAllGameToGamesList:
+DELETE FROM GameEntityToListEntity WHERE gameId = ?;
+
+update:
+UPDATE ListEntity
+SET name = ?,
+    description = ?
+WHERE id = ?;
+
+delete:
+DELETE FROM ListEntity
+WHERE id = ?;

@@ -2,7 +2,7 @@ package org.skynetsoftware.avnlauncher.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.model.PlayState
+import org.skynetsoftware.avnlauncher.domain.model.GamesList
 
 interface GamesRepository {
     val games: Flow<List<Game>>
@@ -21,11 +21,6 @@ interface GamesRepository {
         rating: Int,
     )
 
-    suspend fun updateFavorite(
-        id: Int,
-        favorite: Boolean,
-    )
-
     suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>)
 
     suspend fun insertGame(game: Game)
@@ -37,7 +32,8 @@ interface GamesRepository {
         id: Int,
         executablePaths: Set<String>,
         checkForUpdates: Boolean,
-        playState: PlayState,
+        playState: String,
+        gamesLists: List<GamesList>,
         hidden: Boolean,
         notes: String?,
     )
@@ -55,7 +51,8 @@ interface GamesRepository {
         tags: Set<String>,
         executablePaths: Set<String>,
         checkForUpdates: Boolean,
-        playState: PlayState,
+        playState: String,
+        gamesLists: List<GamesList>,
         hidden: Boolean,
         notes: String?,
     )

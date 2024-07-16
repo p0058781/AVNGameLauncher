@@ -8,43 +8,46 @@ import kotlinx.coroutines.withContext
 import org.koin.core.module.Module
 import org.skynetsoftware.avnlauncher.data.Database
 import org.skynetsoftware.avnlauncher.data.GameEntityQueries
+import org.skynetsoftware.avnlauncher.data.GameEntityToListEntity
+import org.skynetsoftware.avnlauncher.data.ListEntityQueries
 import org.skynetsoftware.avnlauncher.data.mapper.toGame
 import org.skynetsoftware.avnlauncher.data.mapper.toGameEntity
 import org.skynetsoftware.avnlauncher.data.mapper.toGames
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.model.PlayState
+import org.skynetsoftware.avnlauncher.domain.model.GamesList
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 
 internal fun Module.gamesRepositoryKoinModule() {
     single<GamesRepository> {
         val database = get<Database>()
-        GamesRepositoryImpl(database.gameEntityQueries, get())
+        GamesRepositoryImpl(database.gameEntityQueries, database.listEntityQueries, get())
     }
 }
 
 @Suppress("TooManyFunctions")
 private class GamesRepositoryImpl(
     private val gameEntityQueries: GameEntityQueries,
+    private val listEntityQueries: ListEntityQueries,
     private val coroutineDispatchers: CoroutineDispatchers,
 ) : GamesRepository {
     override val games: Flow<List<Game>> =
-        gameEntityQueries.gamesWithPlaySessions().asFlow().mapToList(coroutineDispatchers.io).map { it.toGames() }
+        gameEntityQueries.gamesFull().asFlow().mapToList(coroutineDispatchers.io).map { it.toGames() }
 
     override suspend fun all(): List<Game> {
         return withContext(coroutineDispatchers.io) {
-            gameEntityQueries.gamesWithPlaySessions().executeAsList().toGames()
+            gameEntityQueries.gamesFull().executeAsList().toGames()
         }
     }
 
     override suspend fun get(id: Int): Game? {
         return withContext(coroutineDispatchers.io) {
-            gameEntityQueries.gameWithPlaySessions(id).executeAsList().toGame()
+            gameEntityQueries.gameFull(id).executeAsList().toGame()
         }
     }
 
     override fun getFlow(id: Int): Flow<Game?> {
-        return gameEntityQueries.gameWithPlaySessions(id).asFlow().map { it.executeAsList().toGame() }
+        return gameEntityQueries.gameFull(id).asFlow().map { it.executeAsList().toGame() }
     }
 
     override suspend fun updateRating(
@@ -52,13 +55,6 @@ private class GamesRepositoryImpl(
         rating: Int,
     ) {
         withContext(coroutineDispatchers.io) { gameEntityQueries.updateRating(rating, id) }
-    }
-
-    override suspend fun updateFavorite(
-        id: Int,
-        favorite: Boolean,
-    ) {
-        withContext(coroutineDispatchers.io) { gameEntityQueries.updateFavorite(favorite, id) }
     }
 
     override suspend fun updateExecutablePaths(games: List<Pair<Int, Set<String>>>) {
@@ -92,12 +88,11 @@ private class GamesRepositoryImpl(
                     hidden = game.hidden,
                     releaseDate = game.releaseDate,
                     firstReleaseDate = game.firstReleaseDate,
-                    playState = game.playState,
+                    playState = game.playState.id,
                     availableVersion = game.availableVersion,
                     tags = game.tags,
                     f95ZoneThreadId = game.f95ZoneThreadId,
                     notes = game.notes,
-                    favorite = game.favorite,
                 )
             }
         }
@@ -107,7 +102,8 @@ private class GamesRepositoryImpl(
         id: Int,
         executablePaths: Set<String>,
         checkForUpdates: Boolean,
-        playState: PlayState,
+        playState: String,
+        gamesLists: List<GamesList>,
         hidden: Boolean,
         notes: String?,
     ) {
@@ -120,6 +116,10 @@ private class GamesRepositoryImpl(
                 notes,
                 id,
             )
+            listEntityQueries.deleteAllGameToGamesList(id)
+            gamesLists.forEach {
+                listEntityQueries.insertGameToGamesList(GameEntityToListEntity(id, it.id))
+            }
         }
     }
 
@@ -135,7 +135,8 @@ private class GamesRepositoryImpl(
         tags: Set<String>,
         executablePaths: Set<String>,
         checkForUpdates: Boolean,
-        playState: PlayState,
+        playState: String,
+        gamesLists: List<GamesList>,
         hidden: Boolean,
         notes: String?,
     ) {
@@ -156,6 +157,10 @@ private class GamesRepositoryImpl(
                 notes,
                 id,
             )
+            listEntityQueries.deleteAllGameToGamesList(id)
+            gamesLists.forEach {
+                listEntityQueries.insertGameToGamesList(GameEntityToListEntity(id, it.id))
+            }
         }
     }
 

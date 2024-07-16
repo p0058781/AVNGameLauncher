@@ -1,6 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.screen.main
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -10,6 +11,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterAll
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterArchived
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterGamesWithUpdate
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterGroupGeneral
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterGroupLists
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterGroupPlayStates
+import org.skynetsoftware.avnlauncher.app.generated.resources.filterUnPlayed
 import org.skynetsoftware.avnlauncher.app.generated.resources.gameLauncherInvalidExecutableToast
 import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Filter
@@ -17,9 +25,12 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
+import org.skynetsoftware.avnlauncher.domain.repository.GameListsRepository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
+import org.skynetsoftware.avnlauncher.domain.repository.PlayStateRepository
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
+import org.skynetsoftware.avnlauncher.mode.StringValue
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.State
@@ -31,6 +42,8 @@ import org.skynetsoftware.avnlauncher.utils.calculateAveragePlayTime
 @Suppress("TooManyFunctions", "LongParameterList")
 class MainScreenViewModel(
     private val gamesRepository: GamesRepository,
+    private val playStateRepository: PlayStateRepository,
+    private val gameListsRepository: GameListsRepository,
     private val settingsRepository: SettingsRepository,
     private val gameLauncher: GameLauncher,
     private val eventCenter: EventCenter,
@@ -42,12 +55,60 @@ class MainScreenViewModel(
 
     val searchQuery = MutableStateFlow("")
 
-    val filter: StateFlow<Filter> = settingsRepository.selectedFilter
+    val selectedFilter: Flow<Filter> = combine(
+        settingsRepository.selectedFilterName,
+        settingsRepository.selectedFilterData,
+    ) { selectedFilterName, selectedFilterData ->
+        Filter.fromNameAndData(selectedFilterName, selectedFilterData)
+    }
+    val filters: Flow<List<FilterViewItem>> =
+        combine(playStateRepository.playStates, gameListsRepository.gamesLists) { playStates, gamesLists ->
+            ArrayList<FilterViewItem>().apply {
+                // general
+                add(FilterViewItem.FilterGroup(StringValue.StringResource(Res.string.filterGroupGeneral)))
+                add(FilterViewItem.FilterItem(Filter.All, StringValue.StringResource(Res.string.filterAll)))
+                add(
+                    FilterViewItem.FilterItem(
+                        Filter.GamesWithUpdate,
+                        StringValue.StringResource(Res.string.filterGamesWithUpdate),
+                    ),
+                )
+                add(
+                    FilterViewItem.FilterItem(
+                        Filter.UnplayedGames,
+                        StringValue.StringResource(Res.string.filterUnPlayed),
+                    ),
+                )
+                add(
+                    FilterViewItem.FilterItem(
+                        Filter.HiddenGames,
+                        StringValue.StringResource(Res.string.filterArchived),
+                    ),
+                )
+
+                // play states
+                if (playStates.isNotEmpty()) {
+                    add(FilterViewItem.FilterGroup(StringValue.StringResource(Res.string.filterGroupPlayStates)))
+                    playStates.forEach {
+                        add(FilterViewItem.FilterItem(Filter.PlayState(it.id), StringValue.String(it.label)))
+                    }
+                }
+
+                // lists
+                if (gamesLists.isNotEmpty()) {
+                    add(FilterViewItem.FilterGroup(StringValue.StringResource(Res.string.filterGroupLists)))
+                    gamesLists.forEach {
+                        add(FilterViewItem.FilterItem(Filter.Lists(it.id), StringValue.String(it.name)))
+                    }
+                }
+            }
+        }
+
     val sortOrder: StateFlow<SortOrder> = settingsRepository.selectedSortOrder
     val sortDirection: StateFlow<SortDirection> = settingsRepository.selectedSortDirection
     val gamesDisplayMode: StateFlow<GamesDisplayMode> = settingsRepository.selectedGamesDisplayMode
     val games: StateFlow<List<Game>> =
-        combine(repoGames, filter, sortOrder, sortDirection, searchQuery) { values ->
+        combine(repoGames, selectedFilter, sortOrder, sortDirection, searchQuery) { values ->
             @Suppress("UNCHECKED_CAST", "MagicNumber")
             val games = values[0] as List<Game>
             val filter = values[1] as Filter
@@ -139,7 +200,8 @@ class MainScreenViewModel(
 
     fun setFilter(filter: Filter) =
         viewModelScope.launch {
-            settingsRepository.setSelectedFilter(filter)
+            settingsRepository.setSelectedFilterName(filter.name)
+            settingsRepository.setSelectedFilterData(filter.data)
         }
 
     fun setSortOrder(sortOrder: SortOrder) =
@@ -169,13 +231,6 @@ class MainScreenViewModel(
         game: Game,
     ) = viewModelScope.launch {
         gamesRepository.updateRating(game.f95ZoneThreadId, rating)
-    }
-
-    fun updateFavorite(
-        favorite: Boolean,
-        game: Game,
-    ) = viewModelScope.launch {
-        gamesRepository.updateFavorite(game.f95ZoneThreadId, favorite)
     }
 
     @OptIn(ExperimentalResourceApi::class)

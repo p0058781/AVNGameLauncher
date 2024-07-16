@@ -71,9 +71,11 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabel
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelVersion
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemDescriptionArchived
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemDescriptionCheckForUpdates
+import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemDescriptionLists
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemDescriptionPlayState
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemTitleArchived
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemTitleCheckForUpdates
+import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemTitleLists
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenItemTitlePlayState
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenNoExecutablePaths1
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameScreenNoExecutablePaths2
@@ -85,12 +87,12 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameC
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameToastGameUpdated
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationAddExecutable
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSearchExecutable
-import org.skynetsoftware.avnlauncher.domain.model.PlayState
 import org.skynetsoftware.avnlauncher.domain.utils.OS
 import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.ui.component.Dropdown
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.Item
+import org.skynetsoftware.avnlauncher.ui.component.MultiselectDropdown
 import org.skynetsoftware.avnlauncher.ui.component.Section
 import org.skynetsoftware.avnlauncher.ui.component.Toggle
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
@@ -144,6 +146,7 @@ private fun ManageGameScreen(
         .collectAsState()
     var checkForUpdates by remember { manageGameViewModel.checkForUpdates }.collectAsMutableState()
     var currentPlayState by remember { manageGameViewModel.currentPlayState }.collectAsMutableState()
+    var currentGamesLists by remember { manageGameViewModel.currentGamesLists }.collectAsMutableState()
     var hidden by remember { manageGameViewModel.hidden }.collectAsMutableState()
     val tags by remember { manageGameViewModel.tags }.collectAsState()
     val isF95Game by remember { manageGameViewModel.isF95Game }.collectAsState()
@@ -151,6 +154,8 @@ private fun ManageGameScreen(
     val titleError by remember { manageGameViewModel.titleError }.collectAsState()
     val releaseDateError by remember { manageGameViewModel.releaseDateError }.collectAsState()
     val firstReleaseDateError by remember { manageGameViewModel.firstReleaseDateError }.collectAsState()
+    val playStates by remember { manageGameViewModel.playStates }.collectAsState(emptyList())
+    val gamesLists by remember { manageGameViewModel.gamesLists }.collectAsState(emptyList())
 
     LaunchedEffect(null) {
         manageGameViewModel.gameNotFound.collect {
@@ -315,10 +320,30 @@ private fun ManageGameScreen(
                     subtitle = stringResource(Res.string.editGameScreenItemDescriptionPlayState),
                     endContent = {
                         Dropdown(
-                            values = PlayState.entries,
+                            values = playStates,
                             currentValue = currentPlayState,
                             onValueChanged = {
                                 currentPlayState = it
+                            },
+                            valueToString = {
+                                it.label
+                            },
+                        )
+                    },
+                )
+                Divider()
+                Item(
+                    title = stringResource(Res.string.editGameScreenItemTitleLists),
+                    subtitle = stringResource(Res.string.editGameScreenItemDescriptionLists),
+                    endContent = {
+                        MultiselectDropdown(
+                            values = gamesLists,
+                            currentValue = currentGamesLists,
+                            onCheckedChanged = { value, checked ->
+                                manageGameViewModel.updateGameLists(value, checked)
+                            },
+                            valueToString = {
+                                it.name
                             },
                         )
                     },

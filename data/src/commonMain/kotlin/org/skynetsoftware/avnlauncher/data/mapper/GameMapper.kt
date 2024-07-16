@@ -2,10 +2,12 @@ package org.skynetsoftware.avnlauncher.data.mapper
 
 import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.data.GameEntity
-import org.skynetsoftware.avnlauncher.data.GameWithPlaySessions
-import org.skynetsoftware.avnlauncher.data.GamesWithPlaySessions
+import org.skynetsoftware.avnlauncher.data.GameFull
+import org.skynetsoftware.avnlauncher.data.GamesFull
 import org.skynetsoftware.avnlauncher.data.f95.model.F95Game
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.GamesList
+import org.skynetsoftware.avnlauncher.domain.model.PLAY_STATE_NONE
 import org.skynetsoftware.avnlauncher.domain.model.PlaySession
 import org.skynetsoftware.avnlauncher.domain.model.PlayState
 
@@ -28,44 +30,16 @@ internal fun Game.toGameEntity() =
         hidden = hidden,
         releaseDate = releaseDate,
         firstReleaseDate = firstReleaseDate,
-        playState = playState,
+        playState = playState.id,
         availableVersion = availableVersion,
         tags = tags,
         checkForUpdates = checkForUpdates,
         firstPlayed = 0L,
         notes = notes,
-        favorite = favorite,
     )
 
-internal fun GameEntity.toGame() =
-    Game(
-        title = this.title,
-        description = this.description,
-        developer = this.developer,
-        imageUrl = this.imageUrl,
-        f95ZoneThreadId = f95ZoneThreadId,
-        executablePaths = this.executablePaths,
-        version = this.version,
-        totalPlayTime = this.playTime,
-        rating = this.rating,
-        f95Rating = this.f95Rating,
-        updateAvailable = this.updateAvailable,
-        added = this.added,
-        lastPlayedTime = this.lastPlayed,
-        hidden = this.hidden,
-        releaseDate = this.releaseDate,
-        firstReleaseDate = this.firstReleaseDate,
-        playState = this.playState,
-        availableVersion = this.availableVersion,
-        tags = this.tags.toSet(),
-        checkForUpdates = this.checkForUpdates,
-        firstPlayedTime = this.firstPlayed,
-        notes = this.notes,
-        favorite = this.favorite,
-        playSessions = emptyList(),
-    )
-
-internal fun List<GamesWithPlaySessions>.toGames(): List<Game> {
+@Suppress("LongMethod")
+internal fun List<GamesFull>.toGames(): List<Game> {
     return groupBy { it.f95ZoneThreadId }
         .map { (f95ZoneThreadId, games) ->
             val first = games.first()
@@ -87,6 +61,26 @@ internal fun List<GamesWithPlaySessions>.toGames(): List<Game> {
             } else {
                 playSessionsFirstPlayedTime
             }
+            val lists = games.mapNotNull {
+                if (it.listId == null || it.listName == null) {
+                    null
+                } else {
+                    GamesList(
+                        id = it.listId,
+                        name = it.listName,
+                        description = it.listDescription,
+                    )
+                }
+            }
+            val playState = if (first.playStateId == null || first.playStateLabel == null) {
+                PLAY_STATE_NONE
+            } else {
+                PlayState(
+                    id = first.playStateId,
+                    label = first.playStateLabel,
+                    description = first.playStateDescription,
+                )
+            }
             Game(
                 title = first.title,
                 description = first.description,
@@ -104,19 +98,20 @@ internal fun List<GamesWithPlaySessions>.toGames(): List<Game> {
                 hidden = first.hidden,
                 releaseDate = first.releaseDate,
                 firstReleaseDate = first.firstReleaseDate,
-                playState = first.playState,
+                playState = playState,
                 availableVersion = first.availableVersion,
                 tags = first.tags.toSet(),
                 checkForUpdates = first.checkForUpdates,
                 firstPlayedTime = firstPlayedTime,
                 notes = first.notes,
-                favorite = first.favorite,
                 playSessions = playSessions,
+                lists = lists,
             )
         }
 }
 
-internal fun List<GameWithPlaySessions>.toGame(): Game? {
+@Suppress("LongMethod")
+internal fun List<GameFull>.toGame(): Game? {
     val first = firstOrNull() ?: return null
     val playSessions = mapNotNull {
         if (it.playSessionStartTime == null || it.playSessionEndTime == null) {
@@ -136,6 +131,26 @@ internal fun List<GameWithPlaySessions>.toGame(): Game? {
     } else {
         playSessionsFirstPlayedTime
     }
+    val lists = mapNotNull {
+        if (it.listId == null || it.listName == null) {
+            null
+        } else {
+            GamesList(
+                id = it.listId,
+                name = it.listName,
+                description = it.listDescription,
+            )
+        }
+    }
+    val playState = if (first.playStateId == null || first.playStateLabel == null) {
+        PLAY_STATE_NONE
+    } else {
+        PlayState(
+            id = first.playStateId,
+            label = first.playStateLabel,
+            description = first.playStateDescription,
+        )
+    }
     return Game(
         title = first.title,
         description = first.description,
@@ -153,14 +168,14 @@ internal fun List<GameWithPlaySessions>.toGame(): Game? {
         hidden = first.hidden,
         releaseDate = first.releaseDate,
         firstReleaseDate = first.firstReleaseDate,
-        playState = first.playState,
+        playState = playState,
         availableVersion = first.availableVersion,
         tags = first.tags.toSet(),
         checkForUpdates = first.checkForUpdates,
         firstPlayedTime = firstPlayedTime,
         notes = first.notes,
-        favorite = first.favorite,
         playSessions = playSessions,
+        lists = lists,
     )
 }
 
@@ -182,12 +197,12 @@ internal fun F95Game.toGame() =
         hidden = false,
         releaseDate = releaseDate,
         firstReleaseDate = firstReleaseDate,
-        playState = PlayState.NotStarted,
+        playState = PLAY_STATE_NONE,
         availableVersion = null,
         tags = tags,
         checkForUpdates = true,
         firstPlayedTime = 0L,
         notes = null,
-        favorite = false,
         playSessions = emptyList(),
+        lists = emptyList(),
     )

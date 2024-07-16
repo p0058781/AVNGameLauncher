@@ -42,12 +42,9 @@ import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.edit
-import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_filled
-import org.skynetsoftware.avnlauncher.app.generated.resources.favorite_outlined
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationEditGame
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationExecutablePathMissing
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationF95Link
-import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationFavorites
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationGameDetails
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationRating
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationUpdateAvailable
@@ -72,7 +69,6 @@ import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 import java.net.URI
 import java.text.SimpleDateFormat
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Games(
     games: List<Game>,
@@ -87,7 +83,6 @@ fun Games(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     if (games.isEmpty()) {
         val modId = "importIcon"
@@ -139,7 +134,6 @@ fun Games(
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
-                updateFavorite = updateFavorite,
             )
 
             GamesDisplayMode.List -> GamesList(
@@ -152,7 +146,6 @@ fun Games(
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
-                updateFavorite = updateFavorite,
             )
         }
     }
@@ -202,30 +195,6 @@ fun DetailsIcon(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
-@Composable
-fun AddToFavoritesIcon(
-    modifier: Modifier = Modifier,
-    game: Game,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsStateDelayed()
-    Image(
-        painter = painterResource(if (game.favorite) Res.drawable.favorite_filled else Res.drawable.favorite_outlined),
-        contentDescription = null,
-        modifier = modifier.height(30.dp).padding(5.dp)
-            .clickable {
-                updateFavorite(!game.favorite, game)
-            }.hoverable(interactionSource),
-        colorFilter = ColorFilter.tint(Color.Red),
-    )
-    if (isHovered && LocalWindowControl.current?.windowFocused?.value == true) {
-        HoverExplanation(stringResource(Res.string.hoverExplanationFavorites))
-    }
-}
-
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun F95LinkIcon(
     modifier: Modifier = Modifier,

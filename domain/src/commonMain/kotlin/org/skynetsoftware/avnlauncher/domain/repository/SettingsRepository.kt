@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.domain.repository
 
 import kotlinx.coroutines.flow.StateFlow
-import org.skynetsoftware.avnlauncher.domain.model.Filter
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
@@ -10,7 +9,7 @@ import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 
 @Suppress("ConstPropertyName")
 object SettingsDefaults {
-    val selectedFilter: Filter = Filter.All
+    const val selectedFilter: String = "All"
     val selectedSortOrder: SortOrder = SortOrder.LastPlayed
     val selectedSortOrderDirection: SortDirection = SortDirection.Descending
     val selectedGamesDisplayMode: GamesDisplayMode = GamesDisplayMode.Grid
@@ -38,7 +37,8 @@ object SettingsDefaults {
 
 @Suppress("TooManyFunctions")
 interface SettingsRepository {
-    val selectedFilter: StateFlow<Filter>
+    val selectedFilterName: StateFlow<String>
+    val selectedFilterData: StateFlow<String?>
     val selectedSortOrder: StateFlow<SortOrder>
     val selectedSortDirection: StateFlow<SortDirection>
     val selectedGamesDisplayMode: StateFlow<GamesDisplayMode>
@@ -59,7 +59,9 @@ interface SettingsRepository {
     val gridImageAspectRatio: StateFlow<Float>
     val httpServerEnabled: StateFlow<Boolean>
 
-    suspend fun setSelectedFilter(filter: Filter)
+    suspend fun setSelectedFilterName(filterName: String)
+
+    suspend fun setSelectedFilterData(filterData: String?)
 
     suspend fun setSelectedSortOrder(sortOrder: SortOrder)
 

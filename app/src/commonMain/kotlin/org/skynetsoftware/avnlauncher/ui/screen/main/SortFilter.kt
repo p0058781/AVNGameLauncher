@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -26,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.LocalWindowControl
@@ -41,14 +41,15 @@ import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.domain.model.hoverExplanation
 import org.skynetsoftware.avnlauncher.domain.model.iconRes
+import org.skynetsoftware.avnlauncher.mode.StringValue
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SortFilter(
     games: List<Game>,
     currentFilter: Filter,
+    filters: List<FilterViewItem>,
     currentSortOrder: SortOrder,
     currentSortDirection: SortDirection,
     currentGamesDisplayMode: GamesDisplayMode,
@@ -65,7 +66,7 @@ fun SortFilter(
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Filter(currentFilter, games.size, updateAvailableIndicatorVisible, setFilter)
+            Filter(currentFilter, filters, games.size, updateAvailableIndicatorVisible, setFilter)
             Spacer(modifier = Modifier.width(5.dp))
             Text("|")
             Spacer(modifier = Modifier.width(5.dp))
@@ -99,7 +100,6 @@ fun SortFilter(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Sort(
     currentSortOrder: SortOrder,
@@ -157,14 +157,15 @@ fun Sort(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Filter(
     currentFilter: Filter,
+    filters: List<FilterViewItem>,
     filteredItemsCount: Int,
     updateAvailableIndicatorVisible: Boolean,
     setFilter: (filter: Filter) -> Unit,
 ) {
+    println(currentFilter)
     var showFilterDropdown by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.clickable {
@@ -175,7 +176,12 @@ fun Filter(
         Spacer(modifier = Modifier.width(5.dp))
         Text(
             buildString {
-                append(currentFilter.label)
+                val stringValue = filters.find { it is FilterViewItem.FilterItem && it.filter == currentFilter }?.label
+                when (stringValue) {
+                    is StringValue.String -> append(stringValue.string)
+                    is StringValue.StringResource -> append(stringResource(stringValue.stringResource))
+                    else -> {}
+                }
                 append("(")
                 append(filteredItemsCount)
                 append(")")
@@ -192,18 +198,37 @@ fun Filter(
                 showFilterDropdown = false
             },
         ) {
-            Filter.entries.forEach {
-                DropdownMenuItem(
-                    onClick = {
-                        showFilterDropdown = false
-                        setFilter(it)
-                    },
-                ) {
-                    Text(it.label)
-                    if (updateAvailableIndicatorVisible && it == Filter.GamesWithUpdate) {
-                        Box(
-                            modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
+            filters.forEach {
+                when (it) {
+                    is FilterViewItem.FilterGroup -> {
+                        Text(
+                            modifier = Modifier.padding(start = 5.dp),
+                            text = when (it.label) {
+                                is StringValue.String -> it.label.string
+                                is StringValue.StringResource -> stringResource(it.label.stringResource)
+                            },
+                            style = MaterialTheme.typography.body2,
                         )
+                    }
+                    is FilterViewItem.FilterItem -> {
+                        DropdownMenuItem(
+                            onClick = {
+                                showFilterDropdown = false
+                                setFilter(it.filter)
+                            },
+                        ) {
+                            Text(
+                                text = when (it.label) {
+                                    is StringValue.String -> it.label.string
+                                    is StringValue.StringResource -> stringResource(it.label.stringResource)
+                                },
+                            )
+                            if (updateAvailableIndicatorVisible && it.filter == Filter.GamesWithUpdate) {
+                                Box(
+                                    modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red),
+                                )
+                            }
+                        }
                     }
                 }
             }

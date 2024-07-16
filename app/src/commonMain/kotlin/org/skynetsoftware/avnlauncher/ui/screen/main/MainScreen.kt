@@ -75,7 +75,8 @@ fun MainScreen(
     imageLoaderFactory: ImageLoaderFactory = koinInject(),
 ) {
     val games by remember { gamesViewModel.games }.collectAsState()
-    val currentFilter by remember { gamesViewModel.filter }.collectAsState()
+    val currentFilter by remember { gamesViewModel.selectedFilter }.collectAsState(Filter.All)
+    val filters by remember { gamesViewModel.filters }.collectAsState(emptyList<FilterViewItem>())
     val currentSortOrder by remember { gamesViewModel.sortOrder }.collectAsState()
     val currentSortDirection by remember { gamesViewModel.sortDirection }.collectAsState()
     val currentGamesDisplayMode by remember { gamesViewModel.gamesDisplayMode }.collectAsState()
@@ -113,6 +114,7 @@ fun MainScreen(
         MainScreenContent(
             games = games,
             currentFilter = currentFilter,
+            filters = filters,
             currentSortOrder = currentSortOrder,
             currentSortDirection = currentSortDirection,
             currentGamesDisplayMode = currentGamesDisplayMode,
@@ -143,7 +145,6 @@ fun MainScreen(
             launchGame = gamesViewModel::launchGame,
             resetUpdateAvailable = gamesViewModel::resetUpdateAvailable,
             updateRating = gamesViewModel::updateRating,
-            updateFavorite = gamesViewModel::updateFavorite,
         )
     }
 
@@ -304,6 +305,7 @@ private fun ToolbarInternal(
 fun MainScreenContent(
     games: List<Game>,
     currentFilter: Filter,
+    filters: List<FilterViewItem>,
     currentSortOrder: SortOrder,
     currentSortDirection: SortDirection,
     currentGamesDisplayMode: GamesDisplayMode,
@@ -327,7 +329,6 @@ fun MainScreenContent(
     launchGame: (game: Game) -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     val navigator = LocalNavigator.current
     Column {
@@ -344,6 +345,7 @@ fun MainScreenContent(
         SortFilter(
             games = games,
             currentFilter = currentFilter,
+            filters = filters,
             currentSortOrder = currentSortOrder,
             currentSortDirection = currentSortDirection,
             currentGamesDisplayMode = currentGamesDisplayMode,
@@ -369,7 +371,6 @@ fun MainScreenContent(
             launchGame = launchGame,
             resetUpdateAvailable = resetUpdateAvailable,
             updateRating = updateRating,
-            updateFavorite = updateFavorite,
         )
     }
 }
