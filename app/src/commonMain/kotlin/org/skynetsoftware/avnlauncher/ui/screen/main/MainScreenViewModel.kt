@@ -167,6 +167,9 @@ class MainScreenViewModel(
     private val _newUpdateAvailableIndicatorVisible = MutableStateFlow(false)
     val newUpdateAvailableIndicatorVisible: StateFlow<Boolean> get() = _newUpdateAvailableIndicatorVisible
 
+    private val _gameRunning = MutableStateFlow<Game?>(null)
+    val gameRunning: StateFlow<Game?> get() = _gameRunning
+
     val imageAspectRatio = settingsRepository.gridImageAspectRatio
     val dateFormat = settingsRepository.dateFormat
     val timeFormat = settingsRepository.timeFormat
@@ -191,6 +194,12 @@ class MainScreenViewModel(
                         if (it.updateCheckResult.updates.count { game -> game.updateAvailable } > 0) {
                             _newUpdateAvailableIndicatorVisible.emit(true)
                         }
+                    }
+                    is Event.PlayingStarted -> {
+                        _gameRunning.emit(it.game)
+                    }
+                    is Event.PlayingEnded -> {
+                        _gameRunning.emit(null)
                     }
                     else -> {}
                 }
@@ -253,6 +262,10 @@ class MainScreenViewModel(
     ) = viewModelScope.launch {
         showExecutablePathPicker.emit(null)
         gameLauncher.launch(game, executablePath)
+    }
+
+    fun stopGame() {
+        gameLauncher.stop()
     }
 
     fun toggleSfwMode() =
