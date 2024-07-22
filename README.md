@@ -1,7 +1,11 @@
 # AVN Game Launcher
 #### Adult Visual Novel Game Launcher for F95zone.to
 
-[![PR Pipeline](https://github.com/p0058781/AVNGameLauncher/actions/workflows/pr.yaml/badge.svg?branch=master)](https://github.com/p0058781/AVNGameLauncher/actions/workflows/pr.yaml) [![Release Pipeline](https://github.com/p0058781/AVNGameLauncher/actions/workflows/release.yaml/badge.svg)](https://github.com/p0058781/AVNGameLauncher/actions/workflows/release.yaml)
+[![PR Pipeline](https://github.com/p0058781/AVNGameLauncher/actions/workflows/pr.yaml/badge.svg?branch=master)](https://github.com/p0058781/AVNGameLauncher/actions/workflows/pr.yaml) [![Release Pipeline](https://github.com/p0058781/AVNGameLauncher/actions/workflows/release.yaml/badge.svg)](https://github.com/p0058781/AVNGameLauncher/actions/workflows/release.yaml)  
+[![Platform macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg?logo=apple)](https://github.com/p0058781/AVNGameLauncher/releases/latest)
+[![Platform macOS](https://img.shields.io/badge/Platform-Linux-blue.svg?logo=linux)](https://github.com/p0058781/AVNGameLauncher/releases/latest)
+[![Platform macOS](https://img.shields.io/badge/Platform-Windows-lightblue.svg?logo=windows)](https://github.com/p0058781/AVNGameLauncher/releases/latest)
+[![Platform macOS](https://img.shields.io/badge/Platform-JVM-orange.svg?logo=openjdk)](https://github.com/p0058781/AVNGameLauncher/releases/latest)
 
 ### Features
 - Start game directly from AVN Game Launcher (obviously, it's in the name)
@@ -12,6 +16,7 @@
 - Searching/Filtering/Sorting
 - SFW Mode. Replaces images with random image, and replaces game name with random phrase
 - Game updates notifications
+- Browser Plugin to auto import games directly from F95
 
 ### FAQ
 - **Will login be implemented, to import games that are only accessible if logged in?**  
@@ -19,9 +24,8 @@ No, unless f95 starts disabling public access to the majority of games
 - **Which file do I download?**  
   - **avn-game-launcher-{platform}-release.zip** - these are platform native packages, you don't need external dependencies (like jre) to run it, just extract and run
   - **AVN.Game.Launcher-{platform}-x64-1.0.1.jar**  - platform specific, Java 17 needs to be installed on your system
-  - **androidApp-release.apk** - Android APK
 - **Which platforms are supported?**  
-Desktop (Linux, Mac, Windows), Android
+Linux, Mac, Windows
 - **Can I import non-f95 game?**  
 Not currently, but it is planed. If you really want to do it you can manually add entries to the database (sqlite)
 - **Where is data stored?**
@@ -49,25 +53,20 @@ If you want to use jar file, then minimum Java 17 is required
 
 ### Known Bugs
 - Scaling issues on large dpi screens on desktop
-- Platforms other than Linux aren't tested often, especially Android.
+- Platforms other than Linux aren't tested.
 
 ### Known Limitations
 - Games that are not publicly available (without login) can't be imported. Not sure why f95 requires login for certain games
-- Android can't track play time (android limitation)
-- Periodic update check works only when app is open
 - Due to f95 limitations, not all game details can be downloaded without login
 
 ### Planed Features
-- Manually add non-f95 game
 - Custom Filter/Sort options
-- Browser plugin to auto import game from f95 website  
 - 
 Check development progress in the Github Project
   https://github.com/users/p0058781/projects/1
 
 ### Not Planed Features
 - F95 login
-- Display games as list or grid (currently grid only)
 - View all game details directly in the app
 
 ## How to use
@@ -88,11 +87,10 @@ There are 3 available statuses for games, you can use them however you like, I u
 9. Click anywhere on the game card to launch the game
 
 ## How to build
-1. You will need JDK 17 and Android SDK
+1. You will need JDK 17
 2. Execute `./gradlew run` to run desktop app for you system, or run `./gradlew packageReleaseUberJarForCurrentOS` 
 to build Jar file or `./gradlew createDistributable` to create distributable with embedded jre
 3. Execute `./gradlew installDebug` or `./gradlew installRelease` to install to connected device.
-Or run `./gradlew assembleDebug` or `./gradlew assembleRelease` to build apk  
 
 
 > [!WARNING]  
