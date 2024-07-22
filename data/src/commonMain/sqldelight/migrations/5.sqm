@@ -1,8 +1,8 @@
 import kotlin.Int;
 
-CREATE TABLE PlayState (
+CREATE TABLE PlayStateEntity (
     id TEXT PRIMARY KEY NOT NULL,
-    label TEXT,
+    label TEXT NOT NULL,
     description TEXT
 );
 
