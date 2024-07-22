@@ -36,8 +36,10 @@ jobs:
         - name: Create release distributable for ${{ runner.os }}
           run: ./gradlew --console=plain createReleaseDistributable
         - name: Create browser extension distributable
+          if: matrix.os == 'ubuntu-latest'
           run: ./gradlew wasmJsBrowserDistribution
         - name: Zip browser extension distributable
+          if: matrix.os == 'ubuntu-latest'
           run: |
             cd browser-extension/build/dist/wasmJs/productionExecutable/ &&
             7z a avn-game-launcher-browser-extension-release.zip *
@@ -51,4 +53,5 @@ jobs:
             prerelease: ${{ contains(github.ref_name, '_pre') }}
             files: |-
               app/build/compose/binaries/main-release/app/avn-game-launcher-${{ runner.os }}-release.zip
+              browser-extension/build/dist/wasmJs/productionExecutable/avn-game-launcher-browser-extension-release.zip
               app/build/compose/jars/*
