@@ -98,6 +98,8 @@ fun MainScreen(
     val timeFormat by remember { gamesViewModel.timeFormat }.collectAsState()
     val gridColumns by remember { gamesViewModel.gridColumns }.collectAsState()
 
+    val gameRunning by remember { gamesViewModel.gameRunning }.collectAsState()
+
     setSingletonImageLoaderFactory { context ->
         imageLoaderFactory.createImageLoader(false, context)
     }
@@ -113,6 +115,7 @@ fun MainScreen(
     ) {
         MainScreenContent(
             games = games,
+            runningGame = gameRunning,
             currentFilter = currentFilter,
             filters = filters,
             currentSortOrder = currentSortOrder,
@@ -143,6 +146,7 @@ fun MainScreen(
             setSortDirection = gamesViewModel::setSortDirection,
             setGamesDisplayMode = gamesViewModel::setGamesDisplayMode,
             launchGame = gamesViewModel::launchGame,
+            stopGame = gamesViewModel::stopGame,
             resetUpdateAvailable = gamesViewModel::resetUpdateAvailable,
             updateRating = gamesViewModel::updateRating,
         )
@@ -304,6 +308,7 @@ private fun ToolbarInternal(
 @Composable
 fun MainScreenContent(
     games: List<Game>,
+    runningGame: Game?,
     currentFilter: Filter,
     filters: List<FilterViewItem>,
     currentSortOrder: SortOrder,
@@ -327,6 +332,7 @@ fun MainScreenContent(
     setSortDirection: (sortDirection: SortDirection) -> Unit,
     setGamesDisplayMode: (gamesDisplayMode: GamesDisplayMode) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
@@ -358,6 +364,7 @@ fun MainScreenContent(
         )
         Games(
             games = games,
+            runningGame = runningGame,
             sfwMode = sfwMode,
             query = searchQuery,
             imageAspectRatio = imageAspectRatio,
@@ -369,6 +376,7 @@ fun MainScreenContent(
                 navigator?.navigateToGameDetails(it)
             },
             launchGame = launchGame,
+            stopGame = stopGame,
             resetUpdateAvailable = resetUpdateAvailable,
             updateRating = updateRating,
         )

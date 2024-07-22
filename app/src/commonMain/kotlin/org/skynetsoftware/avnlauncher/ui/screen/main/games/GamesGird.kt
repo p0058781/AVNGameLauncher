@@ -31,7 +31,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelFirstPlayed
@@ -53,6 +52,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun GamesGrid(
     games: List<Game>,
+    runningGame: Game?,
     sfwMode: Boolean,
     query: String?,
     imageAspectRatio: Float,
@@ -61,6 +61,7 @@ fun GamesGrid(
     gridColumns: GridColumns,
     gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
@@ -82,6 +83,7 @@ fun GamesGrid(
         items(games) { game ->
             GameItem(
                 game = game,
+                runningGame = runningGame,
                 sfwMode = sfwMode,
                 query = query,
                 imageAspectRatio = imageAspectRatio,
@@ -89,6 +91,7 @@ fun GamesGrid(
                 timeFormat = timeFormat,
                 gameDetails = gameDetails,
                 launchGame = launchGame,
+                stopGame = stopGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
             )
@@ -97,10 +100,11 @@ fun GamesGrid(
 }
 
 @Suppress("LongMethod", "CyclomaticComplexMethod")
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
 @Composable
 private fun GameItem(
     game: Game,
+    runningGame: Game?,
     sfwMode: Boolean,
     query: String?,
     imageAspectRatio: Float,
@@ -108,12 +112,15 @@ private fun GameItem(
     timeFormat: SimpleDateFormat,
     gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
     GameItemBase(
         game = game,
+        runningGame = runningGame,
         launchGame = launchGame,
+        stopGame = stopGame,
     ) {
         Column(
             modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),

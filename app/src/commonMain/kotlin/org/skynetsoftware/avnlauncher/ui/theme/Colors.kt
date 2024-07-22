@@ -8,6 +8,7 @@ private val LightGrey = Color(36, 38, 41)
 private val Red = Color(186, 69, 69)
 val Warning = Color(233, 213, 2)
 val UpdateAvailable = Color(60, 242, 14)
+val GameRunningFade = Color(0xaa000000)
 
 val darkColors = darkColors(
     primary = Red,

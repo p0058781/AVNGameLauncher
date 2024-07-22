@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.launcher
 
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.gameLauncherAnotherGameRunning
@@ -25,6 +24,8 @@ interface GameLauncher {
         game: Game,
         executablePath: String,
     )
+
+    fun stop()
 }
 
 private class GameLauncherDesktop(
@@ -34,7 +35,6 @@ private class GameLauncherDesktop(
 ) : GameLauncher {
     private var processStarterThread: ProcessStarterThread? = null
 
-    @OptIn(ExperimentalResourceApi::class)
     override fun launch(
         game: Game,
         executablePath: String,
@@ -54,6 +54,10 @@ private class GameLauncherDesktop(
         processStarterThread?.start()
     }
 
+    override fun stop() {
+        processStarterThread?.stopGame()
+    }
+
     private class ProcessStarterThread(
         val game: Game,
         private val executablePath: String,
@@ -63,6 +67,7 @@ private class GameLauncherDesktop(
     ) : Thread() {
         var running = false
             private set
+        private lateinit var process: Process
 
         @Suppress("NewApi")
         override fun run() {
@@ -70,7 +75,7 @@ private class GameLauncherDesktop(
                 eventCenter.emit(Event.PlayingStarted(game))
                 logger.info("game starting: ${game.title}")
                 running = true
-                val process = ProcessBuilder(createCommand(executablePath)).apply {
+                process = ProcessBuilder(createCommand(executablePath)).apply {
                     redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     redirectError(ProcessBuilder.Redirect.DISCARD)
                 }.start()
@@ -114,6 +119,13 @@ private class GameLauncherDesktop(
                 OS.Windows,
                 -> listOf(executablePath)
                 OS.Mac -> listOf("open", "-W", executablePath)
+            }
+        }
+
+        fun stopGame() {
+            if (running) {
+                process.destroy()
+                interrupt()
             }
         }
     }

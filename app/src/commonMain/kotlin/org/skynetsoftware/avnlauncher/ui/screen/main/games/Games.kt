@@ -3,6 +3,7 @@
 package org.skynetsoftware.avnlauncher.ui.screen.main.games
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,13 +18,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +47,7 @@ import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.edit
+import org.skynetsoftware.avnlauncher.app.generated.resources.gameRunningClickToStop
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationEditGame
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationExecutablePathMissing
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationF95Link
@@ -54,6 +60,10 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.link
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart1
 import org.skynetsoftware.avnlauncher.app.generated.resources.noGamesTextPart2
 import org.skynetsoftware.avnlauncher.app.generated.resources.refresh
+import org.skynetsoftware.avnlauncher.app.generated.resources.stopGameConfirmButtonCancel
+import org.skynetsoftware.avnlauncher.app.generated.resources.stopGameConfirmButtonStop
+import org.skynetsoftware.avnlauncher.app.generated.resources.stopGameConfirmText
+import org.skynetsoftware.avnlauncher.app.generated.resources.stopGameConfirmTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.warning
 import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -63,6 +73,8 @@ import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
+import org.skynetsoftware.avnlauncher.ui.component.gesturesDisabled
+import org.skynetsoftware.avnlauncher.ui.theme.GameRunningFade
 import org.skynetsoftware.avnlauncher.ui.theme.UpdateAvailable
 import org.skynetsoftware.avnlauncher.ui.theme.Warning
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
@@ -72,6 +84,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun Games(
     games: List<Game>,
+    runningGame: Game?,
     sfwMode: Boolean,
     query: String?,
     gamesDisplayMode: GamesDisplayMode,
@@ -81,6 +94,7 @@ fun Games(
     gridColumns: GridColumns,
     gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
@@ -124,6 +138,7 @@ fun Games(
         when (gamesDisplayMode) {
             GamesDisplayMode.Grid -> GamesGrid(
                 games = games,
+                runningGame = runningGame,
                 sfwMode = sfwMode,
                 query = query,
                 imageAspectRatio = imageAspectRatio,
@@ -132,18 +147,21 @@ fun Games(
                 gridColumns = gridColumns,
                 gameDetails = gameDetails,
                 launchGame = launchGame,
+                stopGame = stopGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
             )
 
             GamesDisplayMode.List -> GamesList(
                 games = games,
+                runningGame = runningGame,
                 sfwMode = sfwMode,
                 query = query,
                 dateFormat = dateFormat,
                 timeFormat = timeFormat,
                 gameDetails = gameDetails,
                 launchGame = launchGame,
+                stopGame = stopGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
             )
@@ -306,19 +324,80 @@ fun Rating(
 @Composable
 fun GameItemBase(
     game: Game,
+    runningGame: Game?,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     content: @Composable () -> Unit,
 ) {
     val cardHoverInteractionSource = remember { MutableInteractionSource() }
+    var confirmStopDialogShown by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .hoverable(cardHoverInteractionSource)
-            .clickable {
+            .clickable(game.f95ZoneThreadId != runningGame?.f95ZoneThreadId) {
                 launchGame(game)
             },
         shape = RoundedCornerShape(10.dp),
     ) {
-        content()
+        Box {
+            Box(
+                modifier = Modifier.gesturesDisabled(game.f95ZoneThreadId == runningGame?.f95ZoneThreadId),
+            ) {
+                content()
+            }
+            if (game.f95ZoneThreadId == runningGame?.f95ZoneThreadId) {
+                Box(
+                    modifier = Modifier.matchParentSize().background(GameRunningFade).clickable {
+                        confirmStopDialogShown = true
+                    },
+                ) {
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = stringResource(Res.string.gameRunningClickToStop),
+                    )
+                }
+            }
+        }
+    }
+    if (confirmStopDialogShown) {
+        AlertDialog(
+            onDismissRequest = {
+                confirmStopDialogShown = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmStopDialogShown = false
+                        stopGame()
+                    },
+                ) {
+                    Text(
+                        text = stringResource(Res.string.stopGameConfirmButtonStop),
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        confirmStopDialogShown = false
+                    },
+                ) {
+                    Text(
+                        text = stringResource(Res.string.stopGameConfirmButtonCancel),
+                    )
+                }
+            },
+            title = {
+                Text(
+                    text = stringResource(Res.string.stopGameConfirmTitle, game.title),
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(Res.string.stopGameConfirmText),
+                )
+            },
+        )
     }
 }
 

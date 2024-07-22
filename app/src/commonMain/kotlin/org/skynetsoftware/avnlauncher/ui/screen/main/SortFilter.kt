@@ -165,7 +165,6 @@ fun Filter(
     updateAvailableIndicatorVisible: Boolean,
     setFilter: (filter: Filter) -> Unit,
 ) {
-    println(currentFilter)
     var showFilterDropdown by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.clickable {

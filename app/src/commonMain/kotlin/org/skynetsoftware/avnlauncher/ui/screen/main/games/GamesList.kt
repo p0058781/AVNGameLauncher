@@ -42,12 +42,14 @@ import java.text.SimpleDateFormat
 @Composable
 fun GamesList(
     games: List<Game>,
+    runningGame: Game?,
     sfwMode: Boolean,
     query: String?,
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
     gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
@@ -58,12 +60,14 @@ fun GamesList(
         items(games) { game ->
             GameItem(
                 game = game,
+                runningGame = runningGame,
                 sfwMode = sfwMode,
                 query = query,
                 dateFormat = dateFormat,
                 timeFormat = timeFormat,
                 gameDetails = gameDetails,
                 launchGame = launchGame,
+                stopGame = stopGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
             )
@@ -75,18 +79,22 @@ fun GamesList(
 @Composable
 private fun GameItem(
     game: Game,
+    runningGame: Game?,
     sfwMode: Boolean,
     query: String?,
     dateFormat: SimpleDateFormat,
     timeFormat: SimpleDateFormat,
     gameDetails: (game: Game) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
 ) {
     GameItemBase(
         game = game,
+        runningGame = runningGame,
         launchGame = launchGame,
+        stopGame = stopGame,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp),

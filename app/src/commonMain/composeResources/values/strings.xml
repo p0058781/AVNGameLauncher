@@ -107,7 +107,7 @@
     <string name="customListsAddNew">Add New List</string>
     <string name="customListsDeleteConfirmButton">Confirm</string>
     <string name="customListsDeleteCancelButton">Cancel</string>
-    <string name="customListsDeleteTitle">Delete '%s'?</string>
+    <string name="customListsDeleteTitle">Delete '%1$s'?</string>
     <string name="customListsDeleteText">Are you sure. This cannot be undone?</string>
     <string name="customListsInputLabelLabel">Name</string>
     <string name="customListsInputHintLabel">Enter name</string>
@@ -121,7 +121,7 @@
     <string name="customPlayStatesAddNew">Add New Play State</string>
     <string name="customPlayStatesDeleteConfirmButton">Confirm</string>
     <string name="customPlayStatesDeleteCancelButton">Cancel</string>
-    <string name="customPlayStatesDeleteTitle">Delete '%s'?</string>
+    <string name="customPlayStatesDeleteTitle">Delete '%1$s'?</string>
     <string name="customPlayStatesDeleteText">Are you sure. This cannot be undone?</string>
     <string name="customPlayStatesInputLabelLabel">Label</string>
     <string name="customPlayStatesInputHintLabel">Enter label</string>
@@ -187,6 +187,15 @@
     <string name="systemNotificationUpdatesChannelDescription">Notifications for new Game Versions</string>
     <string name="noGamesTextPart1">You don't have any games currently\nChange filter or click</string>
     <string name="noGamesTextPart2">in the top bar to import game.</string>
+    <string name="gameRunningClickToStop">Game is running, click here to stop</string>
+    <string name="stopGameConfirmButtonStop">Stop</string>
+    <string name="stopGameConfirmButtonCancel">Cancel</string>
+    <string name="stopGameConfirmTitle">Stop '%1$s'</string>
+    <string name="stopGameConfirmText">This will forcefully stop the game.
+        \nAny unsaved progress might be lost, game files and/or saves could be corrupted.
+        \nAlways prefer to close the game from within the game.
+        \nYou have been warned!!!
+        \nAre you sure you want to force stop this game?</string>
 
     <!--Hover Explanations-->
     <string name="hoverExplanationGridDisplayMode">Grid View</string>
