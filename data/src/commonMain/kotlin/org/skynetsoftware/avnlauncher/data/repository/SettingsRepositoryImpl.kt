@@ -107,15 +107,6 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
     }
     override val logLevel: StateFlow<LogLevel> get() = _logLevel
 
-    private val _showGifs =
-        MutableStateFlow {
-            settings.getBoolean(
-                SettingsRepository::showGifs.name,
-                SettingsDefaults.showGifs,
-            )
-        }
-    override val showGifs: StateFlow<Boolean> get() = _showGifs
-
     private val _systemNotificationsEnabled =
         MutableStateFlow {
             settings.getBoolean(
@@ -229,11 +220,6 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
     override suspend fun setLogLevel(logLevel: LogLevel) {
         _logLevel.emit(logLevel)
         settings[SettingsRepository::logLevel.name] = logLevel.name
-    }
-
-    override suspend fun setShowGifs(showGifs: Boolean) {
-        _showGifs.emit(showGifs)
-        settings[SettingsRepository::showGifs.name] = showGifs
     }
 
     override suspend fun setSystemNotificationsEnabled(systemNotificationsEnabled: Boolean) {

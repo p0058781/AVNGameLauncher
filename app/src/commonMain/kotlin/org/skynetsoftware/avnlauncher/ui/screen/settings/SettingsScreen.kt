@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
@@ -33,7 +32,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescri
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionHttpServer
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionMinimizeToTray
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionShowGifs
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionStartMinimized
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionTimeFormat
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionUpdateCheckInterval
@@ -54,7 +52,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleG
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleHttpServer
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleMinimizeToTray
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleShowGifs
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleSource
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleStartMinimized
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleTimeFormat
@@ -92,7 +89,6 @@ fun SettingsScreen(
 ) {
     val periodicUpdateChecks by remember { settingsViewModel.periodicUpdateChecksEnabled }.collectAsState()
     val logLevel by remember { settingsViewModel.logLevel }.collectAsState()
-    val showGifs by remember { settingsViewModel.showGifs }.collectAsState()
     val dateFormat by remember { settingsViewModel.dateFormat }.collectAsState()
     val timeFormat by remember { settingsViewModel.timeFormat }.collectAsState()
     val systemNotificationsEnabled by remember { settingsViewModel.systemNotificationsEnabled }.collectAsState()
@@ -313,16 +309,6 @@ fun SettingsScreen(
                                 settingsViewModel.setGridImageAspectRatio(it.toFloat())
                             },
                         )
-                    },
-                )
-                Divider()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleShowGifs),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionShowGifs),
-                    endContent = {
-                        Toggle(showGifs) {
-                            settingsViewModel.setShowGifs(it)
-                        }
                     },
                 )
             }

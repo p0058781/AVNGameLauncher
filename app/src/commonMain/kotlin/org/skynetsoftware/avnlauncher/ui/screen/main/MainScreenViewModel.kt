@@ -174,7 +174,6 @@ class MainScreenViewModel(
     val dateFormat = settingsRepository.dateFormat
     val timeFormat = settingsRepository.timeFormat
     val gridColumns = settingsRepository.gridColumns
-    val showGifs = settingsRepository.showGifs
 
     init {
         // check paths

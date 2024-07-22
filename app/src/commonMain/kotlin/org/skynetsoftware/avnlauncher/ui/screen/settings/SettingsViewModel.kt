@@ -18,7 +18,6 @@ class SettingsViewModel(
     val minimizeToTrayOnClose = settingsRepository.minimizeToTrayOnClose
     val startMinimized = settingsRepository.startMinimized
     val logLevel = settingsRepository.logLevel
-    val showGifs = settingsRepository.showGifs
     val dateFormat = settingsRepository.dateFormat
     val timeFormat = settingsRepository.timeFormat
     val gridColumns = settingsRepository.gridColumns
@@ -55,11 +54,6 @@ class SettingsViewModel(
     fun setLogLevel(logLevel: LogLevel) =
         viewModelScope.launch {
             settingsRepository.setLogLevel(logLevel)
-        }
-
-    fun setShowGifs(showGifs: Boolean) =
-        viewModelScope.launch {
-            settingsRepository.setShowGifs(showGifs)
         }
 
     fun setDateFormat(dateFormat: String) =

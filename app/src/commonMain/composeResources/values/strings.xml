@@ -94,8 +94,6 @@
     <string name="settingsItemHintGridImageAspectRatio">3.5</string>
     <string name="settingsItemTitleGameCardValues">Game Item Values</string>
     <string name="settingsItemDescriptionGridCardValues">Which values to show for each game.</string>
-    <string name="settingsItemTitleShowGifs">Show GIFs</string>
-    <string name="settingsItemDescriptionShowGifs">Show GIFs. If disabled static image will be displayed instead.</string>
 
     <string name="settingsSectionTitleAbout">About</string>
     <string name="settingsItemTitleVersion">Version</string>

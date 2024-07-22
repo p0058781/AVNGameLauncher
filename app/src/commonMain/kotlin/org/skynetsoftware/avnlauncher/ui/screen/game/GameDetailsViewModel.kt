@@ -8,7 +8,6 @@ import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.GameWithStats
 import org.skynetsoftware.avnlauncher.domain.model.PlaySession
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
-import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.utils.calculateAveragePlayTime
 import org.skynetsoftware.avnlauncher.utils.isTimeBetween
 import org.skynetsoftware.avnlauncher.utils.minus1MonthMillis
@@ -20,7 +19,6 @@ import java.time.ZonedDateTime
 class GameDetailsViewModel(
     gameId: Int,
     gamesRepository: GamesRepository,
-    settingsRepository: SettingsRepository,
     coroutineDispatchers: CoroutineDispatchers,
 ) : ViewModel() {
     val state: Flow<LoadingState> = gamesRepository.getFlow(gameId).map { game ->
@@ -113,8 +111,6 @@ class GameDetailsViewModel(
             }
         }
     }
-
-    val showGifs = settingsRepository.showGifs
 
     sealed class LoadingState {
         object Loading : LoadingState()

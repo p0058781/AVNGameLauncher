@@ -19,7 +19,6 @@ object SettingsDefaults {
     const val updateCheckInterval: Long = 3_600_000L // 1 hour
     const val periodicUpdateChecks: Boolean = true
     val logLevel: LogLevel = LogLevel.Info
-    const val showGifs: Boolean = false
     const val systemNotificationsEnabled: Boolean = true
     const val dateFormat: String = "MMM dd, yyyy"
     const val timeFormat: String = "HH:mm"
@@ -50,7 +49,6 @@ interface SettingsRepository {
     val minimizeToTrayOnClose: StateFlow<Boolean>
     val startMinimized: StateFlow<Boolean>
     val logLevel: StateFlow<LogLevel>
-    val showGifs: StateFlow<Boolean>
     val dateFormat: StateFlow<String>
     val timeFormat: StateFlow<String>
     val gridColumns: StateFlow<GridColumns>
@@ -84,8 +82,6 @@ interface SettingsRepository {
     suspend fun setStartMinimized(startMinimized: Boolean)
 
     suspend fun setLogLevel(logLevel: LogLevel)
-
-    suspend fun setShowGifs(showGifs: Boolean)
 
     suspend fun setDateFormat(dateFormat: String)
 
