@@ -22,6 +22,7 @@ kotlin {
                 implementation(project(":domain"))
                 implementation(project(":logger"))
                 implementation(project(":config"))
+                implementation(project(":file-picker"))
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material)
@@ -43,7 +44,6 @@ kotlin {
                 implementation(libs.dokar3.chiptextfield)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.cli)
-                implementation(libs.filekit.compose)
             }
         }
         val commonTest by getting {

@@ -9,7 +9,6 @@ kotlinx-datetime = "0.6.0"
 kotlinx-cli = "0.3.6"
 ktor = "2.3.11"
 ktor-wasm = "3.2.0"
-filekit = "0.6.2"
 multiplatform-settings-no-arg = "1.1.0"
 okio = "3.6.0"
 turbine = "0.12.1"
@@ -52,7 +51,6 @@ ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "k
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
 ktor-server-contentnegotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers", version.ref = "ktor" }
-filekit-compose = { module = "io.github.vinceglb:filekit-compose", version.ref = "filekit" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings-no-arg" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }

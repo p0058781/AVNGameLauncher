@@ -49,19 +49,14 @@ import androidx.compose.ui.unit.sp
 import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
-import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.core.PickerMode
-import io.github.vinceglb.filekit.core.PickerType
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameButtonSave
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputError
-import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelExecutablePath
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelFirstReleaseDate
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelImageUrl
 import org.skynetsoftware.avnlauncher.app.generated.resources.editGameInputLabelNotes
@@ -89,6 +84,8 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationAd
 import org.skynetsoftware.avnlauncher.app.generated.resources.hoverExplanationSearchExecutable
 import org.skynetsoftware.avnlauncher.domain.utils.OS
 import org.skynetsoftware.avnlauncher.domain.utils.os
+import org.skynetsoftware.avnlauncher.filepicker.PickerType
+import org.skynetsoftware.avnlauncher.filepicker.rememberFilePickerLauncher
 import org.skynetsoftware.avnlauncher.ui.component.Dropdown
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.Item
@@ -146,7 +143,7 @@ private fun ManageGameScreen(
         .collectAsState()
     var checkForUpdates by remember { manageGameViewModel.checkForUpdates }.collectAsMutableState()
     var currentPlayState by remember { manageGameViewModel.currentPlayState }.collectAsMutableState()
-    var currentGamesLists by remember { manageGameViewModel.currentGamesLists }.collectAsMutableState()
+    val currentGamesLists by remember { manageGameViewModel.currentGamesLists }.collectAsMutableState()
     var hidden by remember { manageGameViewModel.hidden }.collectAsMutableState()
     val tags by remember { manageGameViewModel.tags }.collectAsState()
     val isF95Game by remember { manageGameViewModel.isF95Game }.collectAsState()
@@ -428,11 +425,11 @@ private fun ColumnScope.ExecutablePathsOptions(
     findExecutables: () -> Unit,
 ) {
     val filePickerLauncher = rememberFilePickerLauncher(
-        mode = PickerMode.Single,
-        type = PickerType.File(extensions = osExecutableExstensions()),
+        pickerType = PickerType.File,
         initialDirectory = currentPath,
+        extensions = osExecutableExtensions(),
     ) { file ->
-        file?.path?.let {
+        file?.absolutePath?.let {
             addExecutablePath(it)
         }
     }
@@ -485,11 +482,11 @@ private fun ExecutablePathsList(
 ) {
     executablePaths.forEachIndexed { index, executablePath ->
         val filePickerLauncher = rememberFilePickerLauncher(
-            mode = PickerMode.Single,
-            type = PickerType.File(extensions = osExecutableExstensions()),
+            pickerType = PickerType.File,
             initialDirectory = executablePaths[index],
+            extensions = osExecutableExtensions(),
         ) { file ->
-            file?.path?.let {
+            file?.absolutePath?.let {
                 setExecutablePath(index, it)
             }
         }
@@ -580,15 +577,12 @@ private fun NoExecutablePaths() {
     )
 }
 
-private fun osExecutableExstensions(): List<String> {
-    return when (os) {
-        OS.Linux -> listOf("sh")
-
-        OS.Windows -> listOf("exe")
-
-        OS.Mac -> listOf("app")
-    }
+private fun osExecutableExtensions(): Array<String> {
+    return arrayOf(
+        when (os) {
+            OS.Linux -> "sh"
+            OS.Windows -> "exe"
+            OS.Mac -> "app"
+        },
+    )
 }
-
-@OptIn(ExperimentalResourceApi::class)
-val inputLabelExecutablePath: StringResource = Res.string.editGameInputLabelExecutablePath

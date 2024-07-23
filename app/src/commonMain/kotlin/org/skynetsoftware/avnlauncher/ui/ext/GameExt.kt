@@ -83,7 +83,6 @@ fun Game.titleWithSfwFilterAndSearchMatchHighlight(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Game.releaseDateDisplayValue(dateFormat: SimpleDateFormat) =
     buildString {

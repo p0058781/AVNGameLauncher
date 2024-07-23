@@ -15,8 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.skynetsoftware.avnlauncher.BuildKonfig
@@ -65,6 +63,8 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsSectionTit
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsSectionTitleUI
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
+import org.skynetsoftware.avnlauncher.filepicker.PickerType
+import org.skynetsoftware.avnlauncher.filepicker.rememberFilePickerLauncher
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.Dropdown
 import org.skynetsoftware.avnlauncher.ui.component.Input
@@ -81,7 +81,6 @@ private const val GITHUB_URL = "https://github.com/p0058781/AVNGameLauncher"
 private const val F95_THREAD_URL = "https://f95zone.to/threads/avn-game-launcher-1-1-0.198164/"
 
 @Suppress("LongMethod")
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel = viewModel(),
@@ -164,10 +163,11 @@ fun SettingsScreen(
             ) {
                 val gamesDir by remember { settingsViewModel.gamesDir }.collectAsState()
 
-                val gamesDirPickerLauncher = rememberDirectoryPickerLauncher(
+                val gamesDirPickerLauncher = rememberFilePickerLauncher(
+                    pickerType = PickerType.Directory,
                     initialDirectory = gamesDir,
                 ) { file ->
-                    file?.path?.let {
+                    file?.absolutePath?.let {
                         settingsViewModel.setGamesDir(it)
                     }
                 }

@@ -38,6 +38,7 @@ private class F95ParserJsoup(
         gameThreadId: Int,
     ): Result<F95Game> {
         if (httpResponse.status != HttpStatusCode.OK) {
+            logger.warning("HTTP Error Code ${httpResponse.status.value} for game $gameThreadId")
             return Result.Error(Exception("http status code: ${httpResponse.status.value}"))
         }
         return try {
