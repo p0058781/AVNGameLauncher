@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.data.f95
 
-import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -11,8 +10,9 @@ import org.koin.test.KoinTest
 import org.koin.test.inject
 import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.data.dataKoinModule
+import org.skynetsoftware.avnlauncher.domain.domainKoinModule
 import org.skynetsoftware.avnlauncher.domain.utils.Result
-import org.skynetsoftware.avnlauncher.logger.Logger
+import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -55,9 +55,10 @@ class F95ApiTest : KoinTest {
         startKoin {
             modules(
                 dataKoinModule,
+                loggerKoinModule,
+                domainKoinModule,
                 module {
                     single { config }
-                    single<Logger> { mockk<Logger>() }
                 },
             )
         }

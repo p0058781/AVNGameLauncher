@@ -6,6 +6,7 @@ include(":data")
 include(":logger")
 include(":config")
 include(":server")
+include(":file-picker")
 
 pluginManagement {
     repositories {
