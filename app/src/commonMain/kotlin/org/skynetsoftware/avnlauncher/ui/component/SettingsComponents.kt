@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -168,7 +169,10 @@ fun <T> RowScope.MultiselectDropdown(
         },
     ) {
         Text(
+            modifier = Modifier.width(200.dp),
             text = currentValue.joinToString { valueToString(it) },
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
         )
         Icon(
             imageVector = Icons.Filled.KeyboardArrowDown,
