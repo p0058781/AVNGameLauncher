@@ -43,7 +43,8 @@ internal fun List<GamesFull>.toGames(): List<Game> {
     return groupBy { it.f95ZoneThreadId }
         .map { (f95ZoneThreadId, games) ->
             val first = games.first()
-            val playSessions = games.mapNotNull {
+            val groupedByList = games.groupBy { it.listId }
+            val playSessions = groupedByList.values.first().mapNotNull {
                 if (it.playSessionStartTime == null || it.playSessionEndTime == null) {
                     null
                 } else {
@@ -61,14 +62,15 @@ internal fun List<GamesFull>.toGames(): List<Game> {
             } else {
                 playSessionsFirstPlayedTime
             }
-            val lists = games.mapNotNull {
-                if (it.listId == null || it.listName == null) {
+            val lists = groupedByList.mapNotNull {
+                val firstInGroup = it.value.first()
+                if (firstInGroup.listId == null || firstInGroup.listName == null) {
                     null
                 } else {
                     GamesList(
-                        id = it.listId,
-                        name = it.listName,
-                        description = it.listDescription,
+                        id = firstInGroup.listId,
+                        name = firstInGroup.listName,
+                        description = firstInGroup.listDescription,
                     )
                 }
             }
@@ -113,7 +115,8 @@ internal fun List<GamesFull>.toGames(): List<Game> {
 @Suppress("LongMethod")
 internal fun List<GameFull>.toGame(): Game? {
     val first = firstOrNull() ?: return null
-    val playSessions = mapNotNull {
+    val groupedByList = groupBy { it.listId }
+    val playSessions = groupedByList.values.first().mapNotNull {
         if (it.playSessionStartTime == null || it.playSessionEndTime == null) {
             null
         } else {
@@ -131,17 +134,19 @@ internal fun List<GameFull>.toGame(): Game? {
     } else {
         playSessionsFirstPlayedTime
     }
-    val lists = mapNotNull {
-        if (it.listId == null || it.listName == null) {
+    val lists = groupedByList.mapNotNull {
+        val firstInGroup = it.value.first()
+        if (firstInGroup.listId == null || firstInGroup.listName == null) {
             null
         } else {
             GamesList(
-                id = it.listId,
-                name = it.listName,
-                description = it.listDescription,
+                id = firstInGroup.listId,
+                name = firstInGroup.listName,
+                description = firstInGroup.listDescription,
             )
         }
     }
+    println(lists.joinToString { it.name })
     val playState = if (first.playStateId == null || first.playStateLabel == null) {
         PLAY_STATE_NONE
     } else {

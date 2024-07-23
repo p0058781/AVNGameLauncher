@@ -38,7 +38,8 @@ ListEntity.id AS listId, ListEntity.name AS listName, ListEntity.description AS 
 PlayStateEntity.id AS playStateId, PlayStateEntity.label AS playStateLabel, PlayStateEntity.description AS playStateDescription
 FROM GameEntity
 LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId
-LEFT JOIN GameEntityToListEntity ON GameEntity.f95ZoneThreadId = GameEntityToListEntity.gameId LEFT JOIN ListEntity ON GameEntityToListEntity.listId = ListEntity.id
+LEFT JOIN GameEntityToListEntity ON GameEntity.f95ZoneThreadId = GameEntityToListEntity.gameId
+LEFT JOIN ListEntity ON GameEntityToListEntity.listId = ListEntity.id
 LEFT JOIN PlayStateEntity ON GameEntity.playState = PlayStateEntity.id;
 
 gameFull:
@@ -49,7 +50,8 @@ ListEntity.id AS listId, ListEntity.name AS listName, ListEntity.description AS 
 PlayStateEntity.id AS playStateId, PlayStateEntity.label AS playStateLabel, PlayStateEntity.description AS playStateDescription
 FROM GameEntity
 LEFT JOIN PlaySessionEntity ON GameEntity.f95ZoneThreadId = PlaySessionEntity.gameId
-LEFT JOIN GameEntityToListEntity ON GameEntity.f95ZoneThreadId = GameEntityToListEntity.gameId LEFT JOIN ListEntity ON GameEntityToListEntity.listId = ListEntity.id
+LEFT JOIN GameEntityToListEntity ON GameEntity.f95ZoneThreadId = GameEntityToListEntity.gameId
+LEFT JOIN ListEntity ON GameEntityToListEntity.listId = ListEntity.id
 LEFT JOIN PlayStateEntity ON GameEntity.playState = PlayStateEntity.id
 WHERE f95ZoneThreadId = ?;
 
