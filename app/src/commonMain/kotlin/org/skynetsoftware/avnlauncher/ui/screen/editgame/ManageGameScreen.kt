@@ -118,7 +118,6 @@ fun CreateCustomGameScreen(onCloseRequest: () -> Unit) {
     )
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("LongMethod")
 @Composable
 private fun ManageGameScreen(
@@ -387,7 +386,6 @@ private fun ManageGameScreen(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("LongMethod")
 @Composable
 fun ColumnScope.ExecutablePaths(

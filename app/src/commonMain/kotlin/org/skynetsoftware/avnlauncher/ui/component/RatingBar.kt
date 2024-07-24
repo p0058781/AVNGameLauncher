@@ -15,7 +15,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.star_outlined
 
 private const val RATING_MAX = 5
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun RatingBar(
     modifier: Modifier = Modifier,

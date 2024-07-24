@@ -45,7 +45,6 @@ import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("LongMethod")
 @Composable
 fun ImportGameScreen(

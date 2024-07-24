@@ -13,7 +13,6 @@ abstract class ShowToastViewModel(
         eventCenter.emit(Event.ToastMessage(message))
     }
 
-    @OptIn(ExperimentalResourceApi::class)
     fun showToast(message: StringResource) {
         eventCenter.emit(Event.ToastMessage(message))
     }

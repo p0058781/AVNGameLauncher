@@ -1,4 +1,4 @@
-package org.skynetsoftware.avnlauncher.mode
+package org.skynetsoftware.avnlauncher.model
 
 sealed class StringValue {
     class StringResource(val stringResource: org.jetbrains.compose.resources.StringResource) : StringValue()

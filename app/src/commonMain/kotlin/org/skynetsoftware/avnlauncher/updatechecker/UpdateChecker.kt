@@ -11,7 +11,7 @@ import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.domain.model.isF95Game
+import org.skynetsoftware.avnlauncher.model.isF95Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository

@@ -69,7 +69,7 @@ import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
-import org.skynetsoftware.avnlauncher.domain.model.isF95Game
+import org.skynetsoftware.avnlauncher.model.isF95Game
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
@@ -169,7 +169,6 @@ fun Games(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun EditIcon(
     game: Game,
@@ -191,7 +190,6 @@ fun EditIcon(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun DetailsIcon(
     game: Game,
@@ -239,7 +237,6 @@ fun F95LinkIcon(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun UpdateAvailableIcon(
     modifier: Modifier = Modifier,
@@ -265,7 +262,6 @@ fun UpdateAvailableIcon(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ExecutablePathMissingIcon(
     modifier: Modifier = Modifier,
@@ -286,7 +282,6 @@ fun ExecutablePathMissingIcon(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Rating(
     modifier: Modifier = Modifier,

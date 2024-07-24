@@ -19,7 +19,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.searchLabel
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Search(
     searchQuery: String,
