@@ -1,7 +1,7 @@
 package org.skynetsoftware.avnlauncher.ui.screen.main
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.filterAll
 import org.skynetsoftware.avnlauncher.app.generated.resources.filterArchived
@@ -30,7 +29,7 @@ import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.repository.PlayStateRepository
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.launcher.GameLauncher
-import org.skynetsoftware.avnlauncher.mode.StringValue
+import org.skynetsoftware.avnlauncher.model.StringValue
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.State
@@ -161,8 +160,8 @@ class MainScreenViewModel(
     val state: StateFlow<State> = stateHandler.state
     val sfwMode = settingsRepository.sfwModeEnabled
 
-    private val _toastMessage = MutableStateFlow<Event.ToastMessage<*>?>(null)
-    val toastMessage: StateFlow<Event.ToastMessage<*>?> get() = _toastMessage
+    private val _toastMessage = MutableSharedFlow<Event.ToastMessage<*>?>(0)
+    val toastMessage: Flow<Event.ToastMessage<*>?> get() = _toastMessage
 
     private val _newUpdateAvailableIndicatorVisible = MutableStateFlow(false)
     val newUpdateAvailableIndicatorVisible: StateFlow<Boolean> get() = _newUpdateAvailableIndicatorVisible
@@ -186,8 +185,6 @@ class MainScreenViewModel(
                 when (it) {
                     is Event.ToastMessage<*> -> {
                         _toastMessage.emit(it)
-                        delay(it.duration)
-                        _toastMessage.emit(null)
                     }
                     is Event.UpdateCheckComplete -> {
                         if (it.updateCheckResult.updates.count { game -> game.updateAvailable } > 0) {
@@ -241,7 +238,6 @@ class MainScreenViewModel(
         gamesRepository.updateRating(game.f95ZoneThreadId, rating)
     }
 
-    @OptIn(ExperimentalResourceApi::class)
     fun launchGame(game: Game) =
         viewModelScope.launch {
             val executablePaths = game.executablePaths

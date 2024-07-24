@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,12 +22,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.setSingletonImageLoaderFactory
+import com.dokar.sonner.LocalToastContentColor
+import com.dokar.sonner.Toaster
+import com.dokar.sonner.rememberToasterState
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -54,12 +59,12 @@ import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.imageloader.ImageLoaderFactory
+import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.state.buildText
 import org.skynetsoftware.avnlauncher.ui.component.IconAction
 import org.skynetsoftware.avnlauncher.ui.component.Search
 import org.skynetsoftware.avnlauncher.ui.component.TextAction
-import org.skynetsoftware.avnlauncher.ui.component.Toast
 import org.skynetsoftware.avnlauncher.ui.screen.PickExecutableDialog
 import org.skynetsoftware.avnlauncher.ui.screen.main.games.Games
 import org.skynetsoftware.avnlauncher.ui.viewmodel.viewModel
@@ -68,7 +73,7 @@ import org.skynetsoftware.avnlauncher.updatechecker.buildToastMessage
 import org.skynetsoftware.avnlauncher.utils.collectAsMutableState
 import java.text.SimpleDateFormat
 
-@OptIn(ExperimentalResourceApi::class, ExperimentalCoilApi::class)
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun MainScreen(
     gamesViewModel: MainScreenViewModel = viewModel(),
@@ -82,7 +87,6 @@ fun MainScreen(
     val currentGamesDisplayMode by remember { gamesViewModel.gamesDisplayMode }.collectAsState()
     val sfwMode by remember { gamesViewModel.sfwMode }.collectAsState()
 
-    val toastMessage by remember { gamesViewModel.toastMessage }.collectAsState()
     var showExecutablePathPicker by gamesViewModel.showExecutablePathPicker.collectAsMutableState()
 
     val totalPlayTime by remember { gamesViewModel.totalPlayTime }.collectAsState()
@@ -102,6 +106,18 @@ fun MainScreen(
 
     setSingletonImageLoaderFactory { context ->
         imageLoaderFactory.createImageLoader(false, context)
+    }
+
+    val toasterState = rememberToasterState()
+
+    LaunchedEffect(null) {
+        gamesViewModel.toastMessage.collect {
+            it?.let { toastMessage ->
+                toasterState.show(
+                    message = toastMessage,
+                )
+            }
+        }
     }
 
     val blockedByPopup = LocalWindowControl.current?.blockedByPopup
@@ -164,18 +180,29 @@ fun MainScreen(
             },
         )
     }
-    toastMessage?.let {
-        @Suppress("SpreadOperator")
-        val message = when (it.message) {
-            is String -> it.message
-            is StringResource -> stringResource(it.message, *it.args)
-            is UpdateCheckResult -> it.message.buildToastMessage()
-            else -> null
-        } ?: return@let
-        Toast(
-            text = message,
-        )
-    }
+
+    @Suppress("SpreadOperator")
+    Toaster(
+        state = toasterState,
+        showCloseButton = true,
+        darkTheme = true,
+        messageSlot = { toast ->
+            val message = toast.message as? Event.ToastMessage<*>
+            val text = when (message?.message) {
+                is String -> message.message
+                is StringResource -> stringResource(message.message, *message.args)
+                is UpdateCheckResult -> message.message.buildToastMessage()
+                else -> null
+            }
+            if (text != null) {
+                val contentColor = LocalToastContentColor.current
+                BasicText(text, color = { contentColor })
+            }
+        },
+        background = {
+            SolidColor(MaterialTheme.colors.surface)
+        },
+    )
 }
 
 @Composable
@@ -217,7 +244,6 @@ private fun Toolbar(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 private fun ToolbarInternal(
     globalState: State,

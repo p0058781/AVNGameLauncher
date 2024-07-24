@@ -50,7 +50,6 @@ import com.dokar.chiptextfield.Chip
 import com.dokar.chiptextfield.OutlinedChipTextField
 import com.dokar.chiptextfield.rememberChipTextFieldState
 import kotlinx.coroutines.Dispatchers
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import org.skynetsoftware.avnlauncher.LocalWindowControl

@@ -40,10 +40,10 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
-import org.skynetsoftware.avnlauncher.ui.ext.hoverExplanation
-import org.skynetsoftware.avnlauncher.ui.ext.iconRes
 import org.skynetsoftware.avnlauncher.model.StringValue
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
+import org.skynetsoftware.avnlauncher.ui.ext.hoverExplanation
+import org.skynetsoftware.avnlauncher.ui.ext.iconRes
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 
 @Composable
