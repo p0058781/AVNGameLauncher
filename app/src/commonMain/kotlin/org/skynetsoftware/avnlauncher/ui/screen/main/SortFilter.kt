@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -203,12 +204,13 @@ fun Filter(
                 when (it) {
                     is FilterViewItem.FilterGroup -> {
                         Text(
-                            modifier = Modifier.padding(start = 5.dp),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp),
                             text = when (it.label) {
                                 is StringValue.String -> it.label.string
                                 is StringValue.StringResource -> stringResource(it.label.stringResource)
                             },
                             style = MaterialTheme.typography.body2,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                     is FilterViewItem.FilterItem -> {
