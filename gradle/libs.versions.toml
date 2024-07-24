@@ -24,6 +24,7 @@ buildkonfig = "0.15.1"
 mvvm = "0.16.1"
 chiptextfield = "0.7.0-alpha02"
 junit = "4.13.2"
+sonner = "0.3.8"
 
 [libraries]
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
@@ -66,6 +67,7 @@ dokar3-chiptextfield = { module = "io.github.dokar3:chiptextfield", version.ref 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+sonner = { module = "io.github.dokar3:sonner", version.ref = "sonner" }
 
 [bundles]
 
