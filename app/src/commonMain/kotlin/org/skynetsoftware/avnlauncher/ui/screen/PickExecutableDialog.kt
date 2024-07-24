@@ -17,7 +17,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.pickeExecutablePat
 
 private const val EXECUTABLE_PATH_MAX_LENGTH = 50
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun PickExecutableDialog(
     executablePaths: Set<String>,

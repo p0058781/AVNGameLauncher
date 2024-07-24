@@ -14,7 +14,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.appName
 import org.skynetsoftware.avnlauncher.app.generated.resources.totalPlayTime
 import org.skynetsoftware.avnlauncher.utils.formatPlayTime
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun ToolbarTitle(
     totalPlayTime: Long,

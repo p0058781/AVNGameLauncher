@@ -8,7 +8,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.stateCheckingForUp
 import org.skynetsoftware.avnlauncher.app.generated.resources.stateIdle
 import org.skynetsoftware.avnlauncher.app.generated.resources.statePlaying
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun State.buildText() =
     buildString {

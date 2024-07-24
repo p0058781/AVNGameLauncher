@@ -75,7 +75,7 @@ fun GamesList(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class, ExperimentalResourceApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterialApi::class)
 @Composable
 private fun GameItem(
     game: Game,

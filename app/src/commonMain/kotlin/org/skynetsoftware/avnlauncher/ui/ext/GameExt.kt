@@ -110,7 +110,6 @@ fun Game.versionDisplayValue() =
         }
     }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun Game.lastPlayedDisplayValue(
     dateFormat: SimpleDateFormat,

@@ -23,7 +23,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.skynetsoftware.avnlauncher.LocalWindowControl
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun IconAction(
     icon: DrawableResource,
@@ -76,7 +75,6 @@ fun TextAction(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun DropdownItemAction(
     text: String,
