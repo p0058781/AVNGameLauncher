@@ -28,6 +28,7 @@ class StateHandlerTest {
         ),
         availableVersion = null,
         tags = emptySet(),
+        prefixes = emptySet(),
         checkForUpdates = false,
         notes = null,
         playSessions = emptyList(),
@@ -49,6 +50,9 @@ class StateHandlerTest {
                 }
                 State.UpdateCheckRunning::class -> {
                     ids.add(State.UpdateCheckRunning.id)
+                }
+                State.UpdatingGamesRunning::class -> {
+                    ids.add(State.UpdatingGamesRunning.id)
                 }
                 State.Playing::class -> {
                     ids.add(State.Playing(game).id)

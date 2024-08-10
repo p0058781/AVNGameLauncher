@@ -97,6 +97,7 @@ class FilterTest {
             playState = playState,
             availableVersion = null,
             tags = emptySet(),
+            prefixes = emptySet(),
             checkForUpdates = false,
             notes = null,
             playSessions = emptyList(),

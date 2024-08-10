@@ -11,4 +11,5 @@ internal data class F95Game(
     val firstReleaseDate: Long,
     val releaseDate: Long,
     val tags: Set<String>,
+    val prefixes: Set<String>,
 )

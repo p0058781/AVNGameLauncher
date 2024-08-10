@@ -190,6 +190,7 @@ class MainScreenViewModel(
                         if (it.updateCheckResult.updates.count { game -> game.updateAvailable } > 0) {
                             _newUpdateAvailableIndicatorVisible.emit(true)
                         }
+                        eventCenter.emit(Event.ToastMessage(it.updateCheckResult))
                     }
                     is Event.PlayingStarted -> {
                         _gameRunning.emit(it.game)
@@ -269,10 +270,7 @@ class MainScreenViewModel(
         }
 
     fun startUpdateCheck() {
-        viewModelScope.launch {
-            val updateCheckResult = updateChecker.checkForUpdates(this)
-            eventCenter.emit(Event.ToastMessage(updateCheckResult))
-        }
+        updateChecker.checkForUpdates()
     }
 
     fun resetNewUpdateAvailableIndicatorVisible() =

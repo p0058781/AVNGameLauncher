@@ -50,6 +50,7 @@ private class F95ParserJsoup(
             val rating = parseRating(document)
             val firstReleaseDate = parseFirstReleaseDate(document)
             val tags = parseTags(document)
+            val prefixes = parsePrefixes(document)
             val game = F95Game(
                 threadId = gameThreadId,
                 title = title,
@@ -61,6 +62,7 @@ private class F95ParserJsoup(
                 firstReleaseDate = firstReleaseDate,
                 releaseDate = releaseDate,
                 tags = tags,
+                prefixes = prefixes,
             )
             Result.Ok(game)
         } catch (t: Throwable) {
@@ -76,6 +78,17 @@ private class F95ParserJsoup(
             tags.add(it.text())
         }
         return tags
+    }
+
+    private fun parsePrefixes(document: Document): Set<String> {
+        val prefixesContainer = document.select(".p-title-value").firstOrNull()?.children()
+        val prefixes = hashSetOf<String>()
+        prefixesContainer?.forEach {
+            if (it.tagName() == "a") {
+                prefixes.add(it.text())
+            }
+        }
+        return prefixes
     }
 
     @Throws(IllegalStateException::class)

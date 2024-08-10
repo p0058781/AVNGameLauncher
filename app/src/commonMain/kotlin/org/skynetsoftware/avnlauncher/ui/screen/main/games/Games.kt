@@ -4,6 +4,7 @@ package org.skynetsoftware.avnlauncher.ui.screen.main.games
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -31,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.Placeholder
@@ -68,12 +71,33 @@ import org.skynetsoftware.avnlauncher.data.f95.createF95ThreadUrl
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesDisplayMode
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
+import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
-import org.skynetsoftware.avnlauncher.model.isF95Game
 import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.RatingBar
 import org.skynetsoftware.avnlauncher.ui.component.gesturesDisabled
 import org.skynetsoftware.avnlauncher.ui.theme.GameRunningFade
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixAbandonedBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixAbandonedFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixCompletedBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixCompletedFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixDefaultBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixDefaultFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixHtmlBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixHtmlFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixJavaFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixOnHoldBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixOnHoldFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixOthersBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixOthersFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixRenPyFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixUnityFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixUnrealBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixUnrealFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixVNBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixVNFill
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixWolfRpgBorder
+import org.skynetsoftware.avnlauncher.ui.theme.PrefixWolfRpgFill
 import org.skynetsoftware.avnlauncher.ui.theme.UpdateAvailable
 import org.skynetsoftware.avnlauncher.ui.theme.Warning
 import org.skynetsoftware.avnlauncher.utils.collectIsHoveredAsStateDelayed
@@ -416,5 +440,87 @@ fun InfoItem(
             style = valueStyle,
             maxLines = maxLines,
         )
+    }
+}
+
+fun Modifier.prefixModifier(prefix: String): Modifier {
+    return when (prefix.lowercase()) {
+        "abandoned",
+        "rags",
+        -> this.clip(CircleShape)
+            .border(width = 1.dp, color = PrefixAbandonedBorder, shape = RoundedCornerShape(8.dp))
+            .background(PrefixAbandonedFill)
+
+        "vn",
+        "qsp",
+        -> this.prefixShapeCircleBorder(PrefixVNFill, PrefixVNBorder)
+
+        "others",
+        "siterip",
+        -> this.prefixShapeCircleBorder(PrefixOthersFill, PrefixOthersBorder)
+
+        "completed",
+        "rpgm",
+        "adrift",
+        "tads",
+        -> this.prefixShapeCircleBorder(PrefixCompletedFill, PrefixCompletedBorder)
+
+        "ren'py" -> this.prefixShapeRound(PrefixRenPyFill)
+
+        "unity",
+        "webgl",
+        -> this.prefixShapeRound(PrefixUnityFill)
+
+        "java" -> this.prefixShapeRound(PrefixJavaFill)
+
+        "html" -> this.prefixShapeCircleBorder(PrefixHtmlFill, PrefixHtmlBorder)
+
+        "wolf rpg" -> this.prefixShapeCircleBorder(PrefixWolfRpgFill, PrefixWolfRpgBorder)
+
+        "unreal engine" -> this.prefixShapeCircleBorder(PrefixUnrealFill, PrefixUnrealBorder)
+
+        "onhold" -> this.prefixShapeCircleBorder(PrefixOnHoldFill, PrefixOnHoldBorder)
+
+        else -> this.prefixShapeCircleBorder(PrefixDefaultFill, PrefixDefaultBorder)
+    }
+}
+
+private fun Modifier.prefixShapeRound(fillColor: Color): Modifier {
+    return this.clip(RoundedCornerShape(5.dp))
+        .background(fillColor)
+}
+
+private fun Modifier.prefixShapeCircleBorder(
+    fillColor: Color,
+    borderColor: Color,
+): Modifier {
+    return this.clip(RoundedCornerShape(5.dp))
+        .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
+        .background(fillColor)
+}
+
+fun prefixColor(prefix: String): Color {
+    return when (prefix) {
+        "abandoned",
+        "rags",
+        "completed",
+        "rpgs",
+        "adrift",
+        "tads",
+        "java",
+        -> Color.Black
+        "ren'py",
+        "vn",
+        "qsp",
+        "siterep",
+        "others",
+        "unity",
+        "webgl",
+        "html",
+        "wolf rpg",
+        "unreal engine",
+        "onhold",
+        -> Color.White
+        else -> Color.White
     }
 }

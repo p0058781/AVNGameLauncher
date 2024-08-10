@@ -19,7 +19,7 @@ val viewModelsKoinModule = module {
     factory { MainScreenViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     factory { parameters -> ManageGameViewModel(parameters.get(), get(), get(), get(), get(), get(), get()) }
     factory { parameters -> GameDetailsViewModel(parameters.get(), get(), get()) }
-    factory { SettingsViewModel(get(), get()) }
+    factory { SettingsViewModel(get(), get(), get()) }
     factory { ImportGameViewModel(get(), get(), get()) }
     factory { CustomStatusesViewModel(get(), get()) }
     factory { CustomListsViewModel(get(), get()) }

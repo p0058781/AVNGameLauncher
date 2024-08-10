@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -148,7 +149,21 @@ private fun GameItem(
 
             Row(
                 modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp).fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
+                game.prefixes.forEach {
+                    Text(
+                        modifier = Modifier
+                            .prefixModifier(it)
+                            .padding(horizontal = 5.dp, vertical = 3.dp),
+                        text = it,
+                        color = prefixColor(it),
+                        style = MaterialTheme.typography.body2,
+                    )
+                    Spacer(
+                        modifier = Modifier.width(5.dp),
+                    )
+                }
                 Text(
                     text = game.titleWithSfwFilterAndSearchMatchHighlight(sfwMode, query),
                     style = MaterialTheme.typography.h6,

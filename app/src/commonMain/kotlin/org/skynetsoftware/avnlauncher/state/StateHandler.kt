@@ -32,6 +32,8 @@ private class StateHandlerImpl(private val eventCenter: EventCenter) : StateHand
                     is Event.PlayingStarted -> activeStates.add(State.Playing(event.game))
                     is Event.UpdateCheckComplete -> activeStates.remove(State.UpdateCheckRunning)
                     Event.UpdateCheckStarted -> activeStates.add(State.UpdateCheckRunning)
+                    Event.UpdatingGamesStarted -> activeStates.add(State.UpdatingGamesRunning)
+                    is Event.UpdatingGamesComplete -> activeStates.remove(State.UpdatingGamesRunning)
                     Event.UpdateSeen -> {
                         // not handled
                     }
@@ -78,12 +80,15 @@ class ActiveStates {
     }
 }
 
+@Suppress("MagicNumber")
 sealed class State(val id: Int, val priority: Int) {
     object Idle : State(0, Int.MAX_VALUE)
 
     object UpdateCheckRunning : State(1, 1)
 
-    class Playing(val game: Game) : State(2, 2)
+    object UpdatingGamesRunning : State(2, 2)
+
+    class Playing(val game: Game) : State(3, 3)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

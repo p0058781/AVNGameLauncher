@@ -27,7 +27,8 @@ CREATE TABLE GameEntity (
     firstPlayed INTEGER NOT NULL,
     notes TEXT,
     description TEXT NOT NULL DEFAULT "",
-    developer TEXT NOT NULL DEFAULT ""
+    developer TEXT NOT NULL DEFAULT "",
+    prefixes TEXT AS Set<String> NOT NULL
 );
 
 gamesFull:
@@ -84,7 +85,8 @@ SET title = ?,
     availableVersion = ?,
     tags = ?,
     checkForUpdates = ?,
-    notes = ?
+    notes = ?,
+    prefixes = ?
 WHERE f95ZoneThreadId = ?;
 
 updateGameF95:

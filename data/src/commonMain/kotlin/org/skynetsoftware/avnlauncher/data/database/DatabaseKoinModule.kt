@@ -37,6 +37,7 @@ internal fun Module.databaseKoinModule() {
                 f95RatingAdapter = FloatColumnAdapter,
                 tagsAdapter = StringSetAdapter,
                 executablePathsAdapter = StringSetAdapter,
+                prefixesAdapter = StringSetAdapter,
             ),
             PlaySessionEntityAdapter = PlaySessionEntity.Adapter(
                 gameIdAdapter = IntColumnAdapter,

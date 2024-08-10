@@ -21,6 +21,7 @@ class GameEntitySlots {
     val playState: CapturingSlot<String> = slot()
     val availableVersion: CapturingSlot<String?> = slot()
     val tags: CapturingSlot<Set<String>> = slot()
+    val prefixes: CapturingSlot<Set<String>> = slot()
     val checkForUpdates: CapturingSlot<Boolean> = slot()
     val customImageUrl: CapturingSlot<String?> = slot()
     val notes: CapturingSlot<String?> = slot()
