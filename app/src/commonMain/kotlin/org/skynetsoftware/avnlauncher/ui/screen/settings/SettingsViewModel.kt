@@ -7,10 +7,12 @@ import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
+import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     eventCenter: EventCenter,
+    private val updateChecker: UpdateChecker,
 ) : ShowToastViewModel(eventCenter) {
     val periodicUpdateChecksEnabled = settingsRepository.periodicUpdateChecksEnabled
     val updateCheckInterval = settingsRepository.updateCheckInterval
@@ -90,4 +92,8 @@ class SettingsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             settingsRepository.setHttpServerEnabled(httpServerEnabled)
         }
+
+    fun forceUpdateAllGames() {
+        updateChecker.updateAllGames()
+    }
 }

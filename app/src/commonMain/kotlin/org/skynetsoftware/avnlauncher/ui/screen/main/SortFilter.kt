@@ -177,7 +177,7 @@ fun Filter(
         Text(
             buildString {
                 val stringValue = filters.find {
-                    it is FilterViewItem.FilterItem && it.filter::class == currentFilter::class
+                    it is FilterViewItem.FilterItem && it.filter == currentFilter
                 }?.label
                 when (stringValue) {
                     is StringValue.String -> append(stringValue.string)

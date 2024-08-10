@@ -91,6 +91,7 @@ private class GamesRepositoryImpl(
                     playState = game.playState.id,
                     availableVersion = game.availableVersion,
                     tags = game.tags,
+                    prefixes = game.prefixes,
                     f95ZoneThreadId = game.f95ZoneThreadId,
                     notes = game.notes,
                 )

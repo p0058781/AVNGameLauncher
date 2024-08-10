@@ -11,12 +11,12 @@ import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.Game
+import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.domain.repository.F95Repository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.Result
 import org.skynetsoftware.avnlauncher.logger.Logger
-import org.skynetsoftware.avnlauncher.model.isF95Game
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import kotlin.math.max
@@ -37,7 +37,7 @@ abstract class UpdateChecker {
 
     abstract fun checkForUpdates()
 
-    abstract suspend fun checkForUpdates(scope: CoroutineScope): UpdateCheckResult
+    abstract fun updateAllGames()
 }
 
 @Suppress("LongParameterList")
@@ -84,13 +84,13 @@ private class UpdateCheckerImpl(
                 var lastUpdateCheckElapsedTime = now - lastUpdateCheck
 
                 if (lastUpdateCheckElapsedTime > interval) {
-                    checkForUpdates(this)
+                    checkForUpdatesInternal()
                     lastUpdateCheckElapsedTime = 0
                 }
 
                 val delay = interval - max(0, lastUpdateCheckElapsedTime)
                 delay(delay)
-                checkForUpdates(this)
+                checkForUpdatesInternal()
             }
         }
     }
@@ -102,12 +102,46 @@ private class UpdateCheckerImpl(
 
     override fun checkForUpdates() {
         scope.launch {
-            checkForUpdates(this)
+            checkForUpdatesInternal()
         }
     }
 
-    override suspend fun checkForUpdates(scope: CoroutineScope): UpdateCheckResult {
-        return runIfNotAlreadyRunning {
+    override fun updateAllGames() {
+        scope.launch {
+            runIfNotAlreadyRunning {
+                eventCenter.emit(Event.UpdatingGamesStarted)
+                val start = Clock.System.now().toEpochMilliseconds()
+                val allGames = gamesRepository.all().filter { it.isF95Game() }
+
+                logger.info("Updating ${allGames.size} games")
+                val updateResult = allGames.map {
+                    scope.async {
+                        updateGameFromF95(it)
+                    }
+                }.map { it.await() }
+
+                val updated = ArrayList<Game>()
+                val exceptions = ArrayList<Throwable>()
+                updateResult.forEach {
+                    when (it) {
+                        is Result.Error -> exceptions.add(it.exception)
+                        is Result.Ok -> updated.add(it.value)
+                    }
+                }
+
+                val mergedResult = UpdateResult(
+                    successCount = updated.size,
+                    errorCount = exceptions.size,
+                )
+                gamesRepository.updateGames(updated)
+                eventCenter.emit(Event.UpdatingGamesComplete(mergedResult))
+                logger.info("Update took ${Clock.System.now().toEpochMilliseconds() - start}ms")
+            }
+        }
+    }
+
+    private suspend fun checkForUpdatesInternal() =
+        runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
             val start = Clock.System.now().toEpochMilliseconds()
             val allGames = gamesRepository.all()
@@ -115,7 +149,7 @@ private class UpdateCheckerImpl(
                 .filter { it.isF95Game() }
                 .filter { !(settingsRepository.archivedGamesDisableUpdateChecks.value && it.hidden) }
             logger.info("Checking ${allGames.size} games for updates")
-            val updateCheckResults = checkForUpdates(allGames)
+            val updateCheckResults = getGamesWithUpdate(allGames)
             logger.info(
                 "Update check took ${Clock.System.now().toEpochMilliseconds() - start}ms," +
                     " made ${updateCheckResults.size} requests",
@@ -151,11 +185,9 @@ private class UpdateCheckerImpl(
             gamesRepository.updateGames(gamesWithUpdate)
             eventCenter.emit(Event.UpdateCheckComplete(mergedResult))
             settingsRepository.setLastUpdateCheck(Clock.System.now().toEpochMilliseconds())
-            mergedResult
         }
-    }
 
-    private suspend fun checkForUpdates(games: List<Game>): List<UpdateCheckResult> {
+    private suspend fun getGamesWithUpdate(games: List<Game>): List<UpdateCheckResult> {
         return games.chunked(UPDATE_CHECK_MAX_GAMES_IN_SINGLE_REQUEST).map { gamesChunk ->
             scope.async {
                 val versions = f95Repository.getVersions(gamesChunk.map { it.f95ZoneThreadId })
@@ -201,14 +233,14 @@ private class UpdateCheckerImpl(
         }
     }
 
-    private suspend fun runIfNotAlreadyRunning(run: suspend () -> UpdateCheckResult): UpdateCheckResult {
+    private suspend fun runIfNotAlreadyRunning(run: suspend () -> Unit) {
         if (updateCheckRunning) {
-            return UpdateCheckResult(emptyList(), emptyList())
+            logger.warning("Attempting to run multiple update checks in parallel")
+            return
         }
         updateCheckRunning = true
-        val result = run()
+        run()
         updateCheckRunning = false
-        return result
     }
 }
 
@@ -233,6 +265,7 @@ private fun Game.mergeWith(f95Game: Game) =
         playState = playState,
         availableVersion = availableVersion,
         tags = f95Game.tags,
+        prefixes = f95Game.prefixes,
         checkForUpdates = checkForUpdates,
         firstPlayedTime = firstPlayedTime,
         notes = notes,

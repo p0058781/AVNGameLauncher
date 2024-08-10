@@ -1,0 +1,3 @@
+import kotlin.collections.Set;
+
+ALTER TABLE GameEntity ADD COLUMN prefixes TEXT AS Set<String> NOT NULL DEFAULT "";

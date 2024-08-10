@@ -18,6 +18,7 @@ data class Game(
     val playState: PlayState,
     val availableVersion: String?,
     val tags: Set<String>,
+    val prefixes: Set<String>,
     val checkForUpdates: Boolean,
     val notes: String?,
     val playSessions: List<PlaySession>,

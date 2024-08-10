@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateCheckResult
+import org.skynetsoftware.avnlauncher.updatechecker.UpdateResult
 
 val eventCenterModule = module {
     single<EventCenter> { EventCenterImpl() }
@@ -40,6 +41,10 @@ sealed class Event {
     class UpdateCheckComplete(val updateCheckResult: UpdateCheckResult) : Event()
 
     object UpdateSeen : Event()
+
+    object UpdatingGamesStarted : Event()
+
+    class UpdatingGamesComplete(val updateResult: UpdateResult) : Event()
 
     // GameLauncher
     class PlayingStarted(val game: Game) : Event()

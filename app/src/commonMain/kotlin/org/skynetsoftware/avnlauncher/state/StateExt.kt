@@ -6,6 +6,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.stateCheckingForUpdates
 import org.skynetsoftware.avnlauncher.app.generated.resources.stateIdle
 import org.skynetsoftware.avnlauncher.app.generated.resources.statePlaying
+import org.skynetsoftware.avnlauncher.app.generated.resources.stateUpdatingGames
 
 @Composable
 fun State.buildText() =
@@ -14,5 +15,6 @@ fun State.buildText() =
             State.Idle -> append(stringResource(Res.string.stateIdle))
             is State.Playing -> append(stringResource(Res.string.statePlaying, state.game.title))
             State.UpdateCheckRunning -> append(stringResource(Res.string.stateCheckingForUpdates))
+            State.UpdatingGamesRunning -> append(stringResource(Res.string.stateUpdatingGames))
         }
     }

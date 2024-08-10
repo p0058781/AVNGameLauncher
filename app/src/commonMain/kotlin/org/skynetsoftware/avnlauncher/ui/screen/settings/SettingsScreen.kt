@@ -24,6 +24,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescri
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionCustomStatuses
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionDateFormat
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionDisableUpdateChecksForArchivedGames
+import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionForceUpdateGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridImageAspectRatio
@@ -44,6 +45,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleC
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleDateFormat
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleDisableUpdateChecksForArchivedGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleF95Thread
+import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleForceUpdateGames
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridImageAspectRatio
@@ -241,6 +243,14 @@ fun SettingsScreen(
                     subtitle = stringResource(Res.string.settingsItemDescriptionCustomStatuses),
                     onClick = {
                         navigator?.navigateToCustomStatuses()
+                    },
+                )
+                Divider()
+                Item(
+                    title = stringResource(Res.string.settingsItemTitleForceUpdateGames),
+                    subtitle = stringResource(Res.string.settingsItemDescriptionForceUpdateGames),
+                    onClick = {
+                        settingsViewModel.forceUpdateAllGames()
                     },
                 )
             }

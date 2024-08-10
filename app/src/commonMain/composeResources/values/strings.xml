@@ -79,6 +79,8 @@
     <string name="settingsItemDescriptionCustomLists">Custom Game Lists</string>
     <string name="settingsItemTitleCustomStatuses">Custom Statuses</string>
     <string name="settingsItemDescriptionCustomStatuses">Playing, Completed, etc</string>
+    <string name="settingsItemTitleForceUpdateGames">Update All Games</string>
+    <string name="settingsItemDescriptionForceUpdateGames">Force update all games from F95. Games will update automatically when there are new updated. Generally this should not be used.</string>
 
     <string name="settingsSectionTitleUI">UI</string>
     <string name="settingsItemTitleDateFormat">Date Format</string>
@@ -164,6 +166,7 @@
     <string name="totalPlayTime">Total play time: %s, %.1fh/day</string>
     <string name="statePlaying">Playing '%1$s'</string>
     <string name="stateCheckingForUpdates">Checking for Updates</string>
+    <string name="stateUpdatingGames">Updating Games</string>
     <string name="stateIdle">Idle</string>
     <string name="gameLauncherInvalidExecutableToast">Can't launch '%1$s', executablePath is invalid</string>
     <string name="gameLauncherAnotherGameRunning">Can't start '%1$s', '%2$s' is already running</string>

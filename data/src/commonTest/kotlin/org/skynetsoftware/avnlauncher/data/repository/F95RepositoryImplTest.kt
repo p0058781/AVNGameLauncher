@@ -33,6 +33,7 @@ class F95RepositoryImplTest : KoinTest {
         firstReleaseDate = 0L,
         releaseDate = 0L,
         tags = emptySet(),
+        prefixes = emptySet(),
     )
 
     private val f95Repository by inject<F95Repository>()

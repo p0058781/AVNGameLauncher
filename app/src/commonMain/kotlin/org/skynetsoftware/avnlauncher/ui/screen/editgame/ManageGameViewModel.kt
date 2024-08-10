@@ -11,10 +11,10 @@ import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GamesList
 import org.skynetsoftware.avnlauncher.domain.model.PLAY_STATE_NONE
+import org.skynetsoftware.avnlauncher.domain.model.isF95Game
 import org.skynetsoftware.avnlauncher.domain.repository.GameListsRepository
 import org.skynetsoftware.avnlauncher.domain.repository.GamesRepository
 import org.skynetsoftware.avnlauncher.domain.repository.PlayStateRepository
-import org.skynetsoftware.avnlauncher.model.isF95Game
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.ui.input.DateVisualTransformation
 import org.skynetsoftware.avnlauncher.ui.viewmodel.ShowToastViewModel
@@ -219,6 +219,7 @@ class ManageGameViewModel(
                 playState = playState,
                 availableVersion = null,
                 tags = tags.toSet(),
+                prefixes = emptySet(),
                 checkForUpdates = checkForUpdates,
                 firstPlayedTime = 0L,
                 notes = notes,

@@ -9,29 +9,29 @@ sealed class Filter {
     @Suppress("MemberNameEqualsClassName")
     abstract fun filter(input: List<Game>): List<Game>
 
-    object All : Filter() {
+    data object All : Filter() {
         override fun filter(input: List<Game>) = input.filter { !it.hidden }
     }
 
-    object GamesWithUpdate : Filter() {
+    data object GamesWithUpdate : Filter() {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.updateAvailable }
     }
 
-    object HiddenGames : Filter() {
+    data object HiddenGames : Filter() {
         override fun filter(input: List<Game>) = input.filter { it.hidden }
     }
 
-    object UnplayedGames : Filter() {
+    data object UnplayedGames : Filter() {
         override fun filter(input: List<Game>) = All.filter(input).filter { it.totalPlayTime < ONE_HOUR_MILLIS }
     }
 
-    class PlayState(private val playStateId: String) : Filter() {
+    data class PlayState(private val playStateId: String) : Filter() {
         override val data = playStateId
 
         override fun filter(input: List<Game>) = All.filter(input).filter { it.playState.id == playStateId }
     }
 
-    class Lists(private val listId: Int) : Filter() {
+    data class Lists(private val listId: Int) : Filter() {
         override val data = listId.toString()
 
         override fun filter(input: List<Game>) = All.filter(input).filter { it.lists.find { it.id == listId } != null }
