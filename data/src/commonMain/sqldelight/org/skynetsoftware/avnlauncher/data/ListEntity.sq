@@ -25,7 +25,7 @@ SELECT * FROM ListEntity
 WHERE name = ?;
 
 insert:
-INSERT INTO ListEntity VALUES ?;
+INSERT INTO ListEntity (name, description) VALUES (?, ?);
 
 insertGameToGamesList:
 INSERT INTO GameEntityToListEntity VALUES ?;

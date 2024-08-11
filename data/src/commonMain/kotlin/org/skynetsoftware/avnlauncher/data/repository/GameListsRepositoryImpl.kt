@@ -37,7 +37,7 @@ private class GameListsRepositoryImpl(
     }
 
     override fun insert(gamesList: GamesList) {
-        listEntityQueries.insert(gamesList.toListEntity())
+        listEntityQueries.insert(gamesList.name, gamesList.description)
     }
 
     override fun insertGameToGameList(
