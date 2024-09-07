@@ -42,7 +42,7 @@ sealed class SortOrder(val label: String) {
         }
     }
 
-    object Rating : SortOrder("Rating") {
+    object MyRating : SortOrder("My Rating") {
         override fun sort(
             input: List<Game>,
             sortDirection: SortDirection,
@@ -50,6 +50,18 @@ sealed class SortOrder(val label: String) {
             return when (sortDirection) {
                 SortDirection.Ascending -> input.sortedBy { it.rating }
                 SortDirection.Descending -> input.sortedByDescending { it.rating }
+            }
+        }
+    }
+
+    object F95Rating : SortOrder("F95 Rating") {
+        override fun sort(
+            input: List<Game>,
+            sortDirection: SortDirection,
+        ): List<Game> {
+            return when (sortDirection) {
+                SortDirection.Ascending -> input.sortedBy { it.f95Rating }
+                SortDirection.Descending -> input.sortedByDescending { it.f95Rating }
             }
         }
     }
@@ -96,7 +108,8 @@ sealed class SortOrder(val label: String) {
                 AZ,
                 LastPlayed,
                 Added,
-                Rating,
+                MyRating,
+                F95Rating,
                 PlayTime,
                 UpdateAvailable,
                 ReleaseDate,
