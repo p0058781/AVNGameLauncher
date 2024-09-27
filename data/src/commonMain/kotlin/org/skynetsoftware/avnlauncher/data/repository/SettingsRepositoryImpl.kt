@@ -9,22 +9,35 @@ import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
 import org.skynetsoftware.avnlauncher.domain.model.SortDirection
 import org.skynetsoftware.avnlauncher.domain.model.SortOrder
-import org.skynetsoftware.avnlauncher.domain.repository.SettingsDefaults
+import org.skynetsoftware.avnlauncher.domain.repository.ISettingsDefaults
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.MutableStateFlow
 
-internal fun Module.settingsKoinModule() {
-    single { Settings() }
-    single<SettingsRepository> { SettingsRepositoryImpl(get()) }
-}
+internal expect fun Module.settingsKoinModule()
 
-@Suppress("TooManyFunctions")
-internal class SettingsRepositoryImpl(private val settings: Settings) : SettingsRepository {
-    private val _selectedFilterName = MutableStateFlow {
-        settings.getString(
-            SettingsRepository::selectedFilterName.name,
-            SettingsDefaults.selectedFilter,
-        )
+expect object SettingsDefaults : ISettingsDefaults
+
+abstract class SettingsRepositoryShared internal constructor(
+    private val settings: Settings,
+) : SettingsRepository {
+
+    private val _gamesDir =
+        MutableStateFlow {
+            val value = settings.getString(
+                SettingsRepository::gamesDir.name,
+                "",
+            )
+            value.ifBlank {
+                null
+            }
+        }
+    override val gamesDir: StateFlow<String?> get() = _gamesDir
+
+        private val _selectedFilterName = MutableStateFlow {
+            settings.getString(
+                SettingsRepository::selectedFilterName.name,
+                SettingsDefaults.selectedFilter,
+            )
     }
     override val selectedFilterName: StateFlow<String> get() = _selectedFilterName
 
@@ -163,15 +176,6 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
         }
     override val gridImageAspectRatio: StateFlow<Float> get() = _gridImageAspectRatio
 
-    private val _httpServerEnabled =
-        MutableStateFlow {
-            settings.getBoolean(
-                SettingsRepository::httpServerEnabled.name,
-                SettingsDefaults.httpServerEnabled,
-            )
-        }
-    override val httpServerEnabled: StateFlow<Boolean> get() = _httpServerEnabled
-
     override suspend fun setSelectedFilterName(filterName: String) {
         _selectedFilterName.emit(filterName)
         settings[SettingsRepository::selectedFilterName.name] = filterName
@@ -252,50 +256,10 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
         settings[SettingsRepository::gridImageAspectRatio.name] = gridImageAspectRatio
     }
 
-    private val _gamesDir = MutableStateFlow {
-        val value = settings.getString(
-            SettingsRepository::gamesDir.name,
-            "",
-        )
-        value.ifBlank {
-            null
-        }
-    }
-    override val gamesDir: StateFlow<String?> get() = _gamesDir
-
-    private val _minimizeToTrayOnClose = MutableStateFlow {
-        settings.getBoolean(
-            SettingsRepository::minimizeToTrayOnClose.name,
-            SettingsDefaults.minimizeToTrayOnClose,
-        )
-    }
-    override val minimizeToTrayOnClose: StateFlow<Boolean> get() = _minimizeToTrayOnClose
-
-    private val _startMinimized = MutableStateFlow {
-        settings.getBoolean(
-            SettingsRepository::startMinimized.name,
-            SettingsDefaults.startMinimized,
-        )
-    }
-    override val startMinimized: StateFlow<Boolean> get() = _startMinimized
-
     override suspend fun setGamesDir(gamesDir: String) {
         _gamesDir.emit(gamesDir)
         settings[SettingsRepository::gamesDir.name] = gamesDir
     }
-
-    override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
-        _minimizeToTrayOnClose.emit(minimizeToTrayOnClose)
-        settings[SettingsRepository::minimizeToTrayOnClose.name] = minimizeToTrayOnClose
-    }
-
-    override suspend fun setStartMinimized(startMinimized: Boolean) {
-        _startMinimized.emit(startMinimized)
-        settings[SettingsRepository::startMinimized.name] = startMinimized
-    }
-
-    override suspend fun setHttpServerEnabled(httpServerEnabled: Boolean) {
-        _httpServerEnabled.emit(httpServerEnabled)
-        settings[SettingsRepository::httpServerEnabled.name] = httpServerEnabled
-    }
 }
+
+internal expect class SettingsRepositoryImpl : SettingsRepositoryShared
