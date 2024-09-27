@@ -24,7 +24,7 @@ jobs:
       - name: KTLint & Detekt
         run: ./analyze_code.sh
       - name: Build & Test
-        run: ./gradlew --console=plain clean koverHtmlReport
+        run: ./gradlew --console=plain clean koverHtmlReport koverHtmlReportRelease
       - name: Upload kover report
         uses: actions/upload-artifact@v4
         with:
