@@ -21,25 +21,20 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
-import org.skynetsoftware.avnlauncher.app.generated.resources.cardValuesScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
-import org.skynetsoftware.avnlauncher.app.generated.resources.importExportScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsTitle
 import org.skynetsoftware.avnlauncher.domain.model.Game
-import org.skynetsoftware.avnlauncher.ui.screen.cardvalues.CardValuesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.CreateCustomGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.game.GameDetailsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameScreen
-import org.skynetsoftware.avnlauncher.ui.screen.importexport.ImportExportScreen
 import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreen
 import org.skynetsoftware.avnlauncher.ui.screen.settings.SettingsScreen
 import org.skynetsoftware.avnlauncher.ui.theme.darkColors
@@ -70,22 +65,6 @@ private const val CUSTOM_LISTS_WINDOW_HEIGHT_PERCENT = 0.5f
 
 private val IMPORT_WINDOW_WIDTH = 500.dp
 private val IMPORT_WINDOW_HEIGHT = 350.dp
-
-typealias DraggableArea = @Composable (content: @Composable () -> Unit) -> Unit
-typealias MaximizeWindow = () -> Unit
-typealias FloatingWindow = () -> Unit
-typealias ExitApplication = () -> Unit
-
-val LocalWindowControl: ProvidableCompositionLocal<WindowControl?> = staticCompositionLocalOf { null }
-val LocalExitApplication: ProvidableCompositionLocal<ExitApplication?> = staticCompositionLocalOf { null }
-
-class WindowControl(
-    val draggableArea: DraggableArea,
-    val maximizeWindow: MaximizeWindow,
-    val floatingWindow: FloatingWindow,
-    val windowFocused: State<Boolean>,
-    val blockedByPopup: Boolean,
-)
 
 @Composable
 @Suppress("CyclomaticComplexMethod")

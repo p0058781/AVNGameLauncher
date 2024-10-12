@@ -3,6 +3,7 @@ package org.skynetsoftware.avnlauncher.utils
 import android.app.Application
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.logger.Logger
 

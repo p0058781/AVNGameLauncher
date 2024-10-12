@@ -36,4 +36,8 @@ private class GameLauncherAndroid(
             eventCenter.emit(Event.ToastMessage(Res.string.gameLauncherInvalidExecutableToast, game.title))
         }
     }
+
+    override fun stop() {
+        TODO("can't stop on android")
+    }
 }

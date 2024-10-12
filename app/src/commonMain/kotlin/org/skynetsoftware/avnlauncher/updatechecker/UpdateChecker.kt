@@ -35,7 +35,7 @@ abstract class UpdateChecker {
 
     abstract fun stopPeriodicUpdateChecks()
 
-    abstract fun checkForUpdates()
+    abstract fun checkForUpdates(): Job
 
     abstract fun updateAllGames()
 }
@@ -100,10 +100,8 @@ private class UpdateCheckerImpl(
         logger.info("stopPeriodicUpdateChecks")
     }
 
-    override fun checkForUpdates() {
-        scope.launch {
-            checkForUpdatesInternal()
-        }
+    override fun checkForUpdates() = scope.launch {
+        checkForUpdatesInternal()
     }
 
     override fun updateAllGames() {
