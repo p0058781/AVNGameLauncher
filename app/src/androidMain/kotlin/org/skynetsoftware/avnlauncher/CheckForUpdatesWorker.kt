@@ -25,62 +25,21 @@ import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.updatechecker.UpdateChecker
 
-@OptIn(ExperimentalResourceApi::class)
 @Suppress("InjectDispatcher")
 class CheckForUpdatesWorker(
-    private val context: Context,
+    context: Context,
     workerParameters: WorkerParameters,
     private val coroutineDispatchers: CoroutineDispatchers,
-) :
-    CoroutineWorker(context, workerParameters),
-        KoinComponent {
-    companion object {
-        private const val NOTIFICATION_CHANNEL_ID = "game_updates"
-        private const val UPDATES_AVAILABLE_NOTIFICATION_ID = 1
-    }
-
-    private val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CoroutineScope(coroutineDispatchers.main).launch {
-                val name = getString(Res.string.systemNotificationUpdatesChannelTitle)
-                val descriptionText = getString(Res.string.systemNotificationUpdatesChannelDescription)
-                val mChannel = NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID,
-                    name,
-                    NotificationManager.IMPORTANCE_DEFAULT,
-                )
-                mChannel.description = descriptionText
-                notificationManager.createNotificationChannel(mChannel)
-            }
-        }
-    }
+) : CoroutineWorker(context, workerParameters), KoinComponent {
 
     private val updateChecker by inject<UpdateChecker>()
     private val logger by inject<Logger>()
-    private val settingsRepository by inject<SettingsRepository>()
 
     override suspend fun doWork(): Result {
         logger.debug("doWork")
         return withContext(coroutineDispatchers.io) {
-            val result = updateChecker.checkForUpdates(this)
-            val count = result.updates.count { it.updateAvailable }
-            if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {
-                sendNotification(count)
-            }
+            updateChecker.checkForUpdates().join()
             Result.success()
         }
-    }
-
-    @OptIn(ExperimentalResourceApi::class)
-    private suspend fun sendNotification(count: Int) {
-        val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_stat_avn)
-            .setContentTitle(getString(Res.string.systemNotificationTitleUpdateAvailable))
-            .setContentText(getString(Res.string.systemNotificationDescriptionUpdateAvailable, count))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-        notificationManager.notify(UPDATES_AVAILABLE_NOTIFICATION_ID, builder.build())
     }
 }

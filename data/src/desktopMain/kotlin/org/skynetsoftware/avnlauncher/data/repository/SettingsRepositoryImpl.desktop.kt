@@ -54,6 +54,8 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings) :
     )
     override val httpServerEnabled: Option<out StateFlow<Boolean>> get() = _httpServerEnabled
 
+    override val showGifs: Option<out StateFlow<Boolean>> = Option.None()
+
     override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
         _minimizeToTrayOnClose.value.emit(minimizeToTrayOnClose)
         settings[SettingsRepository::minimizeToTrayOnClose.name] = minimizeToTrayOnClose
@@ -67,5 +69,9 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings) :
     override suspend fun setHttpServerEnabled(httpServerEnabled: Boolean) {
         _httpServerEnabled.value.emit(httpServerEnabled)
         settings[SettingsRepository::httpServerEnabled.name] = httpServerEnabled
+    }
+
+    override suspend fun setShowGifs(showGifs: Boolean) {
+        //coil doesn't support gifs on desktop
     }
 }

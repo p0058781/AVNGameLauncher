@@ -1,14 +1,20 @@
 package org.skynetsoftware.avnlauncher.ui.screen.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
@@ -18,9 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 import org.skynetsoftware.avnlauncher.LocalNavigator
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.import
@@ -39,6 +47,7 @@ import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.state.buildText
 import org.skynetsoftware.avnlauncher.ui.component.DropdownItemAction
+import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
 import org.skynetsoftware.avnlauncher.ui.component.IconAction
 import org.skynetsoftware.avnlauncher.ui.component.Search
 import org.skynetsoftware.avnlauncher.ui.screen.main.games.Games
@@ -81,8 +90,17 @@ private fun Toolbar(
             var showDropdownMenu by remember { mutableStateOf(false) }
             val navigator = LocalNavigator.current
 
-            IconAction(Res.drawable.more_vert) {
-                showDropdownMenu = true
+            Box(
+                modifier = Modifier.padding(10.dp)
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.more_vert),
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        showDropdownMenu = true
+                    },
+                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onPrimary),
+                )
             }
             DropdownMenu(
                 expanded = showDropdownMenu,
@@ -133,7 +151,9 @@ private fun Toolbar(
 @Composable
 actual fun MainScreenContent(
     games: List<Game>,
+    runningGame: Game?,
     currentFilter: Filter,
+    filters: List<FilterViewItem>,
     currentSortOrder: SortOrder,
     currentSortDirection: SortDirection,
     currentGamesDisplayMode: GamesDisplayMode,
@@ -155,12 +175,12 @@ actual fun MainScreenContent(
     setSortDirection: (sortDirection: SortDirection) -> Unit,
     setGamesDisplayMode: (gamesDisplayMode: GamesDisplayMode) -> Unit,
     launchGame: (game: Game) -> Unit,
+    stopGame: () -> Unit,
     resetUpdateAvailable: (availableVersion: String, game: Game) -> Unit,
     updateRating: (rating: Int, game: Game) -> Unit,
-    updateFavorite: (favorite: Boolean, game: Game) -> Unit,
 ) {
     Surface(
-        Modifier = blurModifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
     ) {
         val navigator = LocalNavigator.current
         Column {
@@ -185,6 +205,7 @@ actual fun MainScreenContent(
                 setSortOrder = setSortOrder,
                 setSortDirection = setSortDirection,
                 setGamesDisplayMode = setGamesDisplayMode,
+                filters = filters,
             )
             if (globalState != State.Idle) {
                 Text(
@@ -209,7 +230,8 @@ actual fun MainScreenContent(
                 launchGame = launchGame,
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
-                updateFavorite = updateFavorite,
+                runningGame = runningGame,
+                stopGame = stopGame
             )
         }
     }

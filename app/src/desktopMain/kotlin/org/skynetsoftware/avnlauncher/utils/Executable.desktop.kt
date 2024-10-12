@@ -12,6 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.extension
+import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 
 actual val executableFinderKoinModule = module {
     single<ExecutableFinder> { ExecutableFinderDesktop(get(), get()) }

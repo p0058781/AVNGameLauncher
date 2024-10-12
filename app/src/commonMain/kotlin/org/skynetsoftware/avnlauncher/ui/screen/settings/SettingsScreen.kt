@@ -65,6 +65,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsSectionTit
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsSectionTitleUI
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
+import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.filepicker.PickerType
 import org.skynetsoftware.avnlauncher.filepicker.rememberFilePickerLauncher
 import org.skynetsoftware.avnlauncher.link.ExternalLinkUtils
@@ -110,29 +111,34 @@ fun SettingsScreen(
             Section(
                 title = stringResource(Res.string.settingsSectionTitleGeneral),
             ) {
-                val minimizeToTrayOnClose by remember { settingsViewModel.minimizeToTrayOnClose }.collectAsState()
-                val httpServerEnabled by remember { settingsViewModel.httpServerEnabled }.collectAsState()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionMinimizeToTray),
-                    endContent = {
-                        Toggle(minimizeToTrayOnClose) {
-                            settingsViewModel.setMinimizeToTrayOnClose(it)
-                        }
-                    },
-                )
-                Divider()
-                val startMinimized by remember { settingsViewModel.startMinimized }.collectAsState()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleStartMinimized),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionStartMinimized),
-                    endContent = {
-                        Toggle(startMinimized) {
-                            settingsViewModel.setStartMinimized(it)
-                        }
-                    },
-                )
-                Divider()
+                val minimizeToTrayOnCloseOption = settingsViewModel.minimizeToTrayOnClose
+                if(minimizeToTrayOnCloseOption is Option.Some) {
+                    val minimizeToTrayOnClose by remember { minimizeToTrayOnCloseOption.value }.collectAsState()
+                    Item(
+                        title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
+                        subtitle = stringResource(Res.string.settingsItemDescriptionMinimizeToTray),
+                        endContent = {
+                            Toggle(minimizeToTrayOnClose) {
+                                settingsViewModel.setMinimizeToTrayOnClose(it)
+                            }
+                        },
+                    )
+                    Divider()
+                }
+                val startMinimizedOption = settingsViewModel.startMinimized
+                if(startMinimizedOption is Option.Some) {
+                    val startMinimized by remember { startMinimizedOption.value }.collectAsState()
+                    Item(
+                        title = stringResource(Res.string.settingsItemTitleStartMinimized),
+                        subtitle = stringResource(Res.string.settingsItemDescriptionStartMinimized),
+                        endContent = {
+                            Toggle(startMinimized) {
+                                settingsViewModel.setStartMinimized(it)
+                            }
+                        },
+                    )
+                    Divider()
+                }
                 Item(
                     title = stringResource(Res.string.settingsItemTitleLogLevel),
                     subtitle = stringResource(Res.string.settingsItemDescriptionLogLevel),
@@ -147,15 +153,19 @@ fun SettingsScreen(
                     },
                 )
                 Divider()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleHttpServer),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionHttpServer),
-                    endContent = {
-                        Toggle(httpServerEnabled) {
-                            settingsViewModel.setHttpServerEnabled(it)
-                        }
-                    },
-                )
+                val httpServerEnabledOption = settingsViewModel.httpServerEnabled
+                if(httpServerEnabledOption is Option.Some) {
+                    val httpServerEnabled by remember { httpServerEnabledOption.value }.collectAsState()
+                    Item(
+                        title = stringResource(Res.string.settingsItemTitleHttpServer),
+                        subtitle = stringResource(Res.string.settingsItemDescriptionHttpServer),
+                        endContent = {
+                            Toggle(httpServerEnabled) {
+                                settingsViewModel.setHttpServerEnabled(it)
+                            }
+                        },
+                    )
+                }
             }
             Spacer(
                 modifier = Modifier.height(10.dp),

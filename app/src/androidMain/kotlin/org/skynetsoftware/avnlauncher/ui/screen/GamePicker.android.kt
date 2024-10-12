@@ -25,6 +25,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.gamePickerPickGame
+/*
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -111,3 +112,4 @@ actual fun GamesDirPicker(
 ) {
     error("GamesDirPicker is not supported on android")
 }
+*/

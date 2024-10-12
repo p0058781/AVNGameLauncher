@@ -32,6 +32,7 @@ import org.skynetsoftware.avnlauncher.data.dataKoinModule
 import org.skynetsoftware.avnlauncher.domain.domainKoinModule
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
+import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
@@ -93,8 +94,8 @@ suspend fun main(args: Array<String>) {
         val httpServer = koinInject<HttpServer>()
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
-        val minimizeToTrayOnClose by remember { settingsRepository.minimizeToTrayOnClose }.collectAsState()
-        val startMinimized = settingsRepository.startMinimized.value
+        val minimizeToTrayOnClose by remember { (settingsRepository.minimizeToTrayOnClose as Option.Some).value }.collectAsState()
+        val startMinimized = (settingsRepository.startMinimized as Option.Some).value.value
         var minimized by remember { mutableStateOf(minimizeToTrayOnClose && startMinimized) }
         var open by remember { mutableStateOf(true) }
 
@@ -118,7 +119,7 @@ suspend fun main(args: Array<String>) {
                 }
             }
             LaunchedEffect(null) {
-                settingsRepository.httpServerEnabled.collect { httpServerEnabled ->
+                (settingsRepository.httpServerEnabled as Option.Some).value.collect { httpServerEnabled ->
                     logger.debug("httpServerEnabled changed: $httpServerEnabled")
                     if (httpServerEnabled) {
                         httpServer.start()
