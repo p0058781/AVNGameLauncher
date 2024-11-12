@@ -116,12 +116,13 @@ private class F95ParserJsoup(
 
     @Throws(IllegalStateException::class)
     private fun parseReleaseDate(document: Document): Long {
-        return releaseDateFormat.parse(
-            releaseDateRegex.find(
-                document.select(".bbWrapper").first()?.html() ?: error("bbWraper html not found"),
-            )?.groups?.get(1)?.value
-                ?: error("can't get release data"),
-        )?.time ?: error("can't parse releaseDate")
+        return document.select(".bbWrapper").first()?.html()?.let { elementHtml ->
+            releaseDateRegex.find(elementHtml)?.groups?.get(1)?.value?.let { date ->
+                releaseDateFormat.parse(
+                    date,
+                )?.time ?: 0L
+            } ?: 0L
+        } ?: 0L
     }
 
     @Throws(IllegalStateException::class)
