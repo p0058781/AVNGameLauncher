@@ -94,7 +94,9 @@ suspend fun main(args: Array<String>) {
         val httpServer = koinInject<HttpServer>()
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
-        val minimizeToTrayOnClose by remember { (settingsRepository.minimizeToTrayOnClose as Option.Some).value }.collectAsState()
+        val minimizeToTrayOnClose by remember {
+            (settingsRepository.minimizeToTrayOnClose as Option.Some).value
+        }.collectAsState()
         val startMinimized = (settingsRepository.startMinimized as Option.Some).value.value
         var minimized by remember { mutableStateOf(minimizeToTrayOnClose && startMinimized) }
         var open by remember { mutableStateOf(true) }

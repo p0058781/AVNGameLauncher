@@ -6,7 +6,6 @@ import coil3.disk.DiskCache
 import coil3.memory.MemoryCache
 import coil3.util.Logger.Level
 import okio.Path.Companion.toPath
-import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.logger.Logger
@@ -17,7 +16,6 @@ interface ImageLoaderFactory {
         platformContext: PlatformContext,
     ): ImageLoader
 }
-
 
 const val MEMORY_CACHE_MAX_SIZE_BYTES = 256 * 1024 * 1024L // 256 MB
 const val DISK_CACHE_MAX_SIZE_BYTES = 1024L * 1024 * 1024L // 1 GB
@@ -77,5 +75,3 @@ private class ImageLoaderLogger(private val logger: Logger) : coil3.util.Logger 
         }
     }
 }
-
-

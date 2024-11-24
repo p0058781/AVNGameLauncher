@@ -23,7 +23,6 @@ internal actual fun Module.settingsKoinModule() {
 
 internal actual class SettingsRepositoryImpl(private val settings: Settings) :
     SettingsRepositoryShared(settings) {
-
     private val _minimizeToTrayOnClose = Option.Some(
         MutableStateFlow {
             settings.getBoolean(
@@ -72,6 +71,6 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings) :
     }
 
     override suspend fun setShowGifs(showGifs: Boolean) {
-        //coil doesn't support gifs on desktop
+        // coil doesn't support gifs on desktop
     }
 }

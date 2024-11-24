@@ -16,7 +16,6 @@ internal actual fun Module.settingsKoinModule() {
 
 internal actual class SettingsRepositoryImpl(private val settings: Settings) :
     SettingsRepositoryShared(settings) {
-
     override val minimizeToTrayOnClose = Option.None<StateFlow<Boolean>>()
 
     override suspend fun setMinimizeToTrayOnClose(minimizeToTrayOnClose: Boolean) {
@@ -33,7 +32,7 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings) :
                 SettingsRepository::showGifs.name,
                 SettingsDefaults.showGifs,
             )
-        }
+        },
     )
     override val showGifs: Option<out StateFlow<Boolean>> get() = _showGifs
 
@@ -53,5 +52,5 @@ internal actual class SettingsRepositoryImpl(private val settings: Settings) :
 
 actual object SettingsDefaults : ISettingsDefaults() {
     override val sfwModeEnabled = true
-    val showGifs = true
+    const val showGifs = true
 }

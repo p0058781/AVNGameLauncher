@@ -28,7 +28,6 @@ import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesScreen
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.CreateCustomGameScreen
-import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.game.GameDetailsScreen
 import org.skynetsoftware.avnlauncher.ui.screen.import.ImportGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.main.MainScreen

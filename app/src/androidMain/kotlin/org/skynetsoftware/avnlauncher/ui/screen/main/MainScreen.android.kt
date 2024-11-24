@@ -3,7 +3,6 @@ package org.skynetsoftware.avnlauncher.ui.screen.main
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,8 +46,6 @@ import org.skynetsoftware.avnlauncher.domain.model.SortOrder
 import org.skynetsoftware.avnlauncher.state.State
 import org.skynetsoftware.avnlauncher.state.buildText
 import org.skynetsoftware.avnlauncher.ui.component.DropdownItemAction
-import org.skynetsoftware.avnlauncher.ui.component.HoverExplanation
-import org.skynetsoftware.avnlauncher.ui.component.IconAction
 import org.skynetsoftware.avnlauncher.ui.component.Search
 import org.skynetsoftware.avnlauncher.ui.screen.main.games.Games
 import java.text.SimpleDateFormat
@@ -91,7 +88,7 @@ private fun Toolbar(
             val navigator = LocalNavigator.current
 
             Box(
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
             ) {
                 Image(
                     painter = painterResource(Res.drawable.more_vert),
@@ -231,7 +228,7 @@ actual fun MainScreenContent(
                 resetUpdateAvailable = resetUpdateAvailable,
                 updateRating = updateRating,
                 runningGame = runningGame,
-                stopGame = stopGame
+                stopGame = stopGame,
             )
         }
     }

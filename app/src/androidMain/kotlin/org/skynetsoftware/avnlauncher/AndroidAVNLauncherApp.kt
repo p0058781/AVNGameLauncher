@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit
 
 @Suppress("InjectDispatcher")
 class AndroidAVNLauncherApp : Application(), KoinComponent {
-
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "game_updates"
         private const val UPDATES_AVAILABLE_NOTIFICATION_ID = 1
@@ -63,10 +62,12 @@ class AndroidAVNLauncherApp : Application(), KoinComponent {
             androidContext(this@AndroidAVNLauncherApp)
             modules(
                 imageLoaderKoinModule(),
-                configKoinModule(Config(
-                    dataDir = dataDir.absolutePath,
-                    cacheDir = cacheDir.absolutePath,
-                )),
+                configKoinModule(
+                    Config(
+                        dataDir = dataDir.absolutePath,
+                        cacheDir = cacheDir.absolutePath,
+                    ),
+                ),
                 appKoinModule,
                 dataKoinModule,
                 domainKoinModule,
@@ -97,7 +98,7 @@ class AndroidAVNLauncherApp : Application(), KoinComponent {
         }
         coroutineScope.launch {
             eventCenter.events.collect {
-                when(it) {
+                when (it) {
                     is Event.UpdateCheckComplete -> {
                         val count = it.updateCheckResult.updates.count { it.updateAvailable }
                         if (count > 0 && settingsRepository.systemNotificationsEnabled.value) {
@@ -105,7 +106,7 @@ class AndroidAVNLauncherApp : Application(), KoinComponent {
                         }
                     }
                     else -> {
-                        //not handled here
+                        // not handled here
                     }
                 }
             }
@@ -119,8 +120,8 @@ class AndroidAVNLauncherApp : Application(), KoinComponent {
             .setContentText(
                 org.jetbrains.compose.resources.getString(
                     Res.string.systemNotificationDescriptionUpdateAvailable,
-                    count
-                )
+                    count,
+                ),
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 

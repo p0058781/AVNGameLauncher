@@ -4,13 +4,10 @@ import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
@@ -144,8 +141,8 @@ actual fun App() {
                         },
                         windowFocused = windowFocused,
                         blockedByPopup = showSettingsScreen || showImportGameScreen || showGameDetailsScreen != null ||
-                                showImportGameScreen || showCustomListsScreen ||
-                                showCreateCustomGameScreen,
+                            showImportGameScreen || showCustomListsScreen ||
+                            showCreateCustomGameScreen,
                     ),
                 ) {
                     MainScreen()

@@ -1,10 +1,10 @@
 package org.skynetsoftware.avnlauncher.utils
 
 import org.koin.dsl.module
+import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.repository.SettingsRepository
 import org.skynetsoftware.avnlauncher.domain.utils.OS
-import org.skynetsoftware.avnlauncher.domain.utils.Option
 import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.logger.Logger
 import java.io.File
@@ -12,7 +12,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.io.path.extension
-import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 
 actual val executableFinderKoinModule = module {
     single<ExecutableFinder> { ExecutableFinderDesktop(get(), get()) }

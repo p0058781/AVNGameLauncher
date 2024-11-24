@@ -20,7 +20,6 @@ expect object SettingsDefaults : ISettingsDefaults
 abstract class SettingsRepositoryShared internal constructor(
     private val settings: Settings,
 ) : SettingsRepository {
-
     private val _gamesDir =
         MutableStateFlow {
             val value = settings.getString(
@@ -33,11 +32,11 @@ abstract class SettingsRepositoryShared internal constructor(
         }
     override val gamesDir: StateFlow<String?> get() = _gamesDir
 
-        private val _selectedFilterName = MutableStateFlow {
-            settings.getString(
-                SettingsRepository::selectedFilterName.name,
-                SettingsDefaults.selectedFilter,
-            )
+    private val _selectedFilterName = MutableStateFlow {
+        settings.getString(
+            SettingsRepository::selectedFilterName.name,
+            SettingsDefaults.selectedFilter,
+        )
     }
     override val selectedFilterName: StateFlow<String> get() = _selectedFilterName
 

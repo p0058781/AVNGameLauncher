@@ -100,9 +100,10 @@ private class UpdateCheckerImpl(
         logger.info("stopPeriodicUpdateChecks")
     }
 
-    override fun checkForUpdates() = scope.launch {
-        checkForUpdatesInternal()
-    }
+    override fun checkForUpdates() =
+        scope.launch {
+            checkForUpdatesInternal()
+        }
 
     override fun updateAllGames() {
         scope.launch {

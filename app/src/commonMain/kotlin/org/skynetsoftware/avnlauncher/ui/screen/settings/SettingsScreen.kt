@@ -112,7 +112,7 @@ fun SettingsScreen(
                 title = stringResource(Res.string.settingsSectionTitleGeneral),
             ) {
                 val minimizeToTrayOnCloseOption = settingsViewModel.minimizeToTrayOnClose
-                if(minimizeToTrayOnCloseOption is Option.Some) {
+                if (minimizeToTrayOnCloseOption is Option.Some) {
                     val minimizeToTrayOnClose by remember { minimizeToTrayOnCloseOption.value }.collectAsState()
                     Item(
                         title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
@@ -126,7 +126,7 @@ fun SettingsScreen(
                     Divider()
                 }
                 val startMinimizedOption = settingsViewModel.startMinimized
-                if(startMinimizedOption is Option.Some) {
+                if (startMinimizedOption is Option.Some) {
                     val startMinimized by remember { startMinimizedOption.value }.collectAsState()
                     Item(
                         title = stringResource(Res.string.settingsItemTitleStartMinimized),
@@ -154,7 +154,7 @@ fun SettingsScreen(
                 )
                 Divider()
                 val httpServerEnabledOption = settingsViewModel.httpServerEnabled
-                if(httpServerEnabledOption is Option.Some) {
+                if (httpServerEnabledOption is Option.Some) {
                     val httpServerEnabled by remember { httpServerEnabledOption.value }.collectAsState()
                     Item(
                         title = stringResource(Res.string.settingsItemTitleHttpServer),

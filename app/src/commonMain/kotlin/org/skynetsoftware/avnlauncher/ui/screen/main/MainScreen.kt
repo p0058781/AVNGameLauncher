@@ -81,45 +81,43 @@ fun MainScreen(
         }
     }
 
-
-        MainScreenContent(
-            games = games,
-            runningGame = gameRunning,
-            currentFilter = currentFilter,
-            filters = filters,
-            currentSortOrder = currentSortOrder,
-            currentSortDirection = currentSortDirection,
-            currentGamesDisplayMode = currentGamesDisplayMode,
-            newUpdateAvailableIndicatorVisible = newUpdateAvailableIndicatorVisible,
-            globalState = globalState,
-            sfwMode = sfwMode,
-            totalPlayTime = totalPlayTime,
-            averagePlayTime,
-            searchQuery,
-            imageAspectRatio = imageAspectRatio,
-            dateFormat = SimpleDateFormat(dateFormat),
-            timeFormat = SimpleDateFormat(timeFormat),
-            gridColumns = gridColumns,
-            setSearchQuery = {
-                searchQuery = it
-            },
-            startUpdateCheck = gamesViewModel::startUpdateCheck,
-            toggleSfwMode = gamesViewModel::toggleSfwMode,
-            setFilter = {
-                gamesViewModel.setFilter(it)
-                if (it == Filter.GamesWithUpdate) {
-                    gamesViewModel.resetNewUpdateAvailableIndicatorVisible()
-                }
-            },
-            setSortOrder = gamesViewModel::setSortOrder,
-            setSortDirection = gamesViewModel::setSortDirection,
-            setGamesDisplayMode = gamesViewModel::setGamesDisplayMode,
-            launchGame = gamesViewModel::launchGame,
-            stopGame = gamesViewModel::stopGame,
-            resetUpdateAvailable = gamesViewModel::resetUpdateAvailable,
-            updateRating = gamesViewModel::updateRating,
-        )
-
+    MainScreenContent(
+        games = games,
+        runningGame = gameRunning,
+        currentFilter = currentFilter,
+        filters = filters,
+        currentSortOrder = currentSortOrder,
+        currentSortDirection = currentSortDirection,
+        currentGamesDisplayMode = currentGamesDisplayMode,
+        newUpdateAvailableIndicatorVisible = newUpdateAvailableIndicatorVisible,
+        globalState = globalState,
+        sfwMode = sfwMode,
+        totalPlayTime = totalPlayTime,
+        averagePlayTime,
+        searchQuery,
+        imageAspectRatio = imageAspectRatio,
+        dateFormat = SimpleDateFormat(dateFormat),
+        timeFormat = SimpleDateFormat(timeFormat),
+        gridColumns = gridColumns,
+        setSearchQuery = {
+            searchQuery = it
+        },
+        startUpdateCheck = gamesViewModel::startUpdateCheck,
+        toggleSfwMode = gamesViewModel::toggleSfwMode,
+        setFilter = {
+            gamesViewModel.setFilter(it)
+            if (it == Filter.GamesWithUpdate) {
+                gamesViewModel.resetNewUpdateAvailableIndicatorVisible()
+            }
+        },
+        setSortOrder = gamesViewModel::setSortOrder,
+        setSortDirection = gamesViewModel::setSortDirection,
+        setGamesDisplayMode = gamesViewModel::setGamesDisplayMode,
+        launchGame = gamesViewModel::launchGame,
+        stopGame = gamesViewModel::stopGame,
+        resetUpdateAvailable = gamesViewModel::resetUpdateAvailable,
+        updateRating = gamesViewModel::updateRating,
+    )
 
     showExecutablePathPicker?.let { game ->
         PickExecutableDialog(
@@ -157,8 +155,6 @@ fun MainScreen(
         },
     )
 }
-
-
 
 @Composable
 expect fun MainScreenContent(

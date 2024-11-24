@@ -1,7 +1,6 @@
 package org.skynetsoftware.avnlauncher.launcher
 
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.gameLauncherAnotherGameRunning
@@ -92,7 +91,7 @@ private class GameLauncherDesktop(
                 }
                 logger.info(
                     "game exited: ${game.title}, " +
-                            "exit code: ${process.exitValue()} elapsedTime: ${endTime - startTime}",
+                        "exit code: ${process.exitValue()} elapsedTime: ${endTime - startTime}",
                 )
             } catch (t: Throwable) {
                 logger.error(t)
@@ -109,7 +108,7 @@ private class GameLauncherDesktop(
             return when (os) {
                 OS.Linux,
                 OS.Windows,
-                    -> listOf(executablePath)
+                -> listOf(executablePath)
                 OS.Mac -> listOf("open", "-W", executablePath)
             }
         }
