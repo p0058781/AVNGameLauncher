@@ -163,15 +163,6 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
         }
     override val gridImageAspectRatio: StateFlow<Float> get() = _gridImageAspectRatio
 
-    private val _httpServerEnabled =
-        MutableStateFlow {
-            settings.getBoolean(
-                SettingsRepository::httpServerEnabled.name,
-                SettingsDefaults.httpServerEnabled,
-            )
-        }
-    override val httpServerEnabled: StateFlow<Boolean> get() = _httpServerEnabled
-
     override suspend fun setSelectedFilterName(filterName: String) {
         _selectedFilterName.emit(filterName)
         settings[SettingsRepository::selectedFilterName.name] = filterName
@@ -292,10 +283,5 @@ internal class SettingsRepositoryImpl(private val settings: Settings) : Settings
     override suspend fun setStartMinimized(startMinimized: Boolean) {
         _startMinimized.emit(startMinimized)
         settings[SettingsRepository::startMinimized.name] = startMinimized
-    }
-
-    override suspend fun setHttpServerEnabled(httpServerEnabled: Boolean) {
-        _httpServerEnabled.emit(httpServerEnabled)
-        settings[SettingsRepository::httpServerEnabled.name] = httpServerEnabled
     }
 }

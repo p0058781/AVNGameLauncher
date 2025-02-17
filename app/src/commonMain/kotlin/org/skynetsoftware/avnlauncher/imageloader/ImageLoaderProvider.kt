@@ -67,7 +67,7 @@ class ImageLoaderLogger(private val logger: Logger) : coil3.util.Logger {
             Level.Warn -> message?.let { logger.warning(it) }
             Level.Error -> {
                 if (throwable != null) {
-                    logger.error(throwable)
+                    logger.error(throwable, message)
                 } else if (message != null) {
                     logger.error(message)
                 }

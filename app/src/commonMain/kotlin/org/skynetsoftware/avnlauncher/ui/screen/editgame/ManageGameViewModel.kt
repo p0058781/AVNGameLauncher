@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.executable.ExecutableFinder
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -211,7 +210,7 @@ class ManageGameViewModel(
                 rating = 0,
                 f95Rating = 0f,
                 updateAvailable = false,
-                added = Clock.System.now().toEpochMilliseconds(),
+                added = System.currentTimeMillis(),
                 lastPlayedTime = 0L,
                 hidden = hidden,
                 releaseDate = dateFormat.parse(releaseDate)!!.time,

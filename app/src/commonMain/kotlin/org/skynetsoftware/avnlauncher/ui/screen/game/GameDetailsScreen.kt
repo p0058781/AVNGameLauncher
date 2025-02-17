@@ -60,6 +60,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.gameDetailsVersion
 import org.skynetsoftware.avnlauncher.app.generated.resources.gameDetailsVersionOther
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GameWithStats
+import org.skynetsoftware.avnlauncher.domain.model.imageUrlOrig
 import org.skynetsoftware.avnlauncher.imageloader.ImageLoaderFactory
 import org.skynetsoftware.avnlauncher.ui.screen.editgame.EditGameScreen
 import org.skynetsoftware.avnlauncher.ui.screen.main.games.InfoItem
@@ -111,7 +112,7 @@ fun GameDetailsScreen(
 
                 Column {
                     AsyncImage(
-                        model = game.game.imageUrl,
+                        model = game.game.imageUrlOrig(),
                         contentDescription = null,
                         modifier = Modifier.aspectRatio(IMAGE_ASPECT_RATIO),
                         contentScale = ContentScale.Crop,

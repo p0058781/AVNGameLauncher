@@ -28,7 +28,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescri
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionGridImageAspectRatio
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionHttpServer
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionMinimizeToTray
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemDescriptionStartMinimized
@@ -49,7 +48,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleF
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGamesDir
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridColumns
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleGridImageAspectRatio
-import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleHttpServer
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleLogLevel
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleMinimizeToTray
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsItemTitleSource
@@ -111,7 +109,6 @@ fun SettingsScreen(
                 title = stringResource(Res.string.settingsSectionTitleGeneral),
             ) {
                 val minimizeToTrayOnClose by remember { settingsViewModel.minimizeToTrayOnClose }.collectAsState()
-                val httpServerEnabled by remember { settingsViewModel.httpServerEnabled }.collectAsState()
                 Item(
                     title = stringResource(Res.string.settingsItemTitleMinimizeToTray),
                     subtitle = stringResource(Res.string.settingsItemDescriptionMinimizeToTray),
@@ -144,16 +141,6 @@ fun SettingsScreen(
                                 settingsViewModel.setLogLevel(it)
                             },
                         )
-                    },
-                )
-                Divider()
-                Item(
-                    title = stringResource(Res.string.settingsItemTitleHttpServer),
-                    subtitle = stringResource(Res.string.settingsItemDescriptionHttpServer),
-                    endContent = {
-                        Toggle(httpServerEnabled) {
-                            settingsViewModel.setHttpServerEnabled(it)
-                        }
                     },
                 )
             }

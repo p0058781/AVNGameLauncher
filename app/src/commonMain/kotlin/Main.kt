@@ -5,19 +5,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
-import kotlinx.cli.ArgParser
-import kotlinx.cli.ArgType
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.context.startKoin
 import org.skynetsoftware.avnlauncher.App
 import org.skynetsoftware.avnlauncher.LocalExitApplication
+import org.skynetsoftware.avnlauncher.app.generated.resources.*
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
 import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationDescriptionUpdateAvailable
@@ -36,11 +35,8 @@ import org.skynetsoftware.avnlauncher.domain.utils.os
 import org.skynetsoftware.avnlauncher.imageloader.imageLoaderKoinModule
 import org.skynetsoftware.avnlauncher.launcher.gameLauncherKoinModule
 import org.skynetsoftware.avnlauncher.link.externalLinkUtilsKoinModule
-import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.logger.logUncaughtExceptions
 import org.skynetsoftware.avnlauncher.logger.loggerKoinModule
-import org.skynetsoftware.avnlauncher.server.HttpServer
-import org.skynetsoftware.avnlauncher.server.httpServerKoinModule
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 import org.skynetsoftware.avnlauncher.state.eventCenterModule
@@ -56,15 +52,10 @@ import java.lang.reflect.Field
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 
 @Suppress("LongMethod")
-suspend fun main(args: Array<String>) {
+suspend fun main() {
     setAwtAppName()
 
-    val parser = ArgParser("avnlauncher")
-    val dataDir by parser.option(ArgType.String, shortName = "d", fullName = "data-dir", description = "Data dir")
-    val cacheDir by parser.option(ArgType.String, shortName = "c", fullName = "cache-dir", description = "Cache dir")
-    parser.parse(args)
-
-    val config = createConfig(dataDir, cacheDir)
+    val config = createConfig()
     System.setProperty("java.util.prefs.userRoot", config.dataDir)
 
     val koinApplication = startKoin {
@@ -82,15 +73,12 @@ suspend fun main(args: Array<String>) {
             stateHandlerModule,
             executableFinderKoinModule,
             externalLinkUtilsKoinModule,
-            httpServerKoinModule,
         )
     }
 
     logUncaughtExceptions(koinApplication.koin.get())
 
     application {
-        val logger = koinInject<Logger>()
-        val httpServer = koinInject<HttpServer>()
         val updateChecker = koinInject<UpdateChecker>()
         val settingsRepository = koinInject<SettingsRepository>()
         val minimizeToTrayOnClose by remember { settingsRepository.minimizeToTrayOnClose }.collectAsState()
@@ -114,16 +102,6 @@ suspend fun main(args: Array<String>) {
                         updateChecker.startPeriodicUpdateChecks()
                     } else {
                         updateChecker.stopPeriodicUpdateChecks()
-                    }
-                }
-            }
-            LaunchedEffect(null) {
-                settingsRepository.httpServerEnabled.collect { httpServerEnabled ->
-                    logger.debug("httpServerEnabled changed: $httpServerEnabled")
-                    if (httpServerEnabled) {
-                        httpServer.start()
-                    } else {
-                        httpServer.stop()
                     }
                 }
             }
@@ -162,7 +140,7 @@ suspend fun main(args: Array<String>) {
                 }
                 Tray(
                     state = trayState,
-                    icon = painterResource(if (hasUpdates) "tray_icon_updates.png" else "tray_icon.png"),
+                    icon = painterResource(if (hasUpdates) Res.drawable.tray_icon_updates else Res.drawable.tray_icon),
                     menu = {
                         Item(
                             stringResource(Res.string.trayShowHideWindow),
@@ -213,16 +191,13 @@ private suspend fun setAwtAppName() {
     }
 }
 
-private fun createConfig(
-    dataDir: String?,
-    cacheDir: String?,
-): Config {
-    val dataDirFile = dataDir?.let { File(it) } ?: when (os) {
+private fun createConfig(): Config {
+    val dataDirFile = when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".config/$DEFAULT_DATA_DIR_NAME")
         OS.Windows -> File(System.getenv("AppData"), DEFAULT_DATA_DIR_NAME)
         OS.Mac -> File(System.getProperty("user.home"), "Library/Application Support/$DEFAULT_DATA_DIR_NAME")
     }
-    val cacheDirFile = cacheDir?.let { File(it) } ?: when (os) {
+    val cacheDirFile = when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".cache/$DEFAULT_DATA_DIR_NAME")
         OS.Windows -> File(System.getenv("AppData"), "$DEFAULT_DATA_DIR_NAME/cache")
         OS.Mac -> File(System.getProperty("user.home"), "Library/Caches/$DEFAULT_DATA_DIR_NAME")

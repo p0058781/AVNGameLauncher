@@ -7,7 +7,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.domain.coroutines.CoroutineDispatchers
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -78,7 +77,7 @@ private class UpdateCheckerImpl(
             }
             logger.info("startPeriodicUpdateChecks interval: $interval")
             while (isActive) {
-                val now = Clock.System.now().toEpochMilliseconds()
+                val now = System.currentTimeMillis()
                 val lastUpdateCheck = settingsRepository.lastUpdateCheck.value
 
                 var lastUpdateCheckElapsedTime = now - lastUpdateCheck
@@ -110,7 +109,7 @@ private class UpdateCheckerImpl(
         scope.launch {
             runIfNotAlreadyRunning {
                 eventCenter.emit(Event.UpdatingGamesStarted)
-                val start = Clock.System.now().toEpochMilliseconds()
+                val start = System.currentTimeMillis()
                 val allGames = gamesRepository.all().filter { it.isF95Game() }
 
                 logger.info("Updating ${allGames.size} games")
@@ -135,7 +134,7 @@ private class UpdateCheckerImpl(
                 )
                 gamesRepository.updateGames(updated)
                 eventCenter.emit(Event.UpdatingGamesComplete(mergedResult))
-                logger.info("Update took ${Clock.System.now().toEpochMilliseconds() - start}ms")
+                logger.info("Update took ${System.currentTimeMillis() - start}ms")
             }
         }
     }
@@ -143,7 +142,7 @@ private class UpdateCheckerImpl(
     private suspend fun checkForUpdatesInternal() =
         runIfNotAlreadyRunning {
             eventCenter.emit(Event.UpdateCheckStarted)
-            val start = Clock.System.now().toEpochMilliseconds()
+            val start = System.currentTimeMillis()
             val allGames = gamesRepository.all()
                 .filter { it.checkForUpdates }
                 .filter { it.isF95Game() }
@@ -151,7 +150,7 @@ private class UpdateCheckerImpl(
             logger.info("Checking ${allGames.size} games for updates")
             val updateCheckResults = getGamesWithUpdate(allGames)
             logger.info(
-                "Update check took ${Clock.System.now().toEpochMilliseconds() - start}ms," +
+                "Update check took ${System.currentTimeMillis() - start}ms," +
                     " made ${updateCheckResults.size} requests",
             )
             val gamesToUpdate = ArrayList<Game>()
@@ -184,7 +183,7 @@ private class UpdateCheckerImpl(
             )
             gamesRepository.updateGames(gamesWithUpdate)
             eventCenter.emit(Event.UpdateCheckComplete(mergedResult))
-            settingsRepository.setLastUpdateCheck(Clock.System.now().toEpochMilliseconds())
+            settingsRepository.setLastUpdateCheck(System.currentTimeMillis())
         }
 
     private suspend fun getGamesWithUpdate(games: List<Game>): List<UpdateCheckResult> {

@@ -6,6 +6,7 @@ import dev.icerock.moko.mvvm.compose.viewModelFactory
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.ParametersDefinition
+import org.koin.core.parameter.emptyParametersHolder
 import org.koin.dsl.module
 import org.skynetsoftware.avnlauncher.ui.screen.customlists.CustomListsViewModel
 import org.skynetsoftware.avnlauncher.ui.screen.customstatuses.CustomStatusesViewModel
@@ -27,6 +28,6 @@ val viewModelsKoinModule = module {
 
 @Composable
 inline fun <reified T : ViewModel> viewModel(noinline parameters: ParametersDefinition? = null): T {
-    val viewModel = koinInject<T>(parameters = parameters)
+    val viewModel = koinInject<T>(parameters = parameters ?: { emptyParametersHolder() })
     return getViewModel(T::class.java.name, viewModelFactory { viewModel })
 }

@@ -17,7 +17,6 @@ kotlin {
                 implementation(libs.sqdelight.primitiveadapters)
 
                 implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.datetime)
                 implementation(libs.okio)
 
                 implementation(libs.koin.core)

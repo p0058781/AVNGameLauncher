@@ -26,7 +26,6 @@ class SettingsViewModel(
     val systemNotificationsEnabled = settingsRepository.systemNotificationsEnabled
     val archivedGamesDisableUpdateChecks = settingsRepository.archivedGamesDisableUpdateChecks
     val gridImageAspectRatio = settingsRepository.gridImageAspectRatio
-    val httpServerEnabled = settingsRepository.httpServerEnabled
 
     fun setPeriodicUpdateChecks(periodicUpdateChecks: Boolean) =
         viewModelScope.launch {
@@ -86,11 +85,6 @@ class SettingsViewModel(
     fun setGridImageAspectRatio(gridImageAspectRatio: Float) =
         viewModelScope.launch {
             settingsRepository.setGridImageAspectRatio(gridImageAspectRatio)
-        }
-
-    fun setHttpServerEnabled(httpServerEnabled: Boolean) =
-        viewModelScope.launch(Dispatchers.IO) {
-            settingsRepository.setHttpServerEnabled(httpServerEnabled)
         }
 
     fun forceUpdateAllGames() {

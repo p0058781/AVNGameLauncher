@@ -1,5 +1,6 @@
 package org.skynetsoftware.avnlauncher.ui.screen.main.games
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +33,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.skynetsoftware.avnlauncher.app.generated.resources.*
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelFirstPlayed
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelLastPlayed
@@ -41,6 +44,7 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelReleaseDa
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelVersion
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
+import org.skynetsoftware.avnlauncher.domain.model.imageUrlOrig
 import org.skynetsoftware.avnlauncher.ui.ext.lastPlayedDisplayValue
 import org.skynetsoftware.avnlauncher.ui.ext.releaseDateDisplayValue
 import org.skynetsoftware.avnlauncher.ui.ext.titleWithSfwFilterAndSearchMatchHighlight
@@ -127,12 +131,18 @@ private fun GameItem(
             modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),
         ) {
             Box {
-                AsyncImage(
+                /*AsyncImage(
                     model = if (sfwMode) {
                         "https://picsum.photos/seed/${game.f95ZoneThreadId}/400/200"
                     } else {
-                        game.imageUrl
+                        game.imageUrlOrig()
                     },
+                    contentDescription = null,
+                    modifier = Modifier.aspectRatio(imageAspectRatio),
+                    contentScale = ContentScale.Crop,
+                )*/
+                Image(
+                    painterResource(Res.drawable.melody_1),
                     contentDescription = null,
                     modifier = Modifier.aspectRatio(imageAspectRatio),
                     contentScale = ContentScale.Crop,
