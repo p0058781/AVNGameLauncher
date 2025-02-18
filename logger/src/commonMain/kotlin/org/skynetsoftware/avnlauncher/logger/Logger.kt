@@ -99,9 +99,12 @@ private class LoggerImpl(
         slf4jLogger.error(message)
     }
 
-    override fun error(throwable: Throwable) {
+    override fun error(
+        throwable: Throwable,
+        message: String?,
+    ) {
         val slf4jLogger = LoggerFactory.getLogger(getLoggerName())
-        slf4jLogger.error(throwable.message, throwable)
+        slf4jLogger.error(message ?: throwable.message, throwable)
     }
 }
 
@@ -126,7 +129,10 @@ interface Logger {
 
     fun error(message: String)
 
-    fun error(throwable: Throwable)
+    fun error(
+        throwable: Throwable,
+        message: String? = null,
+    )
 }
 
 internal fun Logger.getLoggerName(): String {

@@ -15,7 +15,6 @@ kotlin {
                 implementation(project(":domain"))
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.koin.core)
-                implementation(libs.kotlinx.datetime)
                 implementation(libs.log4j.slf4j)
                 implementation(libs.log4j.core)
             }

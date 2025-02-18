@@ -60,8 +60,6 @@
     <string name="settingsItemDescriptionStartMinimized">When app is launched it will start minimized to tray.</string>
     <string name="settingsItemTitleLogLevel">Log Level</string>
     <string name="settingsItemDescriptionLogLevel">Chose Log Level</string>
-    <string name="settingsItemTitleHttpServer">HTTP Server</string>
-    <string name="settingsItemDescriptionHttpServer">HTTP Server used for browser plugin</string>
 
     <string name="settingsSectionTitleGames">Games</string>
     <string name="settingsItemTitleGamesDir">Games Dir</string>

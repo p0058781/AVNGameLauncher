@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.data.mapper
 
-import kotlinx.datetime.Clock
 import org.skynetsoftware.avnlauncher.data.GameEntity
 import org.skynetsoftware.avnlauncher.data.GameFull
 import org.skynetsoftware.avnlauncher.data.GamesFull
@@ -200,7 +199,7 @@ internal fun F95Game.toGame() =
         rating = 0,
         f95Rating = rating,
         updateAvailable = false,
-        added = Clock.System.now().toEpochMilliseconds(),
+        added = System.currentTimeMillis(),
         lastPlayedTime = 0L,
         hidden = false,
         releaseDate = releaseDate,

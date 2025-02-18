@@ -17,6 +17,7 @@
 -dontwarn org.codehaus.mojo.**
 -dontwarn com.ibm.icu.**
 -dontwarn io.netty.**
+-dontwarn org.jspecify.annotations.Nullable
 
 -keep class kotlin.Metadata
 

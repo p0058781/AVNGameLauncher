@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.ui.screen.settings
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel
@@ -26,7 +25,6 @@ class SettingsViewModel(
     val systemNotificationsEnabled = settingsRepository.systemNotificationsEnabled
     val archivedGamesDisableUpdateChecks = settingsRepository.archivedGamesDisableUpdateChecks
     val gridImageAspectRatio = settingsRepository.gridImageAspectRatio
-    val httpServerEnabled = settingsRepository.httpServerEnabled
 
     fun setPeriodicUpdateChecks(periodicUpdateChecks: Boolean) =
         viewModelScope.launch {
@@ -86,11 +84,6 @@ class SettingsViewModel(
     fun setGridImageAspectRatio(gridImageAspectRatio: Float) =
         viewModelScope.launch {
             settingsRepository.setGridImageAspectRatio(gridImageAspectRatio)
-        }
-
-    fun setHttpServerEnabled(httpServerEnabled: Boolean) =
-        viewModelScope.launch(Dispatchers.IO) {
-            settingsRepository.setHttpServerEnabled(httpServerEnabled)
         }
 
     fun forceUpdateAllGames() {

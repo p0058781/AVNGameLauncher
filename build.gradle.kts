@@ -1,6 +1,6 @@
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 
 plugins {
     alias(libs.plugins.kotlin.jvm).apply(false)
@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization).apply(false)
 
     alias(libs.plugins.jetbrains.compose).apply(false)
+    alias(libs.plugins.compose.compiler).apply(false)
 
     alias(libs.plugins.ktor).apply(false)
     alias(libs.plugins.ktlint).apply(false)
@@ -69,20 +70,22 @@ subprojects {
         }
     }
 
-    configure<KoverReportExtension> {
-        filters {
-            excludes {
-                classes(
-                    "org.skynetsoftware.avnlauncher.data.data.DatabaseImpl*",
-                    "org.skynetsoftware.avnlauncher.data.GameEntityQueries*",
-                    "org.skynetsoftware.avnlauncher.data.GameEntity*",
-                    "org.skynetsoftware.avnlauncher.data.TotalPlayTime",
-                    "org.skynetsoftware.avnlauncher.data.PlaySessionEntityQueries*",
-                    "org.skynetsoftware.avnlauncher.data.PlaySessionEntity*",
-                    "org.skynetsoftware.avnlauncher.data.ListEntity*",
-                    "org.skynetsoftware.avnlauncher.data.GameEntityToListEntity*",
-                    "org.skynetsoftware.avnlauncher.data.PlayStateEntity*",
-                )
+    configure<KoverProjectExtension> {
+        reports {
+            filters {
+                excludes {
+                    classes(
+                        "org.skynetsoftware.avnlauncher.data.data.DatabaseImpl*",
+                        "org.skynetsoftware.avnlauncher.data.GameEntityQueries*",
+                        "org.skynetsoftware.avnlauncher.data.GameEntity*",
+                        "org.skynetsoftware.avnlauncher.data.TotalPlayTime",
+                        "org.skynetsoftware.avnlauncher.data.PlaySessionEntityQueries*",
+                        "org.skynetsoftware.avnlauncher.data.PlaySessionEntity*",
+                        "org.skynetsoftware.avnlauncher.data.ListEntity*",
+                        "org.skynetsoftware.avnlauncher.data.GameEntityToListEntity*",
+                        "org.skynetsoftware.avnlauncher.data.PlayStateEntity*",
+                    )
+                }
             }
         }
     }

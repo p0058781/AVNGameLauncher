@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogWindow
@@ -21,12 +20,14 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
 import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
+import org.skynetsoftware.avnlauncher.app.generated.resources.icon
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsTitle
 import org.skynetsoftware.avnlauncher.domain.model.Game
@@ -43,7 +44,7 @@ import java.awt.Toolkit
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 
-private const val WINDOW_ICON = "icon.png"
+private val WINDOW_ICON = Res.drawable.icon
 
 private const val MAIN_WINDOW_DEFAULT_WIDTH_PERCENT = 0.7f
 private const val MAIN_WINDOW_DEFAULT_HEIGHT_PERCENT = 0.72f

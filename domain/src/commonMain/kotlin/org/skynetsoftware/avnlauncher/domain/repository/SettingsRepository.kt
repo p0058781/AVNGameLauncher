@@ -55,7 +55,6 @@ interface SettingsRepository {
     val systemNotificationsEnabled: StateFlow<Boolean>
     val archivedGamesDisableUpdateChecks: StateFlow<Boolean>
     val gridImageAspectRatio: StateFlow<Float>
-    val httpServerEnabled: StateFlow<Boolean>
 
     suspend fun setSelectedFilterName(filterName: String)
 
@@ -94,6 +93,4 @@ interface SettingsRepository {
     suspend fun setArchivedGamesDisableUpdateChecks(archivedGamesDisableUpdateChecks: Boolean)
 
     suspend fun setGridImageAspectRatio(gridImageAspectRatio: Float)
-
-    suspend fun setHttpServerEnabled(httpServerEnabled: Boolean)
 }
