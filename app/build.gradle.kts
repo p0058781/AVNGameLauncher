@@ -10,6 +10,14 @@ plugins {
 
 group = "org.skynetsoftware.avnlauncher"
 
+/*configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:p0058781-4-SNAPSHOT+debug")
+        force("org.jetbrains.skiko:skiko-awt:p0058781-4-SNAPSHOT+debug")
+        force("org.jetbrains.skiko:skiko:p0058781-4-SNAPSHOT+debug")
+    }
+}*/
+
 kotlin {
 
     jvm("desktop")
@@ -45,6 +53,8 @@ kotlin {
                 implementation(compose.desktop.currentOs)
 
                 implementation(libs.sonner)
+
+                implementation("com.github.umjammer:vavi-image-avif:0.0.7")
             }
         }
         val commonTest by getting {
@@ -74,6 +84,7 @@ compose.desktop {
         jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
         jvmArgs("-Dapple.awt.application.appearance=system")
+        jvmArgs("-Djna.library.path=\$APPDIR")
 
         nativeDistributions {
             modules("java.sql", "java.management", "jdk.unsupported")

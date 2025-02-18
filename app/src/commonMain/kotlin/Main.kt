@@ -1,14 +1,9 @@
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
+import com.sun.jna.Platform
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -17,13 +12,6 @@ import org.koin.core.context.startKoin
 import org.skynetsoftware.avnlauncher.App
 import org.skynetsoftware.avnlauncher.LocalExitApplication
 import org.skynetsoftware.avnlauncher.app.generated.resources.*
-import org.skynetsoftware.avnlauncher.app.generated.resources.Res
-import org.skynetsoftware.avnlauncher.app.generated.resources.appName
-import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationDescriptionUpdateAvailable
-import org.skynetsoftware.avnlauncher.app.generated.resources.systemNotificationTitleUpdateAvailable
-import org.skynetsoftware.avnlauncher.app.generated.resources.trayCheckForUpdates
-import org.skynetsoftware.avnlauncher.app.generated.resources.trayExit
-import org.skynetsoftware.avnlauncher.app.generated.resources.trayShowHideWindow
 import org.skynetsoftware.avnlauncher.appKoinModule
 import org.skynetsoftware.avnlauncher.config.Config
 import org.skynetsoftware.avnlauncher.configKoinModule
@@ -48,12 +36,17 @@ import org.skynetsoftware.avnlauncher.utils.executableFinderKoinModule
 import java.awt.Toolkit
 import java.io.File
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 
 @Suppress("LongMethod")
 suspend fun main() {
     setAwtAppName()
+
+    println(getNativeLibraryResourcePrefix())
+    println(System.getProperty("jna.library.path"))
+    return
 
     val config = createConfig()
     System.setProperty("java.util.prefs.userRoot", config.dataDir)
@@ -188,6 +181,19 @@ private suspend fun setAwtAppName() {
     } catch (e: Exception) {
         @Suppress("PrintStackTrace")
         e.printStackTrace()
+    }
+}
+
+@Suppress("TooGenericExceptionCaught")
+private fun getNativeLibraryResourcePrefix(): String? {
+    return try {
+        val getNativeLibraryResourcePrefixMethodName: Method = Platform::class.java.getDeclaredMethod("getNativeLibraryResourcePrefix")
+        getNativeLibraryResourcePrefixMethodName.setAccessible(true)
+        getNativeLibraryResourcePrefixMethodName.invoke(Platform::class) as? String
+    } catch (e: Exception) {
+        @Suppress("PrintStackTrace")
+        e.printStackTrace()
+        null
     }
 }
 

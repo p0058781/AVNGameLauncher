@@ -47,6 +47,9 @@ private class ImageLoaderFactoryImpl(
                     .build()
             }
             .logger(ImageLoaderLogger(avnLauncherLogger))
+            .components {
+                add(ImageIOReEncodeDecoder.Factory())
+            }
             .build()
     }
 }

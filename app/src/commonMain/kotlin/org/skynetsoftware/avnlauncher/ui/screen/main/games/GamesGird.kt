@@ -44,7 +44,6 @@ import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelReleaseDa
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelVersion
 import org.skynetsoftware.avnlauncher.domain.model.Game
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
-import org.skynetsoftware.avnlauncher.domain.model.imageUrlOrig
 import org.skynetsoftware.avnlauncher.ui.ext.lastPlayedDisplayValue
 import org.skynetsoftware.avnlauncher.ui.ext.releaseDateDisplayValue
 import org.skynetsoftware.avnlauncher.ui.ext.titleWithSfwFilterAndSearchMatchHighlight
@@ -131,18 +130,12 @@ private fun GameItem(
             modifier = Modifier.fillMaxSize().padding(bottom = 10.dp),
         ) {
             Box {
-                /*AsyncImage(
+                AsyncImage(
                     model = if (sfwMode) {
                         "https://picsum.photos/seed/${game.f95ZoneThreadId}/400/200"
                     } else {
-                        game.imageUrlOrig()
+                        game.imageUrl
                     },
-                    contentDescription = null,
-                    modifier = Modifier.aspectRatio(imageAspectRatio),
-                    contentScale = ContentScale.Crop,
-                )*/
-                Image(
-                    painterResource(Res.drawable.melody_1),
                     contentDescription = null,
                     modifier = Modifier.aspectRatio(imageAspectRatio),
                     contentScale = ContentScale.Crop,

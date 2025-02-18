@@ -29,5 +29,6 @@ dependencyResolutionManagement {
         maven("https://jitpack.io")
         maven("https://jogamp.org/deployment/maven")
         maven("https://maven.pkg.jetbrains.space/kotlin/p/wasm/experimental")
+        mavenLocal()
     }
 }
