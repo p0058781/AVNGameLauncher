@@ -1,3 +1,4 @@
+
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -9,6 +10,8 @@ import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
+import kotlinx.cli.ArgParser
+import kotlinx.cli.ArgType
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -53,10 +56,15 @@ import java.lang.reflect.Field
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 
 @Suppress("LongMethod")
-suspend fun main() {
+suspend fun main(args: Array<String>) {
     setAwtAppName()
 
-    val config = createConfig()
+    val parser = ArgParser("avnlauncher")
+    val dataDir by parser.option(ArgType.String, shortName = "d", fullName = "data-dir", description = "Data dir")
+    val cacheDir by parser.option(ArgType.String, shortName = "c", fullName = "cache-dir", description = "Cache dir")
+    parser.parse(args)
+
+    val config = createConfig(dataDir, cacheDir)
     System.setProperty("java.util.prefs.userRoot", config.dataDir)
 
     val koinApplication = startKoin {
@@ -192,13 +200,16 @@ private suspend fun setAwtAppName() {
     }
 }
 
-private fun createConfig(): Config {
-    val dataDirFile = when (os) {
+private fun createConfig(
+    dataDir: String?,
+    cacheDir: String?,
+): Config {
+    val dataDirFile = dataDir?.let { File(it) } ?: when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".config/$DEFAULT_DATA_DIR_NAME")
         OS.Windows -> File(System.getenv("AppData"), DEFAULT_DATA_DIR_NAME)
         OS.Mac -> File(System.getProperty("user.home"), "Library/Application Support/$DEFAULT_DATA_DIR_NAME")
     }
-    val cacheDirFile = when (os) {
+    val cacheDirFile = cacheDir?.let { File(it) } ?: when (os) {
         OS.Linux -> File(System.getProperty("user.home"), ".cache/$DEFAULT_DATA_DIR_NAME")
         OS.Windows -> File(System.getenv("AppData"), "$DEFAULT_DATA_DIR_NAME/cache")
         OS.Mac -> File(System.getProperty("user.home"), "Library/Caches/$DEFAULT_DATA_DIR_NAME")

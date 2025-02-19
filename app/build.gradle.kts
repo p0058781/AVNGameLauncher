@@ -38,11 +38,12 @@ kotlin {
                 implementation(libs.mvvm.flow.compose)
 
                 implementation(libs.coil.compose)
-                implementation(libs.coil.network.okhttp)
+                implementation(libs.coil.network.ktor)
                 implementation(libs.coil.network.cache.control)
 
                 implementation(libs.dokar3.chiptextfield)
                 implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.cli)
 
                 implementation(libs.sonner)
 
@@ -92,7 +93,9 @@ compose.desktop {
                 iconFile.set(File(resourcesDir, "icon.png"))
             }
             buildTypes.release.proguard {
-                isEnabled.set(false)
+                version.set("7.5.0")
+                obfuscate.set(false)
+                isEnabled.set(true)
                 configurationFiles.from(project.file("proguard-rules.pro"))
             }
         }

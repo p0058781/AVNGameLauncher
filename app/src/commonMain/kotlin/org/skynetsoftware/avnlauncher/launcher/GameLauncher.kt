@@ -67,7 +67,7 @@ private class GameLauncherDesktop(
     ) : Thread() {
         var running = false
             private set
-        private lateinit var process: Process
+        private lateinit var process: ProcessWithChildren
 
         @Suppress("NewApi")
         override fun run() {
@@ -75,10 +75,12 @@ private class GameLauncherDesktop(
                 eventCenter.emit(Event.PlayingStarted(game))
                 logger.info("game starting: ${game.title}")
                 running = true
-                process = ProcessBuilder(createCommand(executablePath)).apply {
-                    redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                    redirectError(ProcessBuilder.Redirect.DISCARD)
-                }.start()
+                process = ProcessWithChildren(
+                    ProcessBuilder(createCommand(executablePath)).apply {
+                        redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                        redirectError(ProcessBuilder.Redirect.DISCARD)
+                    }.start(),
+                )
 
                 val startTime = System.currentTimeMillis()
 
@@ -87,6 +89,7 @@ private class GameLauncherDesktop(
                         process.waitFor()
                     }
                 }
+
                 val endTime = System.currentTimeMillis()
                 runBlocking {
                     playSessionRepository.insertPlaySession(
