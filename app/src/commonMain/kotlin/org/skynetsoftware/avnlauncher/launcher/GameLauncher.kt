@@ -13,6 +13,7 @@ import org.skynetsoftware.avnlauncher.logger.Logger
 import org.skynetsoftware.avnlauncher.state.Event
 import org.skynetsoftware.avnlauncher.state.EventCenter
 
+
 val gameLauncherKoinModule = module {
     single<GameLauncher> {
         GameLauncherDesktop(get(), get(), get())
@@ -67,7 +68,7 @@ private class GameLauncherDesktop(
     ) : Thread() {
         var running = false
             private set
-        private lateinit var process: Process
+        private lateinit var process: ProcessWithChildren
 
         @Suppress("NewApi")
         override fun run() {
@@ -75,10 +76,10 @@ private class GameLauncherDesktop(
                 eventCenter.emit(Event.PlayingStarted(game))
                 logger.info("game starting: ${game.title}")
                 running = true
-                process = ProcessBuilder(createCommand(executablePath)).apply {
+                process = ProcessWithChildren(ProcessBuilder(createCommand(executablePath)).apply {
                     redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     redirectError(ProcessBuilder.Redirect.DISCARD)
-                }.start()
+                }.start())
 
                 val startTime = System.currentTimeMillis()
 
@@ -87,6 +88,7 @@ private class GameLauncherDesktop(
                         process.waitFor()
                     }
                 }
+
                 val endTime = System.currentTimeMillis()
                 runBlocking {
                     playSessionRepository.insertPlaySession(
@@ -116,8 +118,7 @@ private class GameLauncherDesktop(
         private fun createCommand(executablePath: String): List<String> {
             return when (os) {
                 OS.Linux,
-                OS.Windows,
-                -> listOf(executablePath)
+                OS.Windows -> listOf(executablePath)
                 OS.Mac -> listOf("open", "-W", executablePath)
             }
         }
