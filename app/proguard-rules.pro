@@ -35,7 +35,11 @@
 -keep class kotlinx.coroutines.** { *; }
 -keep class org.jetbrains.skia.** { *; }
 -keep class org.jetbrains.skiko.** { *; }
--keep class androidx.compose.** { *; }
+-keep class androidx.compose.runtime.** { *; }
+-keep class androidx.collection.** { *; }
+-keep class androidx.lifecycle.** { *; }
+-keep class androidx.compose.ui.text.platform.ReflectionUtil { *; }
+-keep class okio.** { *; }
 
 -assumenosideeffects public class androidx.compose.runtime.ComposerKt {
     void sourceInformation(androidx.compose.runtime.Composer,java.lang.String);
@@ -113,3 +117,9 @@
 }
 
 -keep class ** implements coil3.util.FetcherServiceLoaderTarget
+
+-keep class ** implements javax.imageio.spi.ImageReaderSpi
+-keep class ** implements javax.imageio.spi.ImageWriterSpi
+
+-keep class com.sun.jna.** { *; }
+-keep class * implements com.sun.jna.** { *; }
