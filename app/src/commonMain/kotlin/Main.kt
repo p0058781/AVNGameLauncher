@@ -3,7 +3,6 @@ import androidx.compose.ui.window.Notification
 import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberTrayState
-import com.sun.jna.Platform
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -36,17 +35,12 @@ import org.skynetsoftware.avnlauncher.utils.executableFinderKoinModule
 import java.awt.Toolkit
 import java.io.File
 import java.lang.reflect.Field
-import java.lang.reflect.Method
 
 private const val DEFAULT_DATA_DIR_NAME = "avnlauncher"
 
 @Suppress("LongMethod")
 suspend fun main() {
     setAwtAppName()
-
-    println(getNativeLibraryResourcePrefix())
-    println(System.getProperty("jna.library.path"))
-    return
 
     val config = createConfig()
     System.setProperty("java.util.prefs.userRoot", config.dataDir)
@@ -181,19 +175,6 @@ private suspend fun setAwtAppName() {
     } catch (e: Exception) {
         @Suppress("PrintStackTrace")
         e.printStackTrace()
-    }
-}
-
-@Suppress("TooGenericExceptionCaught")
-private fun getNativeLibraryResourcePrefix(): String? {
-    return try {
-        val getNativeLibraryResourcePrefixMethodName: Method = Platform::class.java.getDeclaredMethod("getNativeLibraryResourcePrefix")
-        getNativeLibraryResourcePrefixMethodName.setAccessible(true)
-        getNativeLibraryResourcePrefixMethodName.invoke(Platform::class) as? String
-    } catch (e: Exception) {
-        @Suppress("PrintStackTrace")
-        e.printStackTrace()
-        null
     }
 }
 

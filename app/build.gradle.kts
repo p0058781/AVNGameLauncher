@@ -10,14 +10,6 @@ plugins {
 
 group = "org.skynetsoftware.avnlauncher"
 
-/*configurations.all {
-    resolutionStrategy {
-        force("org.jetbrains.skiko:skiko-awt-runtime-linux-x64:p0058781-4-SNAPSHOT+debug")
-        force("org.jetbrains.skiko:skiko-awt:p0058781-4-SNAPSHOT+debug")
-        force("org.jetbrains.skiko:skiko:p0058781-4-SNAPSHOT+debug")
-    }
-}*/
-
 kotlin {
 
     jvm("desktop")
@@ -54,7 +46,7 @@ kotlin {
 
                 implementation(libs.sonner)
 
-                implementation("com.github.umjammer:vavi-image-avif:0.0.7")
+                implementation(libs.vavi.image.avif)
             }
         }
         val commonTest by getting {
@@ -84,7 +76,6 @@ compose.desktop {
         jvmArgs("--add-opens", "java.desktop/sun.awt.X11=ALL-UNNAMED")
         jvmArgs("--add-opens", "java.desktop/sun.awt.wl=ALL-UNNAMED")
         jvmArgs("-Dapple.awt.application.appearance=system")
-        jvmArgs("-Djna.library.path=\$APPDIR")
 
         nativeDistributions {
             modules("java.sql", "java.management", "jdk.unsupported")
@@ -113,5 +104,35 @@ tasks {
             attributes["Main-Class"] = "MainKt"
             attributes["Add-Opens"] = "java.desktop/sun.awt.X11 java.desktop/sun.awt.wl"
         }
+        val hostOs = System.getProperty("os.name")
+        val isArm64 = System.getProperty("os.arch") == "aarch64"
+        when {
+            hostOs == "Mac OS X" && isArm64 -> {
+                from("lib/darwin-arm64-libavif.dll") {
+                    rename { "avif.dylib" }
+                }
+            }
+
+            hostOs == "Mac OS X" && !isArm64 -> {
+                from("lib/darwin-x86-64-libavif.dll") {
+                    rename { "avif.dylib" }
+                }
+            }
+
+            hostOs == "Linux" && !isArm64 -> {
+                from("lib/linux-x86-64-libavif.so") {
+                    rename { "avif.so" }
+                }
+            }
+
+            hostOs.startsWith("Windows") && !isArm64 -> {
+                from("lib/win32-x86-64-libavif.dll") {
+                    rename { "avif.dll" }
+                }
+            }
+
+            else -> throw GradleException("OS is not supported")
+        }
+
     }
 }
