@@ -92,6 +92,7 @@ compose.desktop {
                 iconFile.set(File(resourcesDir, "icon.png"))
             }
             buildTypes.release.proguard {
+                isEnabled.set(false)
                 configurationFiles.from(project.file("proguard-rules.pro"))
             }
         }
