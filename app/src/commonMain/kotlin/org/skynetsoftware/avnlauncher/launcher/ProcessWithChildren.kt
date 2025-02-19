@@ -5,7 +5,6 @@ package org.skynetsoftware.avnlauncher.launcher
  * Currently handles waiting for and destroying the process and its children
  */
 class ProcessWithChildren(private val process: Process) {
-
     val isAlive: Boolean
         get() = process.isAlive || process.children().anyMatch { it.isAlive }
 
@@ -14,6 +13,7 @@ class ProcessWithChildren(private val process: Process) {
         process.destroy()
     }
 
+    @Suppress("MagicNumber")
     fun waitFor(): Int {
         while (process.children().count() > 0) {
             Thread.sleep(500)
