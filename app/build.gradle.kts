@@ -43,6 +43,7 @@ kotlin {
 
                 implementation(libs.dokar3.chiptextfield)
                 implementation(compose.desktop.currentOs)
+                implementation(libs.kotlinx.cli)
 
                 implementation(libs.sonner)
 
