@@ -34,14 +34,14 @@ class ImageIOReEncodeDecoder(
     private val source: ImageSource,
     private val options: Options,
 ) : Decoder {
-
     override suspend fun decode(): DecodeResult {
         val decodedImage = source.source().inputStream().use { ImageIO.read(it) }
         val pngImageBytes = ByteArrayOutputStream().apply {
             ImageIO.write(decodedImage, "png", this)
         }.toByteArray()
         val image = Image.makeFromEncoded(pngImageBytes)
-        // TODO instead of encoding to png and decoding again, directly decode from pixel data (this will require color types mapping between imageio and skia)
+        // TODO instead of encoding to png and decoding again, directly decode from pixel data (this will require
+        // color types mapping between imageio and skia)
 
         val isSampled: Boolean
         val bitmap: Bitmap
@@ -60,7 +60,6 @@ class ImageIOReEncodeDecoder(
     }
 
     class Factory : Decoder.Factory {
-
         override fun create(
             result: SourceFetchResult,
             options: Options,

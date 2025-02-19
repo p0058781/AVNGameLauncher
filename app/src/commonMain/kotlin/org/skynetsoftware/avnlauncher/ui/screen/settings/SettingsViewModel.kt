@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.ui.screen.settings
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.skynetsoftware.avnlauncher.domain.model.GridColumns
 import org.skynetsoftware.avnlauncher.domain.model.LogLevel

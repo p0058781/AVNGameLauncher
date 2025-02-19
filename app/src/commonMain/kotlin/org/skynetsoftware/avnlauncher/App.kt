@@ -22,12 +22,12 @@ import androidx.compose.ui.window.rememberDialogState
 import androidx.compose.ui.window.rememberWindowState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.skynetsoftware.avnlauncher.app.generated.resources.*
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.appName
 import org.skynetsoftware.avnlauncher.app.generated.resources.createCustomGameTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customListsScreenTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.customStatusesScreenTitle
+import org.skynetsoftware.avnlauncher.app.generated.resources.icon
 import org.skynetsoftware.avnlauncher.app.generated.resources.importGameDialogTitle
 import org.skynetsoftware.avnlauncher.app.generated.resources.settingsTitle
 import org.skynetsoftware.avnlauncher.domain.model.Game

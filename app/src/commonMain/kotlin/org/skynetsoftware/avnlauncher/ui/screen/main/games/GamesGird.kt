@@ -1,6 +1,5 @@
 package org.skynetsoftware.avnlauncher.ui.screen.main.games
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,9 +32,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.skynetsoftware.avnlauncher.app.generated.resources.*
 import org.skynetsoftware.avnlauncher.app.generated.resources.Res
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelFirstPlayed
 import org.skynetsoftware.avnlauncher.app.generated.resources.infoLabelLastPlayed
